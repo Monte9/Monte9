@@ -11,4 +11,5 @@ Key achievements include architecting cross-platform subscription infrastructure
 Feel free to reach me at manthan.thakkar@gmail.com
 
 Thanks for stopping by!
+
 ![](https://komarev.com/ghpvc/?username=monte9&color=blueviolet&style=for-the-badge&base=1000)

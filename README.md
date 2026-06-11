@@ -34,6 +34,9 @@ Currently at an **AI startup**, where I've helped scale the business to **$1M AR
 
 ### AI & Web
 
+- 🏛️ **[history-stories](https://github.com/Monte9/history-stories)** - A 3D museum you can walk through in your browser, where every painting is a short story from history ([historystories.vercel.app](https://historystories.vercel.app))
+- 🧠 **[quiz-me](https://github.com/Monte9/quiz-me)** - Multi-user trivia log where Claude quizzes you on topics you pick and grades honestly ([quizmenexus.vercel.app](https://quizmenexus.vercel.app))
+- 📚 **[deep-research-agent](https://github.com/Monte9/deep-research-agent)** - Deep research essays written with an AI agent — drafts, open data, charts, and annotated sources
 - 🤖 **[nextjs-tailwindcss-chatgpt-clone](https://github.com/Monte9/nextjs-tailwindcss-chatgpt-clone)** - Fully functional ChatGPT website clone using the OpenAI API
 - 🐱 **[xandar](https://github.com/Monte9/xandar)** - Upload an image and Xandar will predict whether it's a cat or a dog
 - ⛓️ **[HelloWorld-Blockchain](https://github.com/Monte9/HelloWorld-Blockchain)** - Hello World dapp on Ethereum with Solidity

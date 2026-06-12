@@ -16,6 +16,7 @@ Currently at an **AI startup**, where I've helped scale the business to **$1M AR
 
 The net-new work. Each project is a different shape of app, built end-to-end with AI agents — the goal is learning the tools and scaffolding that agentic engineering takes: skills, hooks, sub-agents, eval harnesses, and CI that agents can drive.
 
+- 🔁 **[stuck-problems-agent](https://github.com/Monte9/stuck-problems-agent)** - An autonomous research loop for important-but-stuck problems, run by a scheduled Claude Code routine. Scout, planner, generator, evaluator, and publisher sub-agents — the repo itself is the policy, the assets, and the memory.
 - 🏛️ **[history-stories](https://github.com/Monte9/history-stories)** - A 3D museum you can walk through in your browser, where every painting is a short story from history. Comes with its own content-agent harness — planner and evaluator sub-agents, skills, and evals. ([historystories.vercel.app](https://historystories.vercel.app))
 - 🧠 **[quiz-me](https://github.com/Monte9/quiz-me)** - Multi-user trivia log where Claude quizzes you on topics you pick and grades honestly. Next.js + Neon Postgres + Anthropic SDK, with CI-driven database migrations. ([quizmenexus.vercel.app](https://quizmenexus.vercel.app))
 - 📚 **[deep-research-agent](https://github.com/Monte9/deep-research-agent)** - Long-form research essays co-written with an AI agent through a documented brainstorm → research → draft → publish workflow, with open data, charts, and annotated source bibliographies.

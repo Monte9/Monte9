@@ -16,8 +16,10 @@ export const metadata: Metadata = {
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
-  // Build-time check: only show the Resume link once public/resume.pdf exists.
-  const hasResume = fs.existsSync(path.join(process.cwd(), "public", "resume.pdf"));
+  // Self-hosted resume once public/resume.pdf is committed; external link until then.
+  const resumeUrl = fs.existsSync(path.join(process.cwd(), "public", "resume.pdf"))
+    ? "/resume.pdf"
+    : "https://assets.super.so/e181e7f6-05b6-4256-a4ce-5a308f123cc1/files/5681e913-e7f9-4cf9-8e35-60f6283b4ea4/MonteThakkarResume.pdf";
 
   return (
     <html lang="en">
@@ -34,11 +36,9 @@ export default function RootLayout({
               <Link href="/about" className="hover:text-blue-600">
                 About
               </Link>
-              {hasResume && (
-                <a href="/resume.pdf" className="hover:text-blue-600">
-                  Resume
-                </a>
-              )}
+              <a href={resumeUrl} className="hover:text-blue-600">
+                Resume
+              </a>
             </nav>
           </header>
           <main>{children}</main>

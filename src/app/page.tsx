@@ -9,7 +9,14 @@ export default function Home() {
       <h1 className="text-2xl font-semibold">Hi, I&apos;m Monte 👋</h1>
       <p className="mt-4 text-gray-700 leading-relaxed">
         Full-stack software engineer in Los Angeles with a strong product
-        sense. I work at an AI startup, maintain{" "}
+        sense. I&apos;m a founding engineer at{" "}
+        <a
+          href="https://www.rosebud.app/"
+          className="text-blue-600 underline underline-offset-2"
+        >
+          Rosebud
+        </a>
+        , the AI journaling startup, maintain{" "}
         <a
           href="https://github.com/react-native-elements/react-native-elements"
           className="text-blue-600 underline underline-offset-2"

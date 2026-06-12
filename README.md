@@ -12,6 +12,16 @@ Currently at an **AI startup**, where I've helped scale the business to **$1M AR
 ![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
 ![LLMs](https://img.shields.io/badge/-LLMs-412991?style=flat-square&logo=openai&logoColor=white)
 
+## Highlights
+
+- 8 years of experience as a full-stack software engineer
+- Lead maintainer of [react-native-elements](https://github.com/react-native-elements/react-native-elements), the cross-platform React Native UI toolkit (25.8k+ stars) — 400K+ monthly downloads
+- Architected cross-platform subscription infrastructure processing $100K monthly revenue
+- Built a push notification delivery system processing 20K+ daily with an 11% open rate through LLM personalization
+- 1.5k+ GitHub stars across personal projects
+
+> Growth mindset, always seeking feedback - I love building 0→1 products and sharing what I learn along the way.
+
 ## Building with AI Agents
 
 The net-new work. Each project is a different shape of app, built end-to-end with AI agents — the goal is learning the tools and scaffolding that agentic engineering takes: skills, hooks, sub-agents, eval harnesses, and CI that agents can drive.
@@ -27,20 +37,13 @@ _A few more agentic projects are private for now — I'll open-source them and a
 
 The proven work — React Native components used in production by other people's apps.
 
+- 🧰 **[react-native-elements](https://github.com/react-native-elements/react-native-elements)** (25.8k+ stars) - Cross-platform React Native UI toolkit — lead maintainer and longtime contributor
 - ⭐ **[react-native-ratings](https://github.com/Monte9/react-native-ratings)** (940+ stars) - Tap and swipe ratings component for React Native
 - 🌄 **[react-native-parallax-scrollview](https://github.com/Monte9/react-native-parallax-scrollview)** (270+ stars) - The Parallax ScrollView component we all deserve
-- 🤖 **[nextjs-tailwindcss-chatgpt-clone](https://github.com/Monte9/nextjs-tailwindcss-chatgpt-clone)** (120+ stars) - Fully functional ChatGPT website clone built with Next.js, Tailwind CSS & the OpenAI API
 
 ## GitHub Activity
 
 ![GitHub Contribution Graph](https://ghchart.rshah.org/Monte9)
-
-## What I'm Doing
-
-- **Agentic engineering** - Building real apps end-to-end with AI agents, and learning the scaffolding that makes them work
-- **Building AI products** - Full-stack engineering at an AI startup, where I've helped scale the business to $1M ARR
-- **Maintaining open source** - Stewarding an open-source project with 400K+ monthly downloads
-- **Shipping 0→1** - Building early-stage products at startups with a strong product sense
 
 ## Connect
 
@@ -49,21 +52,3 @@ The proven work — React Native components used in production by other people's
 [![Website](https://img.shields.io/badge/-montethakkar.com-4285F4?style=flat-square&logo=google-chrome&logoColor=white)](https://montethakkar.com)
 [![Email](https://img.shields.io/badge/-Email-EA4335?style=flat-square&logo=gmail&logoColor=white)](mailto:manthan.thakkar@gmail.com)
 [![GitHub](https://img.shields.io/badge/-Follow-181717?style=flat-square&logo=github&logoColor=white)](https://github.com/Monte9)
-
----
-
-### Highlights
-
-- 8 years of experience as a full-stack software engineer
-- Architected cross-platform subscription infrastructure processing $100K monthly revenue
-- Built a push notification delivery system processing 20K+ daily with an 11% open rate through LLM personalization
-- Maintaining an open-source project with 400K+ monthly downloads
-- 1.5k+ GitHub stars across personal projects
-
-### Philosophy
-
-> Growth mindset, always seeking feedback - I love building 0→1 products and sharing what I learn along the way.
-
-Thanks for stopping by!
-
-![](https://komarev.com/ghpvc/?username=monte9&color=blueviolet&style=for-the-badge&base=1000)

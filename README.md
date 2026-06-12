@@ -29,7 +29,7 @@ The net-new work. Each project is a different shape of app, built end-to-end wit
 - 🧠 **[quiz-me](https://github.com/Monte9/quiz-me)** - Multi-user trivia log where Claude quizzes you on topics you pick and grades honestly. Next.js + Neon Postgres + Anthropic SDK, with CI-driven database migrations. ([quizmenexus.vercel.app](https://quizmenexus.vercel.app))
 - 📚 **[deep-research-agent](https://github.com/Monte9/deep-research-agent)** - Long-form research essays co-written with an AI agent through a documented brainstorm → research → draft → publish workflow, with open data, charts, and annotated source bibliographies.
 
-_A few more agentic projects are private for now — I'll open-source them and add them here as they're ready._
+_A few more agentic projects are private for now — I'll open-source them and add them here as they're ready. More live experiments at [nexuslabsx.com](https://nexuslabsx.com): ClawDebates, CursorStats, and Math Golf._
 
 ## Open Source
 

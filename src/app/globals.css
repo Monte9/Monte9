@@ -1,0 +1,73 @@
+@import "tailwindcss";
+
+:root {
+  --foreground: #1a1a1a;
+  --muted: #6b7280;
+  --background: #ffffff;
+  --accent: #2563eb;
+}
+
+body {
+  color: var(--foreground);
+  background: var(--background);
+}
+
+/* Rendered markdown articles */
+.article {
+  line-height: 1.75;
+}
+.article h2 {
+  font-size: 1.25rem;
+  font-weight: 600;
+  margin: 2rem 0 0.75rem;
+}
+.article h3 {
+  font-size: 1.1rem;
+  font-weight: 600;
+  margin: 1.5rem 0 0.5rem;
+}
+.article p {
+  margin: 1rem 0;
+}
+.article ul,
+.article ol {
+  margin: 1rem 0;
+  padding-left: 1.5rem;
+}
+.article ul {
+  list-style: disc;
+}
+.article ol {
+  list-style: decimal;
+}
+.article li {
+  margin: 0.35rem 0;
+}
+.article a {
+  color: var(--accent);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+.article code {
+  background: #f3f4f6;
+  padding: 0.15rem 0.35rem;
+  border-radius: 0.25rem;
+  font-size: 0.9em;
+}
+.article pre {
+  background: #f3f4f6;
+  padding: 1rem;
+  border-radius: 0.5rem;
+  overflow-x: auto;
+  margin: 1rem 0;
+}
+.article pre code {
+  background: none;
+  padding: 0;
+}
+.article blockquote {
+  border-left: 3px solid #e5e7eb;
+  padding-left: 1rem;
+  color: var(--muted);
+  margin: 1rem 0;
+}

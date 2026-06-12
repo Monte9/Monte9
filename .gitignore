@@ -1,0 +1,18 @@
+node_modules/
+.next/
+out/
+.DS_Store
+*.tsbuildinfo
+next-env.d.ts
+.vercel
+.env
+.env.local
+.env.*.local
+.env*.local
+
+# Agent harness scratch
+agent/evals/shots/
+agent/evals/tmp/
+
+# Always ignore Claude Code local overrides
+.claude/settings.local.json

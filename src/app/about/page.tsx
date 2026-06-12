@@ -7,29 +7,38 @@ export default function AboutPage() {
     <div className="article">
       <h1 className="text-2xl font-semibold mb-6">About Me</h1>
       <p>
-        I&apos;m Monte Thakkar, a full-stack software engineer in Los Angeles.
-        I was born and raised in Bangalore, India, and moved to San Francisco
-        at 18 to study computer science — where I got hooked on building,
-        attending 20+ hackathons in my junior and senior years.
+        I&apos;m Monte Thakkar — curious, growth-minded, and driven. I&apos;m a
+        product engineer with expertise in early-stage full-stack product
+        engineering, and I live in Los Angeles with my wife, Suvarcha. I was
+        born and raised in Bangalore, India, and moved to San Francisco at 18
+        to study computer science at SF State — where I got hooked on
+        building, attending 20+ hackathons in my junior and senior years.
       </p>
       <p>
-        Out of college I joined{" "}
+        My first job out of college was at{" "}
         <a href="https://techcrunch.com/2018/10/26/expedia-acquires-pillow-and-apartmentjet-to-conquer-the-short-term-rental-market/">
           Pillow
-        </a>{" "}
-        as a full-stack engineer, and a year and a half later we were acquired
-        by Expedia. I stayed on through the acquisition, working on Vrbo and
-        eventually relocating to Austin. A Twitter side project of mine (Flip
-        McBot, an NFT sales bot) caught the attention of two startup founders,
-        and I left Expedia to join their startup Curio — leading product and
-        development of its Twitter and Discord bots. I followed the same
-        founders to{" "}
-        <a href="https://www.rosebud.app/">Rosebud</a>, the AI journaling
-        startup, where I&apos;m a founding engineer today. There I&apos;ve
-        helped scale the business to $1M ARR — architecting cross-platform
-        subscription infrastructure processing $100K in monthly revenue and
-        building an LLM-personalized push notification system that delivers
-        20K+ notifications a day at an 11% open rate.
+        </a>
+        , a short-term rental startup, where I led a team of four building our
+        mobile app in React Native — until Expedia acquired us in 2018. I
+        stayed on at Expedia Group as a Senior Software Engineer through 2022,
+        leading development of the Vrbo Owner iOS app (300K+ monthly active
+        users) and spearheading React Native adoption that boosted development
+        velocity by 50%. A Twitter side project of mine (Flip McBot, an NFT
+        sales bot) then pulled me into web3: I joined Curio, the NFT analytics
+        startup, leading product and development of its Twitter and Discord
+        bots.
+      </p>
+      <p>
+        Today I&apos;m a founding engineer at{" "}
+        <a href="https://www.rosebud.app/">Rosebud</a>, the #1 AI-powered
+        journal for mental health and personal growth, which I&apos;m building
+        alongside Chrys Bader and Sean Dadashi. I&apos;ve helped scale the
+        business from 0 to $1M ARR — architecting subscription infrastructure
+        that processes $100K in monthly revenue across web and mobile, and
+        building a notification system that delivers 20K+ personalized
+        notifications a day. All told, I&apos;ve shipped products to over a
+        million users worldwide.
       </p>
       <p>
         I&apos;ve spent a lot of my career in the React Native ecosystem.
@@ -37,7 +46,8 @@ export default function AboutPage() {
         <a href="https://github.com/react-native-elements/react-native-elements">
           react-native-elements
         </a>
-        , the cross-platform UI toolkit (25.8k+ stars), and the author of{" "}
+        , the cross-platform UI toolkit (25.8k+ stars, 400K+ monthly
+        downloads), and the author of{" "}
         <a href="https://github.com/Monte9/react-native-ratings">
           react-native-ratings
         </a>{" "}
@@ -56,18 +66,34 @@ export default function AboutPage() {
         , an autonomous research loop, and this site itself, which is built and
         maintained by an agent harness.
       </p>
+
+      <h2>Key beliefs</h2>
+      <ul>
+        <li>Have strong opinions, weakly held</li>
+        <li>Have a high standard of success and a high tolerance for failure</li>
+        <li>
+          Being aware of internal vs external validation is key to personal
+          growth
+        </li>
+        <li>Who you work with is more important than what you work on</li>
+        <li>Life is probabilistic, not deterministic</li>
+      </ul>
+
+      <h2>Travel</h2>
       <p>
-        Away from the keyboard I&apos;m outdoorsy and play whatever sport is
-        on offer — table tennis, beach volleyball, pickleball, basketball. At
-        heart I&apos;m a builder and tinkerer, always hacking on new ideas.
+        Away from the keyboard I&apos;m outdoorsy, play whatever sport is on
+        offer — table tennis, beach volleyball, pickleball, basketball — and
+        love to travel. Some favorites so far: 🇮🇹 Italy, 🇫🇷 France, 🇯🇵 Japan,
+        🇭🇷 Croatia, 🇹🇿 Tanzania, 🇨🇷 Costa Rica, and 🇹🇷 Turkey.
       </p>
+
       <p>
         Find me on <a href="https://github.com/Monte9">GitHub</a>,{" "}
         <a href="https://x.com/montethakkar">X</a>, or{" "}
         <a href="https://www.linkedin.com/in/montethakkar/">LinkedIn</a> — or
         email me at{" "}
         <a href="mailto:manthan.thakkar@gmail.com">manthan.thakkar@gmail.com</a>
-        .
+        . You can also grab my <a href="/resume.pdf">resume</a>.
       </p>
     </div>
   );

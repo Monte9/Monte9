@@ -15,7 +15,7 @@ Currently at an **AI startup**, where I've helped scale the business to **$1M AR
 ## Highlights
 
 - 8 years of experience as a full-stack software engineer
-- Lead maintainer of [react-native-elements](https://github.com/react-native-elements/react-native-elements), the cross-platform React Native UI toolkit (25.8k+ stars) — ![npm monthly downloads](https://img.shields.io/npm/dm/react-native-elements?style=flat-square&color=blueviolet)
+- Lead maintainer of [react-native-elements](https://github.com/react-native-elements/react-native-elements), the cross-platform React Native UI toolkit (25.8k+ stars) — ![@rneui/themed monthly downloads](https://img.shields.io/npm/dm/%40rneui%2Fthemed?style=flat-square&color=blueviolet&label=%40rneui%2Fthemed) ![@rneui/base monthly downloads](https://img.shields.io/npm/dm/%40rneui%2Fbase?style=flat-square&color=blueviolet&label=%40rneui%2Fbase)
 - Architected cross-platform subscription infrastructure processing $100K monthly revenue
 - Built a push notification delivery system processing 20K+ daily with an 11% open rate through LLM personalization
 - 1.5k+ GitHub stars across personal projects

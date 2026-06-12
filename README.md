@@ -20,8 +20,6 @@ Currently at an **AI startup**, where I've helped scale the business to **$1M AR
 - Built a push notification delivery system processing 20K+ daily with an 11% open rate through LLM personalization
 - 1.5k+ GitHub stars across personal projects
 
-> Growth mindset, always seeking feedback - I love building 0→1 products and sharing what I learn along the way.
-
 ## Building with AI Agents
 
 The net-new work. Each project is a different shape of app, built end-to-end with AI agents — the goal is learning the tools and scaffolding that agentic engineering takes: skills, hooks, sub-agents, eval harnesses, and CI that agents can drive.

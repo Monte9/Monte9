@@ -13,6 +13,10 @@ export default function AboutPage() {
         born and raised in Bangalore, India, and moved to San Francisco at 18
         to study computer science at SF State — where I got hooked on
         building, attending 20+ hackathons in my junior and senior years.
+        Around that time I also created and taught{" "}
+        <a href="https://github.com/mobilespace/Season2">MobileSpace</a>, a
+        free, in-person course that taught students mobile development (iOS,
+        then React Native) to fill a gap in the CS curriculum.
       </p>
       <p>
         My first job out of college was at{" "}
@@ -24,10 +28,11 @@ export default function AboutPage() {
         stayed on at Expedia Group as a Senior Software Engineer through 2022,
         leading development of the Vrbo Owner iOS app (300K+ monthly active
         users) and spearheading React Native adoption that boosted development
-        velocity by 50%. A Twitter side project of mine (Flip McBot, an NFT
-        sales bot) then pulled me into web3: I joined Curio, the NFT analytics
-        startup, leading product and development of its Twitter and Discord
-        bots.
+        velocity by 50%. A Twitter side project of mine —{" "}
+        <a href="https://twitter.com/nftsalesbot">Flip McBot</a>, an NFT sales
+        bot I grew to 25k+ followers — then pulled me into web3: I joined
+        Curio, the NFT analytics startup, leading product and development of
+        its Twitter and Discord bots.
       </p>
       <p>
         Today I&apos;m a founding engineer at{" "}

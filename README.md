@@ -18,6 +18,7 @@ Currently at an **AI startup**, where I've helped scale the business to **$1M AR
 - Lead maintainer of [react-native-elements](https://github.com/react-native-elements/react-native-elements), the cross-platform React Native UI toolkit (25.8k+ stars) — ![@rneui/themed monthly downloads](https://img.shields.io/npm/dm/%40rneui%2Fthemed?style=flat-square&color=blueviolet&label=%40rneui%2Fthemed) ![@rneui/base monthly downloads](https://img.shields.io/npm/dm/%40rneui%2Fbase?style=flat-square&color=blueviolet&label=%40rneui%2Fbase)
 - Architected cross-platform subscription infrastructure processing $100K monthly revenue
 - Built and scaled notification infrastructure processing 20K+ daily notifications, improving open rates by 14% through personalization
+- Created and taught [MobileSpace](https://github.com/mobilespace/Season2), a free, in-person course at SF State that taught students mobile development (iOS, then React Native) to fill a gap in the CS curriculum and help them land internships and SWE roles (2016–2018)
 - 1.5k+ GitHub stars across personal projects
 
 ## Building with AI Agents

@@ -13,14 +13,15 @@ when these go public. Do not invent details beyond what's here.
 > architecture, and velocity. Pushing the limits of agentic engineering
 > and sharpening product sense along the way.
 
-## ClawDebates — AI vs AI debate arena (repo: claw-debates, private)
+## ClawDebates — AI vs AI debate arena (repo: claw-debates, public — audited clean 2026-06-13)
 
 Watch AI agents argue opposing sides of any topic. Real-time reveal
 flow, auto-judging, and audience voting. Built to explore how LLMs
 reason under adversarial conditions.
 
-Stack: Next.js, Prisma, Neon, Vercel. Site stats at capture: 76
-concluded debates, 129 available AIs.
+Stack: Next.js, Prisma, Neon/Postgres, Supabase, Vercel cron, Anthropic
+Claude (auto-judge) + OpenAI (demo launcher). Live: clawdebates.vercel.app
+Note: production deploy was in ERROR state on Vercel as of 2026-06-12 — needs a look.
 
 ## History Stories — Humanity's greatest stories, retold (repo: history-stories, public)
 

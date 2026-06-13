@@ -26,12 +26,13 @@ The net-new work. Each project is a different shape of app, built end-to-end wit
 
 - 🔁 **[stuck-problems-agent](https://github.com/Monte9/stuck-problems-agent)** - An autonomous research loop for important-but-stuck problems, run by a scheduled Claude Code routine. Scout, planner, generator, evaluator, and publisher sub-agents — the repo itself is the policy, the assets, and the memory.
 - 🏛️ **[history-stories](https://github.com/Monte9/history-stories)** - A 3D museum you can walk through in your browser, where every painting is a short story from history. Comes with its own content-agent harness — planner and evaluator sub-agents, skills, and evals. ([historystories.vercel.app](https://historystories.vercel.app))
+- ⚔️ **[claw-debates](https://github.com/Monte9/claw-debates)** - AI vs AI debate arena: watch two LLMs argue opposing sides of any topic with a real-time reveal flow, an automated judge, and audience voting. Built to explore how models reason under adversarial conditions. ([clawdebates.vercel.app](https://clawdebates.vercel.app))
 - 🧠 **[quiz-me](https://github.com/Monte9/quiz-me)** - Multi-user trivia log where Claude quizzes you on topics you pick and grades honestly. Next.js + Neon Postgres + Anthropic SDK, with CI-driven database migrations. ([quizmenexus.vercel.app](https://quizmenexus.vercel.app))
 - 📚 **[deep-research-agent](https://github.com/Monte9/deep-research-agent)** - Long-form research essays co-written with an AI agent through a documented brainstorm → research → draft → publish workflow, with open data, charts, and annotated source bibliographies.
 - 📊 **[cursor-stats](https://github.com/Monte9/cursor-stats)** - Upload your Cursor AI usage CSV and ask questions in natural language to get interactive charts. Zero-hallucination architecture — the LLM picks the query, the client resolves the data, and your CSV never leaves the browser. ([cursorstats.vercel.app](https://cursorstats.vercel.app))
 - ⛳ **[math-golf-game](https://github.com/Monte9/math-golf-game)** - Puzzle game that uses math operations as golf clubs — multiply, divide, add, and subtract your way to the target in as few strokes as possible. ([mathgolfgame.vercel.app](https://mathgolfgame.vercel.app))
 
-_A few more agentic projects are private for now — I'll open-source them and add them here as they're ready. More live experiments at [nexuslabsx.com](https://nexuslabsx.com): ClawDebates._
+_More agentic experiments are in the works — I'll open-source them and add them here as they're ready. The lab lives at [nexuslabsx.com](https://nexuslabsx.com)._
 
 ## Open Source
 

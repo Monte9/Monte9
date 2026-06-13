@@ -30,13 +30,16 @@ dive into a pivotal moment.
 
 Stack: Next.js, Tailwind, Vercel. Live: historystories.vercel.app
 
-## CursorStats — Visualize your AI coding habits (repo: cursor-stats, private)
+## CursorStats — Visualize your AI coding habits (repo: cursor-stats, public — audited clean 2026-06-13)
 
 Upload your Cursor AI usage CSV and get an interactive dashboard with
 AI-powered chart generation. Zero hallucination architecture — LLM
-picks the query, client resolves the data.
+picks the query, client resolves the data. CSV is parsed entirely in
+the browser and never leaves it.
 
-Stack: Next.js, Recharts, OpenAI, Vercel. Live: cursorstats.vercel.app
+Stack: Next.js 16, Tailwind 4, Recharts + Framer Motion, Vercel AI SDK +
+Anthropic Claude. Live: cursorstats.vercel.app
+(Note: the nexuslabsx card listed "OpenAI" but the app uses Anthropic Claude.)
 
 ## Math Golf — Puzzle game meets math operations (repo: math-golf-game, public — audited clean 2026-06-13)
 

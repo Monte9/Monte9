@@ -38,7 +38,7 @@ picks the query, client resolves the data.
 
 Stack: Next.js, Recharts, OpenAI, Vercel. Live: cursorstats.vercel.app
 
-## Math Golf — Puzzle game meets math operations (repo: math-golf-game, private)
+## Math Golf — Puzzle game meets math operations (repo: math-golf-game, public — audited clean 2026-06-13)
 
 Use math operations as golf clubs to transform numbers. Multiply,
 divide, add, subtract your way to the target in as few strokes as

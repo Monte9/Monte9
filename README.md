@@ -19,6 +19,7 @@ Currently at an **AI startup**, where I've helped scale the business to **$1M AR
 - Architected cross-platform subscription infrastructure processing $100K monthly revenue
 - Built and scaled notification infrastructure processing 20K+ daily notifications, improving open rates by 14% through personalization
 - Created and taught [MobileSpace](https://github.com/mobilespace/Season2), a free, in-person course at SF State that taught students mobile development (iOS, then React Native) to fill a gap in the CS curriculum and help them land internships and SWE roles (2016–2018)
+- Built [@nftsalesbot](https://twitter.com/nftsalesbot) ([nft-sales-bot](https://github.com/Monte9/nft-sales-bot)), a Twitter bot posting single-tweet stories of NFT flips and fumbles on the OpenSea API — grew it to 25k+ followers
 - 1.5k+ GitHub stars across personal projects
 
 ## Building with AI Agents

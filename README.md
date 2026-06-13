@@ -32,7 +32,7 @@ The net-new work. Each project is a different shape of app, built end-to-end wit
 - 📊 **[cursor-stats](https://github.com/Monte9/cursor-stats)** - Upload your Cursor AI usage CSV and ask questions in natural language to get interactive charts. Zero-hallucination architecture — the LLM picks the query, the client resolves the data, and your CSV never leaves the browser. ([cursorstats.vercel.app](https://cursorstats.vercel.app))
 - ⛳ **[math-golf-game](https://github.com/Monte9/math-golf-game)** - Puzzle game that uses math operations as golf clubs — multiply, divide, add, and subtract your way to the target in as few strokes as possible. ([mathgolfgame.vercel.app](https://mathgolfgame.vercel.app))
 
-_More agentic experiments are in the works — I'll open-source them and add them here as they're ready. The lab lives at [nexuslabsx.com](https://nexuslabsx.com)._
+_More agentic experiments are in the works — I'll open-source them and add them here as they're ready._
 
 ## Open Source
 

@@ -57,7 +57,9 @@ settings UI yet (theme set via `localStorage`/`data-theme` for evaluation).
 
 ---
 
-## Sprint 2 — Settings page + reduce-motion [in progress]
+## Sprint 2 — Settings page + reduce-motion [done]
+
+_PASS: agent/evals/20260627-044006-sprint-2-3.md._
 
 **GOAL:** Add the `/settings` page with a theme picker (showing the active theme)
 and a persisted reduce-motion toggle wired to the provider, so users can switch
@@ -88,7 +90,9 @@ auto-rotating.
 
 ---
 
-## Sprint 3 — Nav tidy (hamburger + 5th Settings tab) [in progress]
+## Sprint 3 — Nav tidy (hamburger + 5th Settings tab) [done]
+
+_PASS: agent/evals/20260627-044006-sprint-2-3.md (desktop nav via tab bar on all viewports, accepted deviation)._
 
 **GOAL:** Trim the hamburger to secondary links only, add Settings as the 5th
 far-right gear tab in the bottom bar, and give desktop a path to the primary

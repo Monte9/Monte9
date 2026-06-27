@@ -104,7 +104,8 @@ fold it in or cut at alignment to stay at the cap.)_
 
 ---
 
-## Sprint 3 — Globe-first layout, legend, hint, list removal & polish [in progress]
+## Sprint 3 — Globe-first layout, legend, hint, list removal & polish [done]
+_PASS: agent/evals/20260627-145608-sprint-3.md (all 6 + Sprint 1-2 regression)._
 
 **GOAL:** Make the globe the centerpiece — fill the space below the header to the
 tab bar with no top clipping, overlay a theme-aware category legend and a short

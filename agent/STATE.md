@@ -1,29 +1,31 @@
 # STATE
 
-phase: planning
+phase: idle
 sprint: -
 attempts: 0
 
 ## Notes
 
-Settings + theming + nav-tidy GOAL is complete. All 3 sprints shipped and
-passed the evaluator (Playwright, static export, all 3 themes, both
-viewports). Backlog empty. Next goal needs a new GOAL.md + planner run.
+/travel globe-first revamp is COMPLETE — all 3 sprints shipped and passed the
+evaluator (static export, 3 themes, both viewports). Backlog empty.
 
-Theme system: semantic CSS-var tokens (`:root[data-theme=...]`) exposed to
-Tailwind v4 via `@theme inline`; ThemeProvider + no-FOUC head script;
-themes Light/Dark/Sunset; reduce-motion gates the globe. Nav: sticky top
-bar (name + hamburger=secondary links), bottom tab bar on all viewports
-(Home/Posts/Travel/About/Settings).
+The travel page is now globe-first: filled country regions by category
+(India=Home, US=Lived, 7=Visited; theme-aware colors), tap/hover for rich
+info (bottom sheet on mobile, dialog on desktop), overlaid legend + hint,
+no static list. Globe fills below header to tab bar, drag + auto-rotate +
+reduce-motion intact. Geometry: world-atlas polygons triangulated via
+THREE.ShapeUtils.triangulateShape + longest-edge subdivision, projected to
+the sphere (src/components/globe-utils.ts buildCountryFill).
 
 ## History
 
 | date | sprint | result | notes |
 |------|--------|--------|-------|
 | 2026-06-12 | bootstrap | shipped | site v1 + first harness port |
-| 2026-06-27 | /travel globe | PASS | sprints 1-4 + polish + mobile |
-| 2026-06-27 | nav/hamburger | shipped | sticky bar, hamburger, home declutter |
-| 2026-06-27 | settings s1 | PASS | theme engine (light/dark/sunset), no-FOUC, migration |
-| 2026-06-27 | settings s2-3 | PASS | /settings page, reduce-motion, 5-tab bar, trimmed hamburger |
-| 2026-06-27 | refinements | shipped | desktop nav links (tab bar mobile-only); sunset globe borders fixed; hamburger trailing icons (download/external); bigger posts titles. Self-verified 390/1280 |
-| 2026-06-27 | refinements 2 | shipped | desktop Settings moved into hamburger; mobile header shows page title (page h1 hidden < sm); fixed reduce-motion toggle centering; lucide-react icons for tabs+menu. Self-verified 390/1280 |
+| 2026-06-27 | /travel globe v1 | PASS | 3D globe + pins + polish |
+| 2026-06-27 | nav/hamburger | shipped | sticky bar, hamburger |
+| 2026-06-27 | settings+themes | PASS | theme engine, /settings, reduce-motion |
+| 2026-06-27 | nav refinements | shipped | desktop links, lucide icons, page-title header, toggle |
+| 2026-06-27 | travel-v2 s1 | PASS | filled per-category country polygons |
+| 2026-06-27 | travel-v2 s2 | PASS | rich info: bottom sheet / dialog |
+| 2026-06-27 | travel-v2 s3 | PASS | globe-first layout + legend; list removed |

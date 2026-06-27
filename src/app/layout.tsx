@@ -3,7 +3,7 @@ import Link from "next/link";
 import fs from "fs";
 import path from "path";
 import MobileTabBar from "@/components/MobileTabBar";
-import SiteIcons from "@/components/SiteIcons";
+import SiteMenu from "@/components/SiteMenu";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,26 +26,15 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <div className="mx-auto max-w-2xl px-5 pt-10 pb-24 sm:pb-10">
-          <header className="mb-12 flex items-center justify-between gap-4">
+        <header className="sticky top-0 z-40 border-b border-gray-200/70 bg-white/80 backdrop-blur">
+          <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
             <Link href="/" className="text-lg font-semibold hover:text-blue-600">
               Monte Thakkar
             </Link>
-            <div className="flex items-center gap-5">
-              <nav className="hidden gap-5 text-sm text-gray-600 sm:flex">
-                <Link href="/posts" className="hover:text-blue-600">
-                  Posts
-                </Link>
-                <Link href="/about" className="hover:text-blue-600">
-                  About
-                </Link>
-                <Link href="/travel" className="hover:text-blue-600">
-                  Travel
-                </Link>
-              </nav>
-              <SiteIcons resumeUrl={resumeUrl} />
-            </div>
-          </header>
+            <SiteMenu resumeUrl={resumeUrl} />
+          </div>
+        </header>
+        <div className="mx-auto max-w-2xl px-5 pt-10 pb-24 sm:pb-10">
           <main>{children}</main>
         </div>
         <MobileTabBar />

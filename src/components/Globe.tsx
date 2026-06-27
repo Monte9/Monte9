@@ -30,7 +30,7 @@ function Pin({
   return (
     <mesh
       position={pos}
-      scale={active ? 1.9 : 1}
+      scale={active ? 2.6 : 1}
       onPointerOver={(e) => {
         e.stopPropagation();
         onHover(country);
@@ -47,7 +47,7 @@ function Pin({
       }}
     >
       <sphereGeometry args={[0.022, 16, 16]} />
-      <meshBasicMaterial color={active ? "#1e3a8a" : "#2563eb"} />
+      <meshBasicMaterial color={active ? "#f97316" : "#2563eb"} />
     </mesh>
   );
 }
@@ -62,7 +62,16 @@ function Scene({ activeName, onHover, onSelect }: Handlers) {
       <ambientLight intensity={0.85} />
       <directionalLight position={[3, 2, 2]} intensity={0.5} />
 
-      <mesh>
+      {/* The globe occludes pin picking: as the nearest hit on empty-ocean
+          rays it stops propagation, so pins on the far hemisphere can't be
+          hovered/clicked through the sphere. Clicking the ocean deselects. */}
+      <mesh
+        onPointerOver={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(null);
+        }}
+      >
         <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
         <meshStandardMaterial color="#cfe0f5" roughness={1} metalness={0} />
       </mesh>

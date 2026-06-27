@@ -22,3 +22,4 @@ needs a new GOAL.md + planner run.
 | 2026-06-12 | bootstrap | shipped | site v1 + first harness port |
 | 2026-06-27 | harness-report | shipped | re-ported current harness; new /travel goal |
 | 2026-06-27 | sprints 1-4 | PASS | /travel 3D globe; evaluator PASS, verdict 20260627-024642 |
+| 2026-06-27 | travel polish | shipped | stronger active-pin emphasis; globe occludes far-side pin picking; deselect on ocean click. Self-verified w/ Playwright (front pins activate, ocean=0 false hits, no console errors) |

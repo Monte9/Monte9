@@ -87,10 +87,6 @@ export default function SiteMenu({ resumeUrl }: { resumeUrl: string }) {
   }, [open]);
 
   const nav = [
-    { href: "/", label: "Home", icon: Icon.home },
-    { href: "/posts", label: "Posts", icon: Icon.posts },
-    { href: "/travel", label: "Travel", icon: Icon.travel },
-    { href: "/about", label: "About", icon: Icon.about },
     { href: resumeUrl, label: "Résumé", icon: Icon.resume, external: true },
   ];
   const social = [

@@ -40,7 +40,7 @@ export default function RootLayout({
               <SiteMenu resumeUrl={resumeUrl} />
             </div>
           </header>
-          <div className="mx-auto max-w-2xl px-5 pt-10 pb-24 sm:pb-10">
+          <div className="mx-auto max-w-2xl px-5 pt-10 pb-28">
             <main>{children}</main>
           </div>
           <MobileTabBar />

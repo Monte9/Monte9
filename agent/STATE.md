@@ -1,6 +1,6 @@
 # STATE
 
-phase: idle
+phase: planning
 sprint: -
 attempts: 0
 

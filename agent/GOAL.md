@@ -1,51 +1,54 @@
 # GOAL
 
-Add a Settings page with theming to montethakkar.com, and tidy the nav,
-in the spirit of the Rosebud app reference (settings page with a Theme
-selector; gear "Settings" tab far-right in the bottom bar).
+Revamp `/travel` into a globe-first, interactive map. Keep the site shell
+(sticky header, tab bar, themes) — only the page body changes: it becomes
+essentially just the globe, with little/no static text, and all the
+information lives ON the globe, surfaced by interaction.
 
 ## Must have
 
-### Theming (light / dark / + a third color theme — 3 total)
-- Three selectable themes: **Light**, **Dark**, and a third with a distinct,
-  non-blue accent and its own background tint (e.g. a warm "Sunset"). All
-  three must be legible (clear contrast, no near-invisible text) on every
-  page.
-- Applies to the **entire site** — every page and component (header, menu,
-  tab bar, home, about, posts, post pages, travel + the globe label/legend,
-  settings).
-- Before any explicit choice, follow the OS `prefers-color-scheme`
-  (light or dark). Once the user picks a theme, persist it (localStorage)
-  and keep it across navigations and reloads.
-- No flash of the wrong theme on load (set the theme before first paint).
+### Globe-first layout
+- The globe is the centerpiece and fills the available space below the header
+  (down to the tab bar) on both mobile and desktop. No globe clipping at the
+  top edge.
+- Remove the static "Countries" list at the bottom and the verbose intro/help
+  copy. A short one-line hint (e.g. "Tap a country") is fine; otherwise let the
+  globe speak.
 
-### Settings page + tab
-- New `/settings` page styled like the rest of the site.
-- **Settings** becomes the 5th item in the bottom tab bar, far right, with a
-  gear icon.
-- Settings contains:
-  - **Theme** picker (the three themes above), clearly showing the active one.
-  - **Reduce motion** toggle: when on (or when the OS prefers reduced motion),
-    the globe stops auto-rotating and transitions are minimized. Persisted.
+### Countries colored by category (not just dots)
+Color the actual countries (filled regions), with three categories in three
+distinct, theme-aware colors, plus a small legend:
+- **Home** — 🇮🇳 India (grew up there, ~18 years).
+- **Lived** — 🇺🇸 United States (~13 years).
+- **Visited** — Italy, France, Japan, Croatia, Tanzania, Costa Rica, Turkey.
 
-### Nav tidy
-- The hamburger menu should hold **only the secondary links** — Résumé,
-  GitHub, X, LinkedIn, Email. Remove the primary tab items (Home, Posts,
-  Travel, About) from it; those live in the tab bar. Settings is reachable
-  from the tab bar (and may also appear among the secondary links if useful).
+Visit dates (already in `src/data/travel.ts`): Italy Oct 2025, France Oct 2025,
+Japan May 2024, Croatia Aug 2023, Tanzania Mar 2023, Costa Rica Nov 2022,
+Turkey Jul 2013. India/US have no single date — show the duration instead.
+
+### Rich info on demand
+- Hovering or tapping a highlighted country reveals rich info: country name +
+  category + the detail (years lived / visit date) and a short blurb. The
+  active country is emphasized on the globe.
+- **Bottom sheet on mobile, dialog/modal (or side panel) on desktop** for that
+  rich info. Dismissible.
+- The globe stays draggable to rotate; auto-rotates on load (respecting the
+  reduce-motion setting), pausing during interaction.
 
 ## Constraints
-- Static export stays green (`pnpm build`, `output: "export"`). Theme +
-  settings are client-side only (localStorage), no backend.
-- Match the minimal aesthetic; the third theme should feel intentional, not
-  garish.
-- Never modify the profile `README.md`.
-- Do not break existing behavior: globe interactivity, sticky header, mobile
-  tab bar, no 390px overflow.
+- Static export stays green (`output: "export"`); client-side only, no backend.
+  Any geo data/assets must be vendored (e.g. `world-atlas`), no runtime fetch.
+- Theme-aware (light/dark/sunset) and reduce-motion aware, like the current
+  globe. Legible category colors + text in all three themes.
+- Keep the existing globe's good behaviors (drag, no 390px overflow, no console
+  errors). Never modify the profile `README.md`.
 
-## Notes
-- Settings that do NOT apply to a static personal site (accounts,
-  notifications, language, reminders) are intentionally omitted.
-- The evaluator should define the detailed success criteria at sprint start
-  (criteria-alignment), then verify them with Playwright across all three
-  themes and both viewports.
+## Notes for planning
+- The current globe (`src/components/Globe.tsx`, react-three-fiber) draws country
+  *outlines* + pin dots. This goal needs filled country polygons with per-country
+  category colors and hover/click picking. Consider whether to extend the r3f
+  globe (triangulate + project country polygons onto the sphere) or adopt a
+  purpose-built library (e.g. `three-globe` / `react-globe.gl`) that supports
+  polygon choropleths + onHover/onClick out of the box. Weigh bundle size,
+  static-export/SSR compatibility, theming control, and reduce-motion.
+- The evaluator should define detailed success criteria at sprint start.

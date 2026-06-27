@@ -78,7 +78,7 @@ function FitCamera() {
   useEffect(() => {
     const aspect = size.width / Math.max(size.height, 1);
     const halfFov = ((camera.fov * Math.PI) / 180) / 2;
-    const margin = 1.2;
+    const margin = 1.1;
     const distForHeight = margin / Math.tan(halfFov);
     const distForWidth = margin / (Math.tan(halfFov) * aspect);
     camera.position.set(0, 0, Math.max(distForHeight, distForWidth));

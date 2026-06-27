@@ -67,7 +67,7 @@ export default function MobileTabBar() {
 
   return (
     <nav
-      className="fixed inset-x-0 bottom-0 z-50 border-t border-gray-200 bg-white/90 backdrop-blur sm:hidden"
+      className="fixed inset-x-0 bottom-0 z-50 border-t border-border bg-bg/90 backdrop-blur sm:hidden"
       style={{ paddingBottom: "env(safe-area-inset-bottom)" }}
       aria-label="Primary"
     >
@@ -79,7 +79,7 @@ export default function MobileTabBar() {
             ? pathname === "/"
             : pathname.startsWith(tab.href);
           const className = `flex flex-col items-center gap-0.5 py-2 text-[11px] ${
-            active ? "text-blue-600" : "text-gray-500"
+            active ? "text-accent" : "text-muted"
           }`;
           return (
             <li key={tab.href} className="flex-1">

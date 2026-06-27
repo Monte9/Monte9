@@ -28,7 +28,7 @@ export default async function PostPage({
   return (
     <article>
       <h1 className="text-2xl font-semibold">{post.title}</h1>
-      <div className="mt-1 mb-8 text-sm text-gray-500">{formatDate(post.date)}</div>
+      <div className="mt-1 mb-8 text-sm text-muted">{formatDate(post.date)}</div>
       <div className="article" dangerouslySetInnerHTML={{ __html: post.html }} />
     </article>
   );

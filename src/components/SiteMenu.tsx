@@ -105,7 +105,7 @@ export default function SiteMenu({ resumeUrl }: { resumeUrl: string }) {
   ];
 
   const rowCls =
-    "flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:bg-gray-50";
+    "flex items-center gap-3 px-4 py-2.5 text-sm text-fg hover:bg-surface-2";
 
   const renderRow = (item: {
     href: string;
@@ -115,7 +115,7 @@ export default function SiteMenu({ resumeUrl }: { resumeUrl: string }) {
   }) => {
     const content = (
       <>
-        <span className="text-gray-400">{item.icon}</span>
+        <span className="text-muted">{item.icon}</span>
         {item.label}
       </>
     );
@@ -137,7 +137,7 @@ export default function SiteMenu({ resumeUrl }: { resumeUrl: string }) {
         aria-label="Menu"
         aria-expanded={open}
         onClick={() => setOpen((o) => !o)}
-        className="-mr-1 flex h-9 w-9 items-center justify-center rounded-md text-gray-700 hover:bg-gray-100"
+        className="-mr-1 flex h-9 w-9 items-center justify-center rounded-md text-fg hover:bg-surface-2"
       >
         <svg viewBox="0 0 24 24" className="h-6 w-6" {...navStroke}>
           {open ? (
@@ -149,9 +149,9 @@ export default function SiteMenu({ resumeUrl }: { resumeUrl: string }) {
       </button>
 
       {open && (
-        <div className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-gray-200 bg-white py-1.5 shadow-lg">
+        <div className="absolute right-0 z-50 mt-2 w-56 overflow-hidden rounded-xl border border-border bg-bg py-1.5 shadow-lg">
           {nav.map(renderRow)}
-          <hr className="my-1.5 border-gray-100" />
+          <hr className="my-1.5 border-border" />
           {social.map(renderRow)}
         </div>
       )}

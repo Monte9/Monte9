@@ -1,15 +1,70 @@
 @import "tailwindcss";
 
-:root {
-  --foreground: #1a1a1a;
-  --muted: #6b7280;
-  --background: #ffffff;
+/* Expose semantic role tokens to Tailwind utilities (bg-bg, text-fg,
+   text-muted, text-accent, border-border, bg-surface, ...). The raw vars
+   below are swapped per theme. */
+@theme inline {
+  --color-bg: var(--bg);
+  --color-surface: var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg: var(--fg);
+  --color-muted: var(--muted);
+  --color-border: var(--border);
+  --color-accent: var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+}
+
+:root,
+:root[data-theme="light"] {
+  --bg: #ffffff;
+  --surface: #f9fafb;
+  --surface-2: #f1f3f5;
+  --fg: #1a1a1a;
+  --muted: #5f6b7a;
+  --border: #e5e7eb;
   --accent: #2563eb;
+  --accent-contrast: #ffffff;
+  color-scheme: light;
+}
+
+:root[data-theme="dark"] {
+  --bg: #0b0d10;
+  --surface: #14181d;
+  --surface-2: #1b212a;
+  --fg: #e7e9ec;
+  --muted: #a3acb8;
+  --border: #2a323c;
+  --accent: #6aa8ff;
+  --accent-contrast: #06121f;
+  color-scheme: dark;
+}
+
+:root[data-theme="sunset"] {
+  --bg: #fbf3ea;
+  --surface: #f5e7d6;
+  --surface-2: #efdcc6;
+  --fg: #2b211a;
+  --muted: #7c6047;
+  --border: #e6d2bb;
+  --accent: #c2410c;
+  --accent-contrast: #ffffff;
+  color-scheme: light;
 }
 
 body {
-  color: var(--foreground);
-  background: var(--background);
+  background: var(--bg);
+  color: var(--fg);
+}
+
+/* Reduce motion: minimize transitions/animations site-wide. The globe's
+   auto-rotation is gated separately in JS. */
+[data-reduce-motion="true"] *,
+[data-reduce-motion="true"] *::before,
+[data-reduce-motion="true"] *::after {
+  animation-duration: 0.001ms !important;
+  animation-iteration-count: 1 !important;
+  transition-duration: 0.001ms !important;
+  scroll-behavior: auto !important;
 }
 
 /* Rendered markdown articles */
@@ -49,13 +104,13 @@ body {
   text-underline-offset: 2px;
 }
 .article code {
-  background: #f3f4f6;
+  background: var(--surface-2);
   padding: 0.15rem 0.35rem;
   border-radius: 0.25rem;
   font-size: 0.9em;
 }
 .article pre {
-  background: #f3f4f6;
+  background: var(--surface-2);
   padding: 1rem;
   border-radius: 0.5rem;
   overflow-x: auto;
@@ -66,7 +121,7 @@ body {
   padding: 0;
 }
 .article blockquote {
-  border-left: 3px solid #e5e7eb;
+  border-left: 3px solid var(--border);
   padding-left: 1rem;
   color: var(--muted);
   margin: 1rem 0;

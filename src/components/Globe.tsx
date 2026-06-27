@@ -6,8 +6,17 @@ import { OrbitControls } from "@react-three/drei";
 import type { PerspectiveCamera } from "three";
 import { VISITED_COUNTRIES, type VisitedCountry } from "@/data/travel";
 import { buildBorderPositions, latLngToVec3 } from "@/components/globe-utils";
+import { useTheme } from "@/components/ThemeProvider";
+import { GLOBE_COLORS } from "@/lib/theme";
 
 const GLOBE_RADIUS = 1;
+
+type GlobeColors = {
+  sphere: string;
+  border: string;
+  pin: string;
+  pinActive: string;
+};
 
 type Handlers = {
   activeName: string | null;
@@ -18,11 +27,15 @@ type Handlers = {
 function Pin({
   country,
   active,
+  pinColor,
+  activeColor,
   onHover,
   onSelect,
 }: {
   country: VisitedCountry;
   active: boolean;
+  pinColor: string;
+  activeColor: string;
 } & Pick<Handlers, "onHover" | "onSelect">) {
   const pos = useMemo(
     () => latLngToVec3(country.lat, country.lng, GLOBE_RADIUS * 1.02),
@@ -48,7 +61,7 @@ function Pin({
       }}
     >
       <sphereGeometry args={[0.022, 16, 16]} />
-      <meshBasicMaterial color={active ? "#f97316" : "#2563eb"} />
+      <meshBasicMaterial color={active ? activeColor : pinColor} />
     </mesh>
   );
 }
@@ -71,7 +84,13 @@ function FitCamera() {
   return null;
 }
 
-function Scene({ activeName, onHover, onSelect }: Handlers) {
+function Scene({
+  activeName,
+  onHover,
+  onSelect,
+  colors,
+  reduceMotion,
+}: Handlers & { colors: GlobeColors; reduceMotion: boolean }) {
   const borders = useMemo(() => buildBorderPositions(GLOBE_RADIUS * 1.002), []);
   const [interacting, setInteracting] = useState(false);
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -93,7 +112,7 @@ function Scene({ activeName, onHover, onSelect }: Handlers) {
         }}
       >
         <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
-        <meshStandardMaterial color="#cfe0f5" roughness={1} metalness={0} />
+        <meshStandardMaterial color={colors.sphere} roughness={1} metalness={0} />
       </mesh>
 
       <lineSegments>
@@ -103,7 +122,7 @@ function Scene({ activeName, onHover, onSelect }: Handlers) {
             args={[borders, 3]}
           />
         </bufferGeometry>
-        <lineBasicMaterial color="#5b6b80" transparent opacity={0.55} />
+        <lineBasicMaterial color={colors.border} transparent opacity={0.55} />
       </lineSegments>
 
       {VISITED_COUNTRIES.map((c) => (
@@ -111,6 +130,8 @@ function Scene({ activeName, onHover, onSelect }: Handlers) {
           key={c.name}
           country={c}
           active={activeName === c.name}
+          pinColor={colors.pin}
+          activeColor={colors.pinActive}
           onHover={onHover}
           onSelect={onSelect}
         />
@@ -121,7 +142,7 @@ function Scene({ activeName, onHover, onSelect }: Handlers) {
         enableZoom={false}
         enablePan={false}
         rotateSpeed={0.5}
-        autoRotate={!interacting}
+        autoRotate={!interacting && !reduceMotion}
         autoRotateSpeed={0.55}
         onStart={() => {
           if (resumeTimer.current) clearTimeout(resumeTimer.current);
@@ -136,9 +157,11 @@ function Scene({ activeName, onHover, onSelect }: Handlers) {
 }
 
 export default function Globe(props: Handlers) {
+  const { theme, reduceMotion } = useTheme();
+  const colors = GLOBE_COLORS[theme];
   return (
     <Canvas camera={{ position: [0, 0, 2.6], fov: 45 }} dpr={[1, 2]}>
-      <Scene {...props} />
+      <Scene {...props} colors={colors} reduceMotion={reduceMotion} />
     </Canvas>
   );
 }

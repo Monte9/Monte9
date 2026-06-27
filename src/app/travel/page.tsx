@@ -8,7 +8,7 @@ export default function TravelPage() {
   return (
     <div>
       <h1 className="text-2xl font-semibold mb-2">Travel</h1>
-      <p className="mb-6 text-gray-600">
+      <p className="mb-6 text-muted">
         Places I&apos;ve been, on a globe you can spin. Drag to rotate; hover or
         tap a pin to see where and when.
       </p>
@@ -18,10 +18,10 @@ export default function TravelPage() {
       <h2 className="mt-10 mb-3 text-lg font-semibold">Countries</h2>
       <ul className="space-y-1">
         {VISITED_NEWEST_FIRST.map((c) => (
-          <li key={c.name} className="text-gray-700">
+          <li key={c.name} className="text-fg">
             <span className="mr-1">{c.flag}</span>
             <span className="font-medium">{c.name}</span>
-            <span className="text-gray-500"> — {c.visited}</span>
+            <span className="text-muted"> — {c.visited}</span>
           </li>
         ))}
       </ul>

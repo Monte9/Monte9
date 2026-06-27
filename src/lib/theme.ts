@@ -22,7 +22,7 @@ export const GLOBE_COLORS: Record<
 > = {
   light: { sphere: "#cfe0f5", border: "#5b6b80", pin: "#2563eb", pinActive: "#f97316" },
   dark: { sphere: "#1b2735", border: "#46566b", pin: "#6aa8ff", pinActive: "#f59e0b" },
-  sunset: { sphere: "#e7d2b6", border: "#a98a64", pin: "#c2410c", pinActive: "#2563eb" },
+  sunset: { sphere: "#e3cba6", border: "#5c4326", pin: "#c2410c", pinActive: "#1d4ed8" },
 };
 
 export const THEME_KEY = "theme";

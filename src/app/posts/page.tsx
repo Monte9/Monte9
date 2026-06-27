@@ -18,7 +18,7 @@ export default function PostsPage() {
             <li key={post.slug}>
               <Link
                 href={`/posts/${post.slug}`}
-                className="text-lg font-medium hover:text-accent"
+                className="text-2xl font-semibold hover:text-accent"
               >
                 {post.title}
               </Link>

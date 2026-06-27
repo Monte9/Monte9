@@ -3,6 +3,7 @@ import Link from "next/link";
 import fs from "fs";
 import path from "path";
 import MobileTabBar from "@/components/MobileTabBar";
+import DesktopNav from "@/components/DesktopNav";
 import SiteMenu from "@/components/SiteMenu";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { NO_FOUC_SCRIPT } from "@/lib/theme";
@@ -37,10 +38,13 @@ export default function RootLayout({
               <Link href="/" className="text-lg font-semibold hover:text-accent">
                 Monte Thakkar
               </Link>
-              <SiteMenu resumeUrl={resumeUrl} />
+              <div className="flex items-center gap-5">
+                <DesktopNav />
+                <SiteMenu resumeUrl={resumeUrl} />
+              </div>
             </div>
           </header>
-          <div className="mx-auto max-w-2xl px-5 pt-10 pb-28">
+          <div className="mx-auto max-w-2xl px-5 pt-10 pb-28 sm:pb-12">
             <main>{children}</main>
           </div>
           <MobileTabBar />

@@ -25,3 +25,4 @@ bar (name + hamburger=secondary links), bottom tab bar on all viewports
 | 2026-06-27 | nav/hamburger | shipped | sticky bar, hamburger, home declutter |
 | 2026-06-27 | settings s1 | PASS | theme engine (light/dark/sunset), no-FOUC, migration |
 | 2026-06-27 | settings s2-3 | PASS | /settings page, reduce-motion, 5-tab bar, trimmed hamburger |
+| 2026-06-27 | refinements | shipped | desktop nav links (tab bar mobile-only); sunset globe borders fixed; hamburger trailing icons (download/external); bigger posts titles. Self-verified 390/1280 |

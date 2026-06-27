@@ -64,6 +64,16 @@ const Icon = {
       <path d="m3.5 7 8.5 6 8.5-6" />
     </svg>
   ),
+  download: (
+    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" {...navStroke}>
+      <path d="M12 3v11M8 11l4 4 4-4M5 20h14" />
+    </svg>
+  ),
+  external: (
+    <svg viewBox="0 0 24 24" className="h-3.5 w-3.5" {...navStroke}>
+      <path d="M14 4h6v6M10 14 20 4M19 14v5a1 1 0 0 1-1 1H5a1 1 0 0 1-1-1V6a1 1 0 0 1 1-1h5" />
+    </svg>
+  ),
 };
 
 export default function SiteMenu({ resumeUrl }: { resumeUrl: string }) {
@@ -109,10 +119,14 @@ export default function SiteMenu({ resumeUrl }: { resumeUrl: string }) {
     icon: React.ReactNode;
     external?: boolean;
   }) => {
+    const trailing = item.label === "Résumé" ? Icon.download : Icon.external;
     const content = (
       <>
         <span className="text-muted">{item.icon}</span>
-        {item.label}
+        <span>{item.label}</span>
+        <span className="ml-auto text-muted" aria-hidden="true">
+          {trailing}
+        </span>
       </>
     );
     return item.external || item.href.startsWith("http") || item.href.startsWith("mailto") ? (

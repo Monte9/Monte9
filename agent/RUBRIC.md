@@ -1,40 +1,31 @@
-# RUBRIC
+# Evaluator Rubric
 
-Evaluator criteria for montethakkar.com. Hard gates fail the sprint
-outright; soft criteria inform fix instructions.
+The evaluator grades the running site against this rubric plus the current sprint's acceptance criteria from `agent/BACKLOG.md`. Every line of the verdict must cite evidence: a screenshot path, a command output, or a DOM/console observation. No evidence, no verdict.
 
-## Hard gates
+## Hard gates (any FAIL fails the sprint)
 
-1. `pnpm build` exits 0 (static export, no errors)
-2. Every route in the sprint's scope serves over HTTP with status 200
-   and contains its expected content (heading, nav, post body)
-3. No internal link on a page in scope resolves to 404 (check both the
-   dev server and the `out/` export)
-4. Every acceptance criterion of the sprint demonstrably holds, with
-   evidence (curl output, file listing, HTML excerpt)
-5. `README.md` (GitHub profile page) is unmodified by the sprint
+1. `pnpm build` exits 0 with no errors (static export must succeed)
+2. Zero console errors / page errors on: the homepage and every page the sprint touched
+3. No broken images (`naturalWidth > 0` on rendered `img` elements)
+4. No horizontal overflow at 390px viewport width on touched pages
+5. Every acceptance criterion of the current sprint demonstrated by actual interaction (click it, drag it, navigate it), not by reading the code
+6. No regressions: the homepage and at least one existing page (`/about` or `/posts`) render correctly at 1280px and 390px
 
-## Soft criteria
+## Soft criteria (note in verdict, do not fail on these alone)
 
-- Pages render sensible HTML without client-side JS (static-first)
-- Posts index and home agree on post titles/dates
-- Metadata: every page has a meaningful `<title>`
-- Design stays minimal per GOAL.md: system fonts, one accent color
+- Design stays minimal and consistent with the rest of the site: system fonts, generous whitespace, the existing accent color, content over chrome
+- Typography hierarchy clear; no near-invisible text
+- Hover/active/focus states present on new interactive elements
+- Motion (auto-rotation, transitions) feels smooth, not janky or distracting
+- Works with the keyboard and doesn't trap focus
 
-## Evidence protocol
+## Criteria alignment (pre-build, every sprint)
 
-Write verdicts to `agent/evals/sprint-NN-verdict.md`:
+The builder and evaluator agree the acceptance criteria BEFORE the build, so evaluation judges whether the implementation is the best outcome for the sprint goal, not merely whether it works. At sprint start the evaluator reviews the planner's draft ACs against the sprint goal, GOAL.md, and SPEC.md: strengthen weak criteria, add outcome-quality criteria (feel, legibility, composition, failure modes), cut redundancy, cap at ~6, keep every criterion interaction-verifiable, prescribe no implementation. The agreed list is recorded in BACKLOG.md (marked "aligned") and `agent/evals/<ts>-sprint-N-criteria.md` before feature code is written. The post-build verdict grades against the agreed list, and an implementation that meets every AC's letter while missing the sprint goal FAILS with evidence.
 
-- Date, sprint number, overall PASS/FAIL
-- Per-gate result with the evidence captured (commands + relevant output)
-- Per-criterion result with what was exercised and observed
-- On FAIL: fix instructions ordered by severity, each specific enough to
-  act on without re-investigation (file, element, expected vs observed)
+## Protocol
 
-## Environment note
-
-This repo's cloud environment has no Playwright browsers (CDN blocked).
-Verify over HTTP (`curl`) and via the `out/` export. If browsers become
-available (`/opt/pw-browsers`), add: console-error capture, image
-`naturalWidth` checks, 390px overflow check, and screenshots to
-`agent/evals/shots/`.
+- Playwright with `PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers` and `NODE_PATH=/opt/node22/lib/node_modules`. Browsers are pre-installed; the CDN is blocked, so never try to `playwright install`.
+- Screenshot at 1280x900 and 390x844 for each checked page, saved under `agent/evals/shots/` (gitignored)
+- Verdict file: `agent/evals/YYYYMMDD-HHmmss-sprint-N.md` (committed), structure: one line per hard gate with PASS/FAIL + evidence, soft notes, overall verdict, and concrete fix instructions on FAIL
+- Overall verdict is PASS only if all hard gates pass

@@ -15,7 +15,10 @@ This repo does two jobs:
 ## Project-specific skills
 
 - `.claude/skills/build-sprint/SKILL.md` - autonomous build harness
-  (planner → generator → evaluator) driven by `agent/GOAL.md`
+  (planner → generator → evaluator) driven by `agent/GOAL.md`. Flow is
+  ALIGN (evaluator agrees acceptance criteria) → BUILD → EVALUATE
+  (evaluator drives Playwright and issues a PASS/FAIL verdict). The
+  `planner` and `evaluator` run as fresh-context subagents.
 
 ## Repo conventions
 
@@ -42,9 +45,12 @@ Tailwind 4, markdown posts with frontmatter, pnpm.
 
 ## Environment notes
 
-- This repo's Claude Code cloud environment has no Playwright browsers
-  and the Playwright CDN is blocked. The evaluator runs in degraded mode:
-  `pnpm build` + HTTP checks against `pnpm dev` (curl the routes, assert
-  on the HTML). If a future environment provisions browsers, prefer
-  Playwright per `agent/RUBRIC.md`.
+- Playwright browsers are pre-installed at `/opt/pw-browsers`; the module
+  resolves via `NODE_PATH=/opt/node22/lib/node_modules`. The evaluator
+  drives a real headless Chromium (screenshots + interaction). The
+  Playwright CDN is blocked, so never run `playwright install` — the
+  browsers are already there.
 - npm registry access works; `pnpm install` is fine.
+- `git push origin HEAD:main` works from cloud sessions. If a push is
+  rejected because the remote moved (e.g. a GitHub-UI upload), fetch and
+  rebase, then push again.

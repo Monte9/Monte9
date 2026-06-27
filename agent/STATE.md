@@ -1,20 +1,23 @@
 # STATE
 
-phase: idle
+phase: planning
 sprint: -
 attempts: 0
 
 ## Notes
 
-Site v1 was bootstrapped by hand in the session that ported this harness
-(2026-06-12): home, /about, /posts, /posts/[slug], one starter post,
-build-time Resume link gated on public/resume.pdf. No SPEC.md or
-BACKLOG.md exist yet — the planner should generate them from
-agent/GOAL.md before the first sprint, treating the bootstrapped v1 as
-existing architecture.
+Harness re-ported from history-stories (2026-06-27) with the current
+ALIGN → BUILD → EVALUATE flow and a two-mode evaluator. Playwright browsers
+are available in this environment at `/opt/pw-browsers` (module at
+`/opt/node22/lib/node_modules`), so the evaluator drives a real headless
+Chromium — no degraded HTTP mode.
+
+New GOAL.md set: the `/travel` interactive 3D globe. No SPEC/BACKLOG yet —
+the planner runs first.
 
 ## History
 
 | date | sprint | result | notes |
 |------|--------|--------|-------|
-| 2026-06-12 | bootstrap | shipped | v1 scaffold + harness port, built outside the loop |
+| 2026-06-12 | bootstrap | shipped | site v1 + first harness port |
+| 2026-06-27 | harness-report | shipped | re-ported current harness; new /travel goal |

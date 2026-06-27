@@ -1,6 +1,6 @@
 ---
 name: build-sprint
-description: Run the autonomous build harness for montethakkar.com (the personal site in this repo). Use when asked to run a sprint, run the harness, build the next feature, or continue building toward the goal. Reads agent/STATE.md and loops sprints until the backlog is done.
+description: Run the autonomous build harness for montethakkar.com (the personal site in this repo). Use when asked to run a sprint, run the harness, build the next feature, or continue building toward the goal. Runs as one long live session; reads agent/STATE.md and loops sprints until the backlog is done.
 ---
 
 # Build Sprint
@@ -16,7 +16,7 @@ State lives in git so the harness survives context summarization and session res
 - `agent/BACKLOG.md` - ordered sprints with acceptance criteria
 - `agent/STATE.md` - cursor: phase, sprint, attempts, history
 - `agent/RUBRIC.md` - evaluator criteria
-- `agent/evals/` - verdict reports (markdown committed; `shots/` and `tmp/` gitignored)
+- `agent/evals/` - verdict reports (markdown committed; `shots/` gitignored)
 
 ## The loop
 
@@ -26,15 +26,16 @@ Read `agent/STATE.md`, then repeat until a stop condition:
 |-----------|--------|
 | No `agent/SPEC.md`, no pending sprints, or GOAL.md changed direction | Spawn the `planner` subagent. Commit its output to main. Continue |
 | phase=blocked | Stop. Report the blocked sprint and its verdict to the human |
-| Pending sprint, attempts < 2 | BUILD then EVALUATE (below) |
+| Pending sprint, attempts < 2 | ALIGN (once per sprint) then BUILD then EVALUATE (below) |
 | Pending sprint, attempts >= 2 | Set phase=blocked, commit state + verdict, stop and notify the human |
 
 Stop conditions: backlog empty (success), a sprint blocks, or the human interrupts.
 
-## BUILD then EVALUATE
+## ALIGN then BUILD then EVALUATE
 
-1. **Build**: implement the first pending sprint from `agent/BACKLOG.md`. Match existing code style. Keep static export viable. Never touch `README.md`. Run `pnpm build` yourself before handing off; don't waste evaluator runs on compile errors.
-2. **Evaluate**: spawn the `evaluator` subagent. Give it only the sprint number and its acceptance criteria. Never include implementation notes, reasoning, or diffs. Never grade your own work in the main context.
+0. **Align** (once per sprint, before any feature code): the planner writes only a sprint goal plus DRAFT acceptance criteria. Spawn the `evaluator` subagent in criteria-alignment mode (RUBRIC "Criteria alignment"): give it the sprint goal, the draft ACs, and pointers to GOAL/SPEC/RUBRIC. It returns the agreed ACs: strengthened toward the best outcome for the goal, still interaction-verifiable, capped at ~6. Record them in `agent/BACKLOG.md` under the sprint (marked "aligned"), save the alignment note to `agent/evals/<ts>-sprint-N-criteria.md`, and commit both before building. The builder never weakens agreed ACs; if building proves an agreed AC wrong, go back through alignment, not around it.
+1. **Build**: implement the first pending sprint from `agent/BACKLOG.md` against the agreed ACs. Match existing code style. Keep the static export green. Run `pnpm build` yourself before handing off; don't waste evaluator runs on compile errors.
+2. **Evaluate**: spawn the `evaluator` subagent in verdict mode. Give it only the sprint number and the agreed acceptance criteria. Never include implementation notes, reasoning, or diffs. Never grade your own work in the main context. The evaluator judges outcome quality against the sprint goal, not just the letter of the ACs.
 3. **On PASS**: commit `feat(sprint-N): <summary>`, push to main (standing permission, see AGENTS.md). Mark the sprint done in BACKLOG, advance STATE (next pending sprint, attempts=0), append history row, commit, push.
 4. **On FAIL**: increment attempts in STATE. Fix exactly what the verdict's instructions say, then re-evaluate. Do not expand scope while fixing.
 
@@ -42,7 +43,8 @@ Stop conditions: backlog empty (success), a sprint blocks, or the human interrup
 
 - One sprint in flight at a time. Never start sprint N+1 while N is unresolved.
 - Main only receives PASS work. Failed attempts stay in the working tree, never on main.
+- Never modify `README.md` (the GitHub profile page) as part of site work.
 - Update `agent/STATE.md` and its history table on every transition, including failures. The state file is the source of truth if context is lost mid-run.
 - Verdict files are append-only history. Never edit or delete old verdicts.
-- Infrastructure failures (sandbox, network, missing browsers) don't count as sprint attempts: retry once, then stop and report.
+- Infrastructure failures (sandbox, Playwright, network) don't count as sprint attempts: retry once, then stop and report.
 - Keep per-sprint chat updates to one or two lines; the pushed commits and verdicts are the record.

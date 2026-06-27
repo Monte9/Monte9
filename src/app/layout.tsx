@@ -3,6 +3,7 @@ import Link from "next/link";
 import fs from "fs";
 import path from "path";
 import MobileTabBar from "@/components/MobileTabBar";
+import SiteIcons from "@/components/SiteIcons";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -26,48 +27,26 @@ export default function RootLayout({
     <html lang="en">
       <body className="font-sans antialiased">
         <div className="mx-auto max-w-2xl px-5 pt-10 pb-24 sm:pb-10">
-          <header className="mb-12 flex items-baseline justify-between">
+          <header className="mb-12 flex items-center justify-between gap-4">
             <Link href="/" className="text-lg font-semibold hover:text-blue-600">
               Monte Thakkar
             </Link>
-            <nav className="hidden gap-5 text-sm text-gray-600 sm:flex">
-              <Link href="/posts" className="hover:text-blue-600">
-                Posts
-              </Link>
-              <Link href="/about" className="hover:text-blue-600">
-                About
-              </Link>
-              <Link href="/travel" className="hover:text-blue-600">
-                Travel
-              </Link>
-              <a href={resumeUrl} className="hover:text-blue-600">
-                Resume
-              </a>
-            </nav>
+            <div className="flex items-center gap-5">
+              <nav className="hidden gap-5 text-sm text-gray-600 sm:flex">
+                <Link href="/posts" className="hover:text-blue-600">
+                  Posts
+                </Link>
+                <Link href="/about" className="hover:text-blue-600">
+                  About
+                </Link>
+                <Link href="/travel" className="hover:text-blue-600">
+                  Travel
+                </Link>
+              </nav>
+              <SiteIcons resumeUrl={resumeUrl} />
+            </div>
           </header>
           <main>{children}</main>
-          <footer className="mt-16 border-t border-gray-200 pt-6 text-sm text-gray-500">
-            <div className="flex gap-4">
-              <a href="https://github.com/Monte9" className="hover:text-blue-600">
-                GitHub
-              </a>
-              <a href="https://x.com/montethakkar" className="hover:text-blue-600">
-                X
-              </a>
-              <a
-                href="https://www.linkedin.com/in/montethakkar/"
-                className="hover:text-blue-600"
-              >
-                LinkedIn
-              </a>
-              <a
-                href="mailto:manthan.thakkar@gmail.com"
-                className="hover:text-blue-600"
-              >
-                Email
-              </a>
-            </div>
-          </footer>
         </div>
         <MobileTabBar />
       </body>

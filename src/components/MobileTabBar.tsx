@@ -60,17 +60,6 @@ const TABS: Tab[] = [
       </svg>
     ),
   },
-  {
-    href: "/resume.pdf",
-    label: "Resume",
-    external: true,
-    icon: (
-      <svg viewBox="0 0 24 24" className="h-5 w-5" {...stroke}>
-        <path d="M7 3h7l4 4v14H7z" />
-        <path d="M14 3v4h4M10 13h4M10 17h4" />
-      </svg>
-    ),
-  },
 ];
 
 export default function MobileTabBar() {

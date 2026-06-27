@@ -18,6 +18,10 @@ export default function AboutPage() {
         free, in-person course that taught students mobile development (iOS,
         then React Native) to fill a gap in the CS curriculum.
       </p>
+
+      <p>
+        <a href="/resume.pdf">Download my résumé (PDF) →</a>
+      </p>
       <p>
         My first job out of college was at{" "}
         <a href="https://techcrunch.com/2018/10/26/expedia-acquires-pillow-and-apartmentjet-to-conquer-the-short-term-rental-market/">
@@ -95,7 +99,7 @@ export default function AboutPage() {
         <a href="https://www.linkedin.com/in/montethakkar/">LinkedIn</a> — or
         email me at{" "}
         <a href="mailto:manthan.thakkar@gmail.com">manthan.thakkar@gmail.com</a>
-        . You can also grab my <a href="/resume.pdf">resume</a>.
+        .
       </p>
     </div>
   );

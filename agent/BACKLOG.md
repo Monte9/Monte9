@@ -1,11 +1,11 @@
-# BACKLOG — /travel interactive 3D globe
+# BACKLOG — Settings, Theming, and Nav Tidy
 
-Ordered sprints toward `agent/GOAL.md`. Each sprint is buildable AND evaluable
-in a single run, keeps `pnpm build` (static export) green, never touches
-`README.md`, and every acceptance criterion is verifiable by interacting with
-the running site (Playwright-checkable).
+Ordered sprints toward `agent/GOAL.md`, building on `agent/SPEC.md`. Each sprint
+is buildable AND evaluable in a single run, keeps `pnpm build` (static export)
+green, never touches `README.md`, and every acceptance criterion is verifiable
+by interacting with the running site (Playwright-checkable).
 
-Acceptance criteria below are **DRAFT** — they are finalized at sprint start via
+Acceptance criteria below are **DRAFT** — finalized at sprint start via
 builder/evaluator alignment (per `agent/RUBRIC.md`) and recorded as "aligned" in
 this file and in `agent/evals/<ts>-sprint-N-criteria.md` before feature code is
 written.
@@ -13,110 +13,109 @@ written.
 Status legend: `todo` / `in progress` / `done` / `blocked`. Never delete
 done/blocked history; mark it.
 
----
-
-## Sprint 1 — Route, data, nav, and a sized client globe mount (scaffold) [done]
-
-**GOAL:** Stand up `/travel` with the Travel nav link, the visited-countries
-data module, and a dynamically-imported (`ssr: false`) `'use client'` Three.js
-canvas that renders a plain rotating sphere — proving static export survives
-WebGL.
-
-**DRAFT acceptance criteria**
-
-1. Navigating to `/travel` returns 200 and renders an `h1` containing "Travel";
-   a Travel link in the header nav (in `src/app/layout.tsx`, beside
-   Posts/About) resolves from `/about` (or `/`) to `/travel`.
-2. A `<canvas>` is present inside the globe container with non-zero rendered
-   width and height at both 1280px and 390px viewports.
-3. `src/data/travel.ts` exports all seven countries (Italy, France, Japan,
-   Croatia, Tanzania, Costa Rica, Turkey) with `name`, `lat`, `lng`, and
-   `visited` fields; the page surfaces this (e.g. a static list) so all seven
-   country names appear in the DOM.
-4. `pnpm build` exits 0 (static export succeeds) and the globe component is
-   loaded via `next/dynamic` with `{ ssr: false }` (no WebGL at prerender).
-5. No console errors / page errors on `/travel` or the homepage; no horizontal
-   overflow at 390px on `/travel`.
+Ordering rationale: the theme engine + site-wide token migration must land first
+(everything else assumes semantic utilities and a working provider). The
+settings page, reduce-motion, and nav changes then sit on top. Three sprints.
 
 ---
 
-## Sprint 2 — Recognizable Earth + auto-rotation [done]
+## Sprint 1 — Theme engine + no-FOUC + site-wide token migration [todo]
 
-**GOAL:** Turn the bare sphere into a recognizable, minimal Earth (vendored
-`world-atlas` country outlines as line geometry; lat/long graticule fallback)
-that auto-rotates on load with no user input, matching the site's quiet
-aesthetic.
+**GOAL:** Establish the three-theme system (semantic CSS vars + Tailwind v4
+`@theme inline` tokens), a `ThemeProvider` with localStorage persistence and an
+OS-default + no-FOUC inline `<head>` script, and migrate every component/page off
+literal colors so all three themes apply across the entire site — with no
+settings UI yet (theme set via `localStorage`/`data-theme` for evaluation).
 
 **DRAFT acceptance criteria**
 
-1. The globe reads as Earth: country-outline lines (or, fallback, a clear
-   lat/long graticule) are visible over the sphere in a 1280px screenshot, in
-   muted styling consistent with the site.
-2. Any geo data/asset used is vendored into the repo (committed under `src/` or
-   `public/`); there are no runtime external network requests from `/travel`
-   (verifiable: no failed/blocked external fetches in the console/network log).
-3. The globe auto-rotates on load with no user input: two screenshots ~1s apart
-   (no interaction) differ in the globe region.
-4. `pnpm build` exits 0; no console errors / page errors on `/travel`.
-5. No horizontal overflow at 390px; the globe still fills its container and the
-   canvas has non-zero size at 390px.
+1. Setting `<html data-theme>` to `light` / `dark` / `sunset` (or seeding
+   `localStorage.theme` then reloading) visibly re-colors the **whole site** —
+   header, hamburger menu, mobile tab bar, home, about, posts, a post page,
+   travel + the globe label/legend: `getComputedStyle(body).backgroundColor` and
+   key text/border colors differ across the three themes on each page.
+2. **No FOUC:** with `localStorage.theme="dark"` set before load, the first
+   painted frame already shows the dark background (the inline head script set
+   `data-theme="dark"` before paint) — verified by reading `data-theme` on
+   `document.documentElement` immediately and by a screenshot showing no white
+   flash.
+3. **OS default + persistence:** with no stored theme and the emulated OS color
+   scheme = dark, the site renders dark; selecting a theme via the provider API
+   and reloading keeps it (localStorage `theme` honored across reload and
+   navigation between two pages).
+4. **Legibility:** on home, about, and travel, body and muted text are clearly
+   readable against the background in all three themes (no near-invisible text —
+   computed text vs background contrast is comfortable, or screenshot review
+   confirms), and the globe is legible (sphere/pins/borders visible) in dark and
+   sunset, not just light.
+5. **No regressions:** globe still auto-rotates and is draggable, sticky header
+   still sticks, no horizontal overflow at 390px on every page, zero console /
+   page errors, and `pnpm build` exits 0 (static export succeeds).
 
 ---
 
-## Sprint 3 — Pins + drag-to-rotate + pause-on-interact + labels [done]
+## Sprint 2 — Settings page + reduce-motion [todo]
 
-**GOAL:** Place an accent-colored pin at each of the seven countries, let the
-user drag to spin the globe (pausing auto-rotation during interaction), and
-reveal a country's name + visit date on hover/click.
+**GOAL:** Add the `/settings` page with a theme picker (showing the active theme)
+and a persisted reduce-motion toggle wired to the provider, so users can switch
+themes from the UI with an immediate site-wide update and stop the globe
+auto-rotating.
 
 **DRAFT acceptance criteria**
 
-1. Seven pins render at the correct approximate locations (each visited country
-   has one pin near its landmass); Italy and France remain individually
-   distinguishable/selectable rather than merged into one target.
-2. Dragging across the canvas rotates the globe: the rendered view after a drag
-   differs from the pre-drag frame (pixels differ).
-3. Auto-rotation pauses while the user interacts (during/right after a drag the
-   globe is not auto-spinning) and resumes after interaction ends — observable
-   by frame comparison before, during, and after a drag.
-4. Hovering or clicking a pin reveals DOM-readable text with that country's name
-   and its visit date (e.g. "Japan — May 2024") for at least one country, and
-   the active pin is visually emphasized (color/scale change).
-5. `pnpm build` exits 0; no console errors / page errors on `/travel`; no
-   horizontal overflow at 390px (pin interaction works at mobile width via tap).
+1. `/settings` returns 200, renders a `Settings` heading styled like other
+   pages, a **theme picker with three options** (Light/Dark/Sunset, each with a
+   swatch/preview), and a **reduce-motion toggle** — legible in all three themes,
+   no overflow at 390px.
+2. Clicking a theme option **immediately** re-colors the whole site (no reload),
+   the picker clearly marks the **active** theme (visual + `aria` selected
+   state), and the choice **persists across reload** and navigation away and
+   back to `/settings`.
+3. Turning the **reduce-motion toggle on** sets `data-reduce-motion="true"` and
+   the globe on `/travel` **stops auto-rotating** (two screenshots ~1s apart with
+   no input are ~identical in the globe region); turning it off resumes
+   auto-rotation. The setting persists across reload.
+4. With reduce-motion on, manual globe interaction still works (a drag rotates
+   the globe; a pin tap still selects and reveals its country name + date), i.e.
+   only the ambient auto-spin is suppressed.
+5. The settings controls are keyboard-operable with visible focus (theme options
+   focusable + selectable via keyboard; toggle has `role="switch"` +
+   `aria-checked` that flips), and focus is not trapped.
+6. No console / page errors on `/settings` or `/travel`; `pnpm build` exits 0.
 
 ---
 
-## Sprint 4 — Mobile polish, legend, and resilience [done]
+## Sprint 3 — Nav tidy (hamburger + 5th Settings tab + desktop primary nav) [todo]
 
-**GOAL:** Final pass — responsive composition, a static newest-first country
-legend that doubles as the no-WebGL fallback, and smooth/quiet motion that fits
-the site.
+**GOAL:** Trim the hamburger to secondary links only, add Settings as the 5th
+far-right gear tab in the bottom bar, and give desktop a path to the primary
+pages (header text links per SPEC §2 default), without regressing any existing
+behavior.
 
 **DRAFT acceptance criteria**
 
-1. A static legend lists all seven countries with visit dates, ordered
-   newest-first (Italy/France 2025 → Turkey 2013); the same `src/data/travel.ts`
-   drives both the legend and the pins (single source of truth).
-2. At 390px the page has no horizontal overflow, the globe and legend stack
-   cleanly, the canvas is non-zero and interactive (tap a pin selects it), and
-   labels remain legible.
-3. At 1280px the globe is well-composed within the `max-w-2xl` column, motion
-   (auto-rotate) is smooth/not janky, and the active-country label is clearly
-   readable (no near-invisible text); accent color matches the site.
-4. Regression check: homepage and `/about` (or `/posts`) still render correctly
-   at 1280px and 390px with no console errors.
-5. `pnpm build` exits 0; no console errors / page errors on `/travel`; if WebGL
-   is unavailable the legend still conveys the seven countries + dates (page
-   degrades gracefully, no crash).
+1. The **bottom tab bar** has exactly 5 items in order Home, Posts, Travel,
+   About, **Settings**; the Settings tab is far-right with a gear icon and
+   navigates to `/settings`; its active state shows on `/settings`. Still no
+   horizontal overflow at 390px.
+2. The **hamburger menu** contains only secondary links — Résumé, GitHub, X,
+   LinkedIn, Email (Settings allowed as an extra) — and **no longer** contains
+   Home / Posts / Travel / About. Click-outside and Escape still close it.
+3. On **desktop (1280px)** every primary page (Home, Posts, Travel, About) is
+   reachable from the header without the tab bar (per SPEC default: header text
+   links; active link emphasized with the accent color), and these links work.
+4. The nav fully respects the active theme (tab bar, hamburger, and desktop
+   links use semantic tokens; active = accent in all three themes) and remains
+   legible in each.
+5. **No regressions:** globe interactivity, sticky header, reduce-motion, and
+   theme persistence all still work; homepage + at least one existing page render
+   correctly at 1280px and 390px; zero console / page errors; `pnpm build` exits
+   0.
 
 ---
 
 ## Done / Blocked history
 
-- 2026-06-27: Sprints 1–4 built together in one pass and verified as a single
-  feature. Evaluator PASS on all 9 hard gates (real Playwright interaction):
-  build green, canvas sized at 1280/390, recognizable vector Earth,
-  auto-rotate on load, drag-to-rotate, pause-then-resume, pins reveal
-  name+date (Italy/France separable), seven countries server-rendered, no
-  regressions. Verdict: `agent/evals/20260627-024642-sprint-1-4.md`.
+- Prior goal (/travel interactive 3D globe): Sprints 1–4 shipped and evaluator
+  PASS. Closed. Verdict: `agent/evals/20260627-024642-sprint-1-4.md`. The
+  SPEC/BACKLOG above supersede that work item.

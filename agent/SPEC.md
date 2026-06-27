@@ -1,226 +1,392 @@
-# SPEC — /travel interactive 3D globe
+# SPEC — Settings, Theming, and Nav Tidy
 
-Derived from `agent/GOAL.md`. This is the product spec for the new `/travel`
-route: an animated, interactive 3D globe (Three.js) that plots the seven
-countries Monte has visited, each with a pin. Concrete enough that two builders
-would build roughly the same thing. `agent/GOAL.md` is the north star and is
-read-only.
+Derived from `agent/GOAL.md`. This spec is concrete enough that two builders
+would produce roughly the same thing. It fixes the architecture, the theme
+token model, the three palettes, the no-FOUC strategy, persistence keys, the
+settings page layout, the reduce-motion mechanics, and the nav changes. It does
+not prescribe exact line-level code.
 
-## 1. Goals and non-goals
+(Supersedes the previous /travel spec, which shipped and is closed — see
+`agent/STATE.md`.)
 
-**Goals**
+---
 
-- A new route at `/travel`, linked from the site header nav next to Posts /
-  About / Resume.
-- A 3D Earth globe that auto-rotates on load, can be dragged to spin, and shows
-  a pin at the approximate lat/long of each visited country.
-- Hover or click a pin reveals that country's name and visit date.
-- Visited countries stored as structured data so adding a destination is a
-  one-line change.
-- Works at desktop and mobile widths; no horizontal overflow at 390px.
+## 1. Technical constraints (plan around these)
 
-**Non-goals**
+- **Next.js App Router, static export.** `next.config.ts` has
+  `output: "export"` and `trailingSlash: true`. `pnpm build` must stay green;
+  every page is prerendered to static HTML. No server, no API routes, no
+  runtime data fetching. `/settings` is a static page like the others.
+- **Tailwind v4.** `src/app/globals.css` uses `@import "tailwindcss"` and the
+  PostCSS plugin is `@tailwindcss/postcss`. There is **no `tailwind.config.js`**;
+  configuration is CSS-first via `@theme`. New design tokens are registered
+  through `@theme inline { ... }` so utility classes are generated for them.
+- **State is client-side only.** Theme and reduce-motion live in
+  `localStorage`; a small client provider manages reads/writes and applies
+  attributes to `<html>`. Before any explicit choice we follow the OS
+  `prefers-color-scheme` / `prefers-reduced-motion`.
+- **No FOUC.** Because pages are statically generated, the server HTML cannot
+  know the user's stored theme. A tiny **blocking inline `<script>` in
+  `<head>`** sets `data-theme` and `data-reduce-motion` on `<html>` before
+  first paint (see §4).
+- **Do not break:** globe interactivity (drag/hover/tap, far-side occlusion,
+  active-pin emphasis), sticky header, mobile tab bar, and no horizontal
+  overflow at 390px. `README.md` is never touched.
 
-- No backend, no runtime API calls, no per-country detail pages, no photos.
-- No travel destinations beyond the seven in GOAL.md (do not invent any).
-- No changes to `README.md` (the GitHub profile page).
-- No globe on any page other than `/travel`.
+---
 
-## 2. Architecture constraints (the hard ground rules)
+## 2. Information architecture
 
-The existing site is Next.js App Router with `output: "export"` (see
-`next.config.ts`: `output: "export"`, `trailingSlash: true`), Tailwind 4,
-system fonts, a centered `max-w-2xl` column, accent color `--accent: #2563eb`
-(`text-blue-600`). All pages are statically prerendered at build time; there is
-no server at runtime.
+Primary destinations (exist today): **Home** `/`, **Posts** `/posts`,
+**Travel** `/travel`, **About** `/about`. Plus post detail `/posts/[slug]`.
 
-- **The globe must not break static export.** WebGL/Three.js cannot run during
-  the Node prerender. Therefore:
-  - The globe lives in a `'use client'` component.
-  - The `/travel` page (a server component) renders it via
-    `next/dynamic` with `{ ssr: false }`, so the heavy WebGL code is never
-    imported during `next build`.
-  - A lightweight placeholder (sized box, e.g. "Loading globe…") is shown
-    while the dynamic chunk loads and during SSR fallback, so layout is stable
-    and there is no flash of zero-height content.
-- **`pnpm build` must stay green on every sprint.** Each sprint is shippable on
-  its own.
-- **Vendor assets/data, never hot-link.** Any geometry data or texture is
-  committed into the repo (see Data, below). No external fetch at runtime.
-- **Nav lives in `src/app/layout.tsx`.** The Travel link is added there once and
-  appears on every page. Order: Posts, Travel, About, Resume (Travel sits next
-  to Posts/About per GOAL).
+New destination: **Settings** `/settings`.
 
-## 3. Tech approach
+Navigation surfaces after this work:
 
-- **Renderer:** Three.js via `@react-three/fiber` (R3F) — the idiomatic React
-  wrapper — plus `@react-three/drei` for `OrbitControls` (drag-to-rotate +
-  `autoRotate`). Raw `three` is acceptable but R3F is preferred for fit with the
-  React codebase. These install from the npm registry via pnpm.
-- **Auto-rotation + pause-on-interact:** `OrbitControls` with `autoRotate
-  enabled` and a slow `autoRotateSpeed`. While the user drags, auto-rotation
-  pauses (driven by OrbitControls' `start`/`end` events toggling `autoRotate`);
-  it resumes shortly after the interaction ends. Drag rotates the camera around
-  the globe; zoom may be disabled or clamped to keep the composition stable.
-- **Earth surface — primary approach (vector globe):** vendor the
-  `world-atlas` package's `countries-110m.json` (a small ~100KB TopoJSON) into
-  the repo (e.g. `src/data/` or `public/`), convert with `topojson-client`
-  (`feature`/`mesh`) at module load on the client, and draw country borders as
-  thin line geometry mapped onto the sphere (lat/long → 3D via a shared
-  projection helper). The result is a recognizable, minimal "wireframe Earth"
-  with no bitmap texture and no hot-linking.
-  - **Acceptable fallback** if the vector approach proves too heavy or the
-    package can't be vendored cleanly: a stylized sphere with a lat/long
-    graticule (meridians + parallels) so the sphere still reads as a globe.
-    Either way the pins are the point and must be correct.
-- **Pins:** small 3D markers (sphere/cone/dot) placed at each country's
-  lat/long on the globe surface using the same projection helper. Each pin is
-  interactive (R3F pointer events: `onPointerOver`, `onPointerOut`,
-  `onClick`). The active pin is visually emphasized (color/scale).
-- **Labels:** drei `Html` to anchor a small DOM label to the active pin, OR a
-  fixed DOM info panel overlaid on the canvas that updates on
-  hover/click. Either way the label is real DOM text (so Playwright can read
-  the country name and date), styled to match the site (system font, small,
-  muted, accent on the name). Touch devices fall back to tap = select.
-- **Color scheme:** keep chrome quiet. Globe lines in a muted gray; pins/active
-  state use the existing accent (`#2563eb`). Light background consistent with the
-  rest of the site.
+- **Sticky header (all viewports):** site title (left) linking to `/`; on
+  desktop, a row of primary text links (see below); the hamburger **SiteMenu**
+  (right). The hamburger now holds **secondary links only**: Résumé, GitHub, X,
+  LinkedIn, Email (Settings may also appear here as a convenience — see §8).
+- **Bottom tab bar (`MobileTabBar`, mobile only):** primary destinations.
+  Becomes **5 tabs**: Home, Posts, Travel, About, **Settings** (gear, far
+  right).
+- **Desktop primary nav — open question + chosen default.** Today the hamburger
+  carried the primary destinations (Home/Posts/Travel/About) and the tab bar is
+  `sm:hidden` (mobile only). Once the hamburger is secondary-only, desktop loses
+  a path to primary destinations. Options considered:
+  1. Show the bottom tab bar on **all** viewports (drop `sm:hidden`).
+  2. Add desktop **text links** (Home/Posts/Travel/About) in the header next to
+     the title; keep the tab bar mobile-only.
+  3. Keep primary links in the hamburger on desktop only.
+  **Chosen default: Option 2 — desktop header text links.** Rationale: preserves
+  the minimal sticky-header aesthetic, keeps the bottom tab bar as the familiar
+  mobile pattern, and avoids a phone-style tab bar floating over wide desktop
+  layouts. Implementation: a horizontal row of primary links shown
+  `hidden sm:flex` in the header between the title and the hamburger; the active
+  link uses `text-accent`, idle uses `text-muted`/`text-fg`. The hamburger and
+  bottom tab bar are otherwise unchanged except for their new contents.
+  Builder/evaluator may revisit at sprint start, but this is the default and
+  should be built unless explicitly re-aligned.
 
-## 4. Data model
+---
 
-Single source of truth for visited countries, stored as structured data so a new
-destination is one object. Suggested location `src/data/travel.ts` (importable by
-the client globe component):
+## 3. Theme token model (Tailwind v4)
 
-```ts
-export type VisitedCountry = {
-  name: string;   // "Italy"
-  code: string;   // ISO-ish short code / key, e.g. "IT" (also drives the flag emoji)
-  flag: string;   // "🇮🇹" (emoji, for the label)
-  lat: number;    // degrees, +N
-  lng: number;    // degrees, +E
-  visited: string;// human label, e.g. "October 2025"
-  sort: string;   // ISO-ish "2025-10" for ordering, newest first
-};
-```
+Two layers.
 
-The seven entries (lat/lng are approximate country centroids — exact precision
-not required, "roughly the right place" per GOAL):
+**Layer A — raw role variables** on `:root` (= Light defaults), overridden per
+theme by attribute selectors on `<html>`. These are the source of truth.
 
-| name | flag | lat | lng | visited | sort |
-|---|---|---|---|---|---|
-| Italy | 🇮🇹 | 41.9 | 12.6 | October 2025 | 2025-10 |
-| France | 🇫🇷 | 46.6 | 2.2 | October 2025 | 2025-10 |
-| Japan | 🇯🇵 | 36.2 | 138.3 | May 2024 | 2024-05 |
-| Croatia | 🇭🇷 | 45.1 | 15.2 | August 2023 | 2023-08 |
-| Tanzania | 🇹🇿 | -6.4 | 34.9 | March 2023 | 2023-03 |
-| Costa Rica | 🇨🇷 | 9.7 | -83.8 | November 2022 | 2022-11 |
-| Turkey | 🇹🇷 | 39.0 | 35.2 | July 2013 | 2013-07 |
-
-Builders may refine the exact lat/lng but must not add, drop, or rename
-countries. Italy and France are close on the map — pins must remain individually
-hoverable/selectable (small enough markers, or slight offset) so neither is
-unreachable.
-
-### Projection helper
-
-A shared pure function converts geographic coordinates to a 3D point on a sphere
-of radius `r`, used by both the country lines and the pins so they line up:
-
-```ts
-function latLngToVec3(lat: number, lng: number, r: number): [number, number, number] {
-  const phi = (90 - lat) * (Math.PI / 180);
-  const theta = (lng + 180) * (Math.PI / 180);
-  return [
-    -r * Math.sin(phi) * Math.cos(theta),
-     r * Math.cos(phi),
-     r * Math.sin(phi) * Math.sin(theta),
-  ];
+```css
+:root {            /* Light theme defaults */
+  --bg:        #ffffff;  /* page background */
+  --surface:   #ffffff;  /* header / menu / tab-bar / card surfaces */
+  --surface-2: #f3f4f6;  /* code blocks, subtle fills, hover wash */
+  --fg:        #1a1a1a;  /* primary text */
+  --muted:     #6b7280;  /* secondary text, dates, captions */
+  --border:    #e5e7eb;  /* hairlines, dividers, card borders */
+  --accent:    #2563eb;  /* links, active nav, focus ring */
+  --accent-contrast: #ffffff; /* text/icon on a filled accent surface */
 }
 ```
 
-(Builder may adjust sign conventions to match their texture/orientation as long
-as pins land on the correct landmasses.)
+**Layer B — Tailwind token registration** so utilities exist:
 
-## 5. Information architecture — the `/travel` page
+```css
+@theme inline {
+  --color-bg:        var(--bg);
+  --color-surface:   var(--surface);
+  --color-surface-2: var(--surface-2);
+  --color-fg:        var(--fg);
+  --color-muted:     var(--muted);
+  --color-border:    var(--border);
+  --color-accent:    var(--accent);
+  --color-accent-contrast: var(--accent-contrast);
+}
+```
 
-Route: `/travel` (App Router page at `src/app/travel/page.tsx`, server
-component, exports `metadata = { title: "Travel" }`). Within the existing
-`max-w-2xl` layout column:
+This generates `bg-bg`, `bg-surface`, `bg-surface-2`, `text-fg`, `text-muted`,
+`text-accent`, `border-border`, `bg-accent`, `text-accent-contrast`, etc.
+Opacity modifiers (`bg-surface/80`) work because the vars are plain colors.
 
-1. **Heading** — `h1` "Travel" (matches the `text-2xl font-semibold` heading
-   style used on About/Posts).
-2. **Intro line** — one short muted sentence, e.g. "Countries I've been lucky
-   enough to visit. Drag to spin the globe; tap a pin for details." Reuses the
-   "drag / pause" affordance copy so users know it is interactive.
-3. **Globe** — the dynamically-imported client component, in a responsive
-   square-ish container that fills the column width and scales down on mobile
-   (e.g. a width-constrained `aspect-square` or fixed-height box). The `<canvas>`
-   must have non-zero width/height at both 1280px and 390px and must not cause
-   horizontal overflow.
-4. **Active-country label / info** — DOM text showing the selected country's
-   flag, name, and visit date (anchored to the pin or in a small panel below /
-   over the globe). Empty/neutral state before any selection is fine.
-5. **(Optional, nice-to-have) Legend/list** — a small static list of the seven
-   countries + dates below the globe (newest first, from the same data). This
-   doubles as a no-JS / no-WebGL fallback so the page still conveys the
-   information if WebGL is unavailable, and gives Playwright stable text to
-   assert. Recommended but can land in the polish sprint.
+`body` uses `background: var(--bg); color: var(--fg);`. The `.article` rules in
+globals.css that hardcode `#f3f4f6` / `#e5e7eb` switch to `var(--surface-2)` /
+`var(--border)`; `code`/`pre` use `var(--surface-2)`, `blockquote` border uses
+`var(--border)` + text `var(--muted)`, `a` uses `var(--accent)`.
 
-## 6. Component breakdown
+### The three palettes (by role; hex are targets — builder may nudge but must keep contrast)
 
-- `src/app/travel/page.tsx` — server component. Heading + intro + renders
-  `<TravelGlobe />` via `next/dynamic({ ssr: false })` with a sized loading
-  placeholder. May render the static legend/list from `src/data/travel.ts`.
-- `src/components/TravelGlobe.tsx` — `'use client'`. Owns the R3F `<Canvas>`,
-  `OrbitControls` (autoRotate + pause-on-interact), lighting, the Earth surface
-  (vector country lines or graticule fallback), the pins, the active-country
-  state, and the label. Sizes itself to its container; uses `dpr` clamping for
-  perf.
-- `src/components/Pin.tsx` (optional split) — a single interactive pin: geometry
-  + pointer handlers, raises selection up to `TravelGlobe`.
-- `src/data/travel.ts` — `VisitedCountry[]` + the `latLngToVec3` helper (or a
-  separate `src/lib/geo.ts`).
-- Vendored geo data (vector approach): `src/data/countries-110m.json` (or under
-  `public/`) from `world-atlas`, plus `topojson-client` for decoding.
+| role | Light | Dark | Sunset (third) |
+|------|-------|------|----------------|
+| `--bg` | `#ffffff` | `#0d1117` | `#fbf3ec` |
+| `--surface` | `#ffffff` | `#161b22` | `#fff7f0` |
+| `--surface-2` | `#f3f4f6` | `#21262d` | `#f3e2d4` |
+| `--fg` | `#1a1a1a` | `#e6edf3` | `#3a2a21` |
+| `--muted` | `#6b7280` | `#9aa4b2` | `#8a6d5c` |
+| `--border` | `#e5e7eb` | `#30363d` | `#e7d3c2` |
+| `--accent` | `#2563eb` | `#5b9dff` | `#d2611f` (warm terracotta / burnt-orange) |
+| `--accent-contrast` | `#ffffff` | `#0d1117` | `#ffffff` |
 
-## 7. Aesthetic
+Requirements for the third theme: a **distinct, non-blue accent** (warm
+"Sunset" terracotta) and its **own background tint** (warm off-white), feeling
+intentional and minimal — not garish. Every theme keeps body text vs `--bg` at a
+comfortable contrast (target WCAG AA, ≥ 4.5:1 for body text; muted text should
+stay clearly readable, target ≥ 4.5:1 in content roles and never below ~3:1).
 
-System fonts (inherited), generous whitespace, accent `#2563eb`. The globe is
-the centerpiece; surrounding chrome is quiet. Globe lines muted gray; pins and
-active highlight use the accent. Labels are small and legible (no near-invisible
-text). Motion is smooth, slow auto-rotation — present but not distracting.
+Selectors:
 
-## 8. Verification surface (what the evaluator can check on the running site)
+```css
+[data-theme="dark"]   { --bg:#0d1117; --surface:#161b22; /* ...rest... */ }
+[data-theme="sunset"] { --bg:#fbf3ec; --surface:#fff7f0; /* ...rest... */ }
+```
 
-- `/travel` returns 200 and shows the "Travel" heading.
-- Header nav contains a Travel link that resolves to `/travel` from another page.
-- A `<canvas>` is present inside the globe container with non-zero
-  width and height at 1280px and at 390px.
-- The globe auto-rotates: a screenshot/pixel sample (or camera state) differs
-  across a ~1s wait with no user input.
-- Dragging across the canvas changes the rendered view (pixels differ from the
-  pre-drag frame).
-- Hovering or clicking a pin reveals DOM text containing the country name (and
-  visit date) for at least one country; the seven country names are all present
-  in the page (via labels and/or the static legend).
-- No console errors / page errors on `/travel` (and homepage unaffected).
-- No horizontal overflow at 390px on `/travel`.
-- `pnpm build` exits 0 (static export succeeds).
+`:root` defaults = Light. The inline script always writes an explicit
+`data-theme` so the rendered theme is unambiguous (see §4).
 
-## 9. Risks and mitigations
+### Globe colors must follow the theme
 
-- **WebGL during prerender breaks `next build`.** Mitigation: `ssr: false`
-  dynamic import; never import Three at module scope of a server component.
-- **Bundle size / first paint.** Mitigation: dynamic import keeps Three out of
-  the initial chunk; clamp `dpr`; 110m (low-res) TopoJSON is small.
-- **Pin selection in headless Chromium for the evaluator.** Mitigation: provide
-  DOM-readable labels and a static country list so name/date text is always
-  assertable even if pointer-picking a tiny 3D pin is flaky; ensure pins are
-  large enough hit targets and Italy/France don't overlap into one.
-- **Mobile overflow from the canvas.** Mitigation: container width-constrained
-  to the column, `aspect-square`/fixed-height, `overflow-hidden`; verify at
-  390px.
-- **Auto-rotate vs. evaluator determinism.** Mitigation: pause-on-interact is
-  driven by OrbitControls events; rotation is detectable by frame diffing over
-  time, and the static legend guarantees content is present regardless.
+`Globe.tsx` uses literal hex (sphere `#cfe0f5`, borders `#5b6b80`, resting pin
+`#2563eb`, active pin `#f97316`) and `TravelGlobe.tsx` uses `text-gray-*`. The
+globe's sphere / border / pin colors should be **derived from the active theme
+at render time** (read `getComputedStyle(document.documentElement)` for the
+relevant vars, or take them from the theme context), recomputing on theme
+change, so the globe is legible in all three themes — notably the sphere must
+not be bright pale blue on a dark background. The active-pin emphasis stays a
+warm highlight distinct from the resting pin. The legend/label text under the
+globe migrates to `text-fg` / `text-muted`.
+
+---
+
+## 4. No-FOUC strategy + persistence
+
+**Persistence keys (localStorage):**
+
+- `theme` → `"light" | "dark" | "sunset"` (absent = follow OS color scheme).
+- `reduce-motion` → `"on" | "off"` (absent = follow OS
+  `prefers-reduced-motion`).
+
+**Inline blocking script** rendered in `layout.tsx` `<head>` (raw
+`<script dangerouslySetInnerHTML>` or Next `<Script strategy="beforeInteractive">`;
+it must run before paint). Pseudocode:
+
+```js
+(function () {
+  try {
+    var t = localStorage.getItem('theme');
+    if (t !== 'light' && t !== 'dark' && t !== 'sunset') {
+      t = matchMedia('(prefers-color-scheme: dark)').matches ? 'dark' : 'light';
+    }
+    document.documentElement.setAttribute('data-theme', t);
+
+    var rm = localStorage.getItem('reduce-motion');
+    var reduce = rm === 'on' ||
+      (rm == null && matchMedia('(prefers-reduced-motion: reduce)').matches);
+    document.documentElement.setAttribute('data-reduce-motion', reduce ? 'true' : 'false');
+  } catch (e) {}
+})();
+```
+
+Because `data-theme` is set synchronously before first paint, there is no flash
+of the wrong theme on reload or hard navigation. (Note: setting attributes on
+`<html>` from an inline head script does not trigger React hydration warnings;
+if `suppressHydrationWarning` on `<html>` is needed for any attribute mismatch,
+add it.)
+
+**Client provider — `ThemeProvider` (`'use client'`, wraps `children` in the
+layout):**
+
+- On mount, reads the same logic into React state (so UI like the active-theme
+  highlight and the toggle render correctly) without re-flashing.
+- Exposes `theme`, `setTheme(t)`, `reduceMotion`, `setReduceMotion(b)`.
+- `setTheme` writes `localStorage.theme`, sets `data-theme` on `<html>`, updates
+  state. `setReduceMotion` writes `localStorage['reduce-motion']` and sets
+  `data-reduce-motion`.
+- When a stored value is absent (following OS), the provider may subscribe to the
+  `prefers-color-scheme` / `prefers-reduced-motion` media queries and update
+  live; once the user picks explicitly, the explicit value wins.
+- A `useTheme()` hook is consumed by the header active-link state (if needed),
+  the settings page, and the globe.
+
+**Data model** (the only "data" here is preference state):
+
+```ts
+type ThemeName = 'light' | 'dark' | 'sunset';
+type ThemeContextValue = {
+  theme: ThemeName;
+  setTheme: (t: ThemeName) => void;
+  reduceMotion: boolean;
+  setReduceMotion: (b: boolean) => void;
+};
+```
+
+---
+
+## 5. Reduce-motion mechanics
+
+State source: `data-reduce-motion="true"` on `<html>` + the provider's
+`reduceMotion` boolean. Active when the user toggled it on, OR (when untouched)
+the OS prefers reduced motion.
+
+Effects when active:
+
+- **Globe auto-rotation off.** In `Globe.tsx`, `OrbitControls.autoRotate` is
+  gated on reduce-motion: `autoRotate={!interacting && !reduceMotion}`. Manual
+  drag/hover/tap still work (interaction is not the "motion" we suppress; only
+  the ambient auto-spin stops). The globe reads `reduceMotion` from the provider
+  (it is a client component) or from the `data-reduce-motion` attribute.
+- **Transitions minimized.** A global CSS rule scoped to the attribute:
+  ```css
+  [data-reduce-motion="true"] *,
+  [data-reduce-motion="true"] *::before,
+  [data-reduce-motion="true"] *::after {
+    animation-duration: 0.001ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.001ms !important;
+    scroll-behavior: auto !important;
+  }
+  ```
+  (The standard reduce-motion reset; must not break essential UI.)
+
+Persisted across reloads via the `reduce-motion` key and re-applied by the
+inline script.
+
+---
+
+## 6. Settings page `/settings`
+
+A static page styled like the rest of the site, inside the existing `max-w-2xl`
+layout column. `metadata = { title: "Settings" }`. The interactive controls live
+in a `'use client'` child (e.g. `SettingsPanel`) that consumes `useTheme()`;
+the route page itself can stay a server component rendering the heading + that
+child. Content, top to bottom:
+
+- **Heading:** `Settings` (`text-2xl font-semibold`, matching other page
+  headings), optional one-line subtitle in `text-muted`.
+- **Theme section:**
+  - Section label `Theme`.
+  - Three selectable options: **Light**, **Dark**, **Sunset**, as a row/grid of
+    cards or a segmented control. Each option:
+    - Shows its name and a small **swatch/preview** (chips rendering that theme's
+      `--bg` / `--surface` / `--accent`).
+    - The **active** theme is clearly indicated (e.g. `border-accent` ring + a
+      check) and exposes selected state to a11y (`aria-pressed` /
+      `aria-checked`).
+    - Clicking it calls `setTheme`; the **whole site updates immediately** (no
+      reload).
+  - Implemented as buttons or a radiogroup; keyboard operable, visible focus.
+- **Reduce motion section:**
+  - Label `Reduce motion` + short helper text in `text-muted` ("Stops the globe
+    from auto-spinning and minimizes transitions.").
+  - A **toggle switch** (`role="switch"` + `aria-checked`) bound to
+    `setReduceMotion`. Toggling on immediately stops globe auto-rotation.
+- Surfaces use `bg-surface` / `border-border` / `text-fg` / `text-muted`; the
+  page is legible and consistent in all three themes.
+
+No omitted-setting categories (accounts, notifications, language, reminders) —
+out of scope per GOAL.
+
+---
+
+## 7. Migration: literal colors → semantic utilities
+
+Every component currently uses literal Tailwind/hex colors; all must move to the
+semantic tokens so all three themes apply site-wide. Known set (builder should
+grep `text-/bg-/border-/hover:` + `gray|blue|white` and any `#hex` and catch the
+rest):
+
+| file | current literals | replace with |
+|------|------------------|--------------|
+| `src/app/layout.tsx` | `border-gray-200/70`, `bg-white/80`, `hover:text-blue-600` | `border-border/70`, `bg-surface/80`, `hover:text-accent` |
+| `src/components/SiteMenu.tsx` | `text-gray-700`, `text-gray-400`, `hover:bg-gray-50`, `hover:bg-gray-100`, `border-gray-200`, `border-gray-100`, `bg-white` | `text-fg`/`text-muted`, `hover:bg-surface-2`, `border-border`, `bg-surface` |
+| `src/components/MobileTabBar.tsx` | `border-gray-200`, `bg-white/90`, `text-blue-600` (active), `text-gray-500` (idle) | `border-border`, `bg-surface/90`, `text-accent`, `text-muted` |
+| `src/app/page.tsx` | `text-gray-700`, `text-blue-600`, `text-gray-500`, `hover:text-blue-600` | `text-fg`/`text-muted`, `text-accent`, `hover:text-accent` |
+| `src/app/about/page.tsx` | links styled via `.article` in globals.css | ensure links read `--accent` (handled in globals.css) |
+| `src/app/posts/page.tsx` | `text-gray-500`, `hover:text-blue-600`, `text-gray-700` | `text-muted`, `hover:text-accent`, `text-fg` |
+| `src/app/posts/[slug]/page.tsx` | `text-gray-500` | `text-muted` |
+| `src/app/travel/page.tsx` | `text-gray-600`, `text-gray-700`, `text-gray-500` | `text-muted`/`text-fg` |
+| `src/components/TravelGlobe.tsx` | `text-gray-400`, `text-gray-700`, `text-gray-500` | `text-muted`/`text-fg` |
+| `src/components/Globe.tsx` | hex sphere/border/pin colors | derive from theme vars (see §3) |
+| `src/app/globals.css` | `.article` hardcoded `#f3f4f6`, `#e5e7eb` | `var(--surface-2)`, `var(--border)` |
+
+Acceptance is behavioral: switching themes visibly re-colors header, menu, tab
+bar, home, about, posts, post pages, travel + globe, and settings — with no
+leftover gray-on-dark or white-on-sunset patches.
+
+---
+
+## 8. Nav changes (detail)
+
+**`SiteMenu` (hamburger):** remove the `nav` array (Home/Posts/Travel/About);
+keep only the `social` array — Résumé, GitHub, X, LinkedIn, Email. Optionally
+append a **Settings** row (gear) for convenience (with a divider above the social
+group if kept). Click-outside / Escape behavior and a11y attributes unchanged;
+colors migrated per §7.
+
+**`MobileTabBar`:** add a **5th tab — Settings** at the far right with a **gear
+icon**. Active when `pathname` starts with `/settings`, using `text-accent`.
+Five tabs still fit at 390px (each `flex-1`); verify no overflow.
+
+**Desktop primary nav:** add header text links per §2 Option 2 (`hidden sm:flex`
+row of Home/Posts/Travel/About; active = `text-accent`). This keeps desktop able
+to reach every primary page once the hamburger is secondary-only. (If
+builder/evaluator prefer Option 1 at alignment, record it in the verdict;
+default is Option 2.)
+
+The header title link keeps pointing at `/`.
+
+---
+
+## 9. Component breakdown (new / changed)
+
+- `src/components/ThemeProvider.tsx` — `'use client'` context provider + the
+  `useTheme()` hook + the `setTheme`/`setReduceMotion` logic. Wraps `children`
+  in `layout.tsx`.
+- `src/app/layout.tsx` — adds the inline no-FOUC `<head>` script, wraps children
+  in `ThemeProvider`, adds desktop header primary links, migrates colors.
+- `src/app/globals.css` — Layer A vars per theme, `@theme inline` token map,
+  reduce-motion CSS reset, `.article` var migration.
+- `src/app/settings/page.tsx` (+ `SettingsPanel` client child) — the settings
+  UI.
+- `src/components/SiteMenu.tsx`, `src/components/MobileTabBar.tsx` — nav changes
+  + color migration.
+- `src/components/Globe.tsx`, `src/components/TravelGlobe.tsx` — theme-aware
+  colors + reduce-motion gating + text migration.
+- `src/app/page.tsx`, `src/app/posts/*`, `src/app/travel/page.tsx` — color
+  migration only.
+
+---
+
+## 10. Verification surface (what the evaluator can check on the running site)
+
+- `/settings` returns 200, shows a `Settings` heading, a theme picker with three
+  options, and a reduce-motion toggle.
+- Selecting each theme updates `document.documentElement` `data-theme` and
+  visibly re-colors the page (computed `background-color` of `body` /
+  `getComputedStyle` of key elements differs per theme); the choice **persists
+  across reload** (localStorage `theme`).
+- **No FOUC:** on load with a stored non-default theme, `data-theme` is already
+  set on the first paintable frame (the inline script ran; the body background
+  matches the stored theme without a flash to white).
+- Each theme is **legible** on home/about/posts/travel/settings (no
+  near-invisible text — assert computed text color contrast vs background, or
+  screenshot review).
+- Reduce-motion toggle on → `data-reduce-motion="true"` and the globe stops
+  auto-rotating (frame diff over ~1s is ~zero with no user input); drag still
+  rotates it.
+- Bottom tab bar has 5 items incl. a far-right Settings (gear) tab that
+  navigates to `/settings`.
+- Hamburger contains only secondary links (Résumé/GitHub/X/LinkedIn/Email,
+  optionally Settings); Home/Posts/Travel/About are no longer in it.
+- No horizontal overflow at 390px on every touched page; no console / page
+  errors; globe + sticky header still work; `pnpm build` exits 0.
+
+---
+
+## 11. Out of scope / non-goals
+
+- No backend, accounts, notification settings, language, reminders.
+- No changes to `README.md`, post content, or the globe's interaction model
+  (only its colors + auto-rotate gating).
+- No new dependencies required (theming is plain CSS + a small provider). Adding
+  one is allowed only if it keeps static export green and the bundle minimal.

@@ -19,7 +19,9 @@ settings page, reduce-motion, and nav changes then sit on top. Three sprints.
 
 ---
 
-## Sprint 1 — Theme engine + no-FOUC + site-wide token migration [todo]
+## Sprint 1 — Theme engine + no-FOUC + site-wide token migration [in progress]
+
+_Aligned: agent/evals/20260627-034336-sprint-1-criteria.md (6 criteria)._
 
 **GOAL:** Establish the three-theme system (semantic CSS vars + Tailwind v4
 `@theme inline` tokens), a `ThemeProvider` with localStorage persistence and an

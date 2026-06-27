@@ -23,7 +23,9 @@ rendering it serves. Three sprints.
 
 ---
 
-## Sprint 1 — Filled, per-category country polygons on the themed globe [todo]
+## Sprint 1 — Filled, per-category country polygons on the themed globe [in progress]
+
+_Aligned: agent/evals/20260627-134750-sprint-1-criteria.md (6 criteria)._
 
 **GOAL:** Replace the pin dots with filled, category-colored country regions for
 all 9 countries (Home=India, Lived=US, Visited=the other 7), built from vendored

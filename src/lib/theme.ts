@@ -18,11 +18,27 @@ export const THEME_SWATCHES: Record<Theme, { bg: string; accent: string }> = {
 // materials, mirroring the CSS palette roles.
 export const GLOBE_COLORS: Record<
   Theme,
-  { sphere: string; border: string; pin: string; pinActive: string }
+  {
+    sphere: string;
+    border: string;
+    cat: { home: string; lived: string; visited: string };
+  }
 > = {
-  light: { sphere: "#cfe0f5", border: "#5b6b80", pin: "#2563eb", pinActive: "#f97316" },
-  dark: { sphere: "#1b2735", border: "#46566b", pin: "#6aa8ff", pinActive: "#f59e0b" },
-  sunset: { sphere: "#e3cba6", border: "#5c4326", pin: "#c2410c", pinActive: "#1d4ed8" },
+  light: {
+    sphere: "#cfe0f5",
+    border: "#5b6b80",
+    cat: { home: "#dc2626", lived: "#2563eb", visited: "#16a34a" },
+  },
+  dark: {
+    sphere: "#1b2735",
+    border: "#46566b",
+    cat: { home: "#f87171", lived: "#60a5fa", visited: "#4ade80" },
+  },
+  sunset: {
+    sphere: "#e3cba6",
+    border: "#5c4326",
+    cat: { home: "#b91c1c", lived: "#1d4ed8", visited: "#15803d" },
+  },
 };
 
 export const THEME_KEY = "theme";

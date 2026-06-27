@@ -3,79 +3,50 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import type { PerspectiveCamera } from "three";
-import { VISITED_COUNTRIES, type VisitedCountry } from "@/data/travel";
-import { buildBorderPositions, latLngToVec3 } from "@/components/globe-utils";
+import { DoubleSide, type PerspectiveCamera } from "three";
+import { TRAVEL_COUNTRIES } from "@/data/travel";
+import { buildBorderPositions, buildCountryFill } from "@/components/globe-utils";
 import { useTheme } from "@/components/ThemeProvider";
 import { GLOBE_COLORS } from "@/lib/theme";
 
 const GLOBE_RADIUS = 1;
 
-type GlobeColors = {
-  sphere: string;
-  border: string;
-  pin: string;
-  pinActive: string;
-};
-
-type Handlers = {
-  activeName: string | null;
-  onHover: (c: VisitedCountry | null) => void;
-  onSelect: (c: VisitedCountry | null) => void;
-};
-
-function Pin({
-  country,
-  active,
-  pinColor,
-  activeColor,
-  onHover,
-  onSelect,
+function CountryFill({
+  atlasName,
+  color,
 }: {
-  country: VisitedCountry;
-  active: boolean;
-  pinColor: string;
-  activeColor: string;
-} & Pick<Handlers, "onHover" | "onSelect">) {
-  const pos = useMemo(
-    () => latLngToVec3(country.lat, country.lng, GLOBE_RADIUS * 1.02),
-    [country]
+  atlasName: string;
+  color: string;
+}) {
+  const positions = useMemo(
+    () => buildCountryFill(atlasName, GLOBE_RADIUS * 1.004),
+    [atlasName]
   );
   return (
-    <mesh
-      position={pos}
-      scale={active ? 2.6 : 1}
-      onPointerOver={(e) => {
-        e.stopPropagation();
-        onHover(country);
-        document.body.style.cursor = "pointer";
-      }}
-      onPointerOut={(e) => {
-        e.stopPropagation();
-        onHover(null);
-        document.body.style.cursor = "auto";
-      }}
-      onClick={(e) => {
-        e.stopPropagation();
-        onSelect(country);
-      }}
-    >
-      <sphereGeometry args={[0.022, 16, 16]} />
-      <meshBasicMaterial color={active ? activeColor : pinColor} />
+    <mesh>
+      <bufferGeometry>
+        <bufferAttribute attach="attributes-position" args={[positions, 3]} />
+      </bufferGeometry>
+      <meshBasicMaterial
+        color={color}
+        transparent
+        opacity={0.88}
+        side={DoubleSide}
+        depthWrite={false}
+      />
     </mesh>
   );
 }
 
 // Pull the camera back so the radius-1 globe always fits the canvas, including
-// narrow/portrait mobile widths (otherwise the sphere gets clipped on the
-// sides). Recomputes on resize.
+// narrow/portrait mobile widths. Recomputes on resize.
 function FitCamera() {
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const size = useThree((s) => s.size);
   useEffect(() => {
     const aspect = size.width / Math.max(size.height, 1);
     const halfFov = ((camera.fov * Math.PI) / 180) / 2;
-    const margin = 1.2; // sphere radius 1; ~20% breathing room
+    const margin = 1.2;
     const distForHeight = margin / Math.tan(halfFov);
     const distForWidth = margin / (Math.tan(halfFov) * aspect);
     camera.position.set(0, 0, Math.max(distForHeight, distForWidth));
@@ -84,13 +55,9 @@ function FitCamera() {
   return null;
 }
 
-function Scene({
-  activeName,
-  onHover,
-  onSelect,
-  colors,
-  reduceMotion,
-}: Handlers & { colors: GlobeColors; reduceMotion: boolean }) {
+function Scene() {
+  const { theme, reduceMotion } = useTheme();
+  const colors = GLOBE_COLORS[theme];
   const borders = useMemo(() => buildBorderPositions(GLOBE_RADIUS * 1.002), []);
   const [interacting, setInteracting] = useState(false);
   const resumeTimer = useRef<ReturnType<typeof setTimeout> | null>(null);
@@ -98,42 +65,26 @@ function Scene({
   return (
     <>
       <FitCamera />
-      <ambientLight intensity={0.85} />
-      <directionalLight position={[3, 2, 2]} intensity={0.5} />
+      <ambientLight intensity={0.9} />
+      <directionalLight position={[3, 2, 2]} intensity={0.45} />
 
-      {/* The globe occludes pin picking: as the nearest hit on empty-ocean
-          rays it stops propagation, so pins on the far hemisphere can't be
-          hovered/clicked through the sphere. Clicking the ocean deselects. */}
-      <mesh
-        onPointerOver={(e) => e.stopPropagation()}
-        onClick={(e) => {
-          e.stopPropagation();
-          onSelect(null);
-        }}
-      >
+      <mesh>
         <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
         <meshStandardMaterial color={colors.sphere} roughness={1} metalness={0} />
       </mesh>
 
       <lineSegments>
         <bufferGeometry>
-          <bufferAttribute
-            attach="attributes-position"
-            args={[borders, 3]}
-          />
+          <bufferAttribute attach="attributes-position" args={[borders, 3]} />
         </bufferGeometry>
-        <lineBasicMaterial color={colors.border} transparent opacity={0.55} />
+        <lineBasicMaterial color={colors.border} transparent opacity={0.5} />
       </lineSegments>
 
-      {VISITED_COUNTRIES.map((c) => (
-        <Pin
+      {TRAVEL_COUNTRIES.map((c) => (
+        <CountryFill
           key={c.name}
-          country={c}
-          active={activeName === c.name}
-          pinColor={colors.pin}
-          activeColor={colors.pinActive}
-          onHover={onHover}
-          onSelect={onSelect}
+          atlasName={c.atlasName}
+          color={colors.cat[c.category]}
         />
       ))}
 
@@ -156,12 +107,10 @@ function Scene({
   );
 }
 
-export default function Globe(props: Handlers) {
-  const { theme, reduceMotion } = useTheme();
-  const colors = GLOBE_COLORS[theme];
+export default function Globe() {
   return (
     <Canvas camera={{ position: [0, 0, 2.6], fov: 45 }} dpr={[1, 2]}>
-      <Scene {...props} colors={colors} reduceMotion={reduceMotion} />
+      <Scene />
     </Canvas>
   );
 }

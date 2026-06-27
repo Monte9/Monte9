@@ -21,7 +21,7 @@ export default function TravelPage() {
           <li key={c.name} className="text-fg">
             <span className="mr-1">{c.flag}</span>
             <span className="font-medium">{c.name}</span>
-            <span className="text-muted"> — {c.visited}</span>
+            <span className="text-muted"> — {c.detail}</span>
           </li>
         ))}
       </ul>

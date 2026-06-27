@@ -3,8 +3,6 @@
 - 10 years of experience as a full-stack software engineer
 - Founding engineer at [Rosebud](https://www.rosebud.app/), the AI journaling startup — helped scale it to $1M+ ARR and grow the team from 3 to 12
 - Lead maintainer of [react-native-elements](https://github.com/react-native-elements/react-native-elements), the cross-platform React Native UI toolkit (25.8k+ stars) — ![@rneui/themed monthly downloads](https://img.shields.io/npm/dm/%40rneui%2Fthemed?style=flat-square&color=blueviolet&label=%40rneui%2Fthemed) ![@rneui/base monthly downloads](https://img.shields.io/npm/dm/%40rneui%2Fbase?style=flat-square&color=blueviolet&label=%40rneui%2Fbase)
-- Created and taught [MobileSpace](https://github.com/mobilespace/Season2), a free in-person course teaching students mobile development at SF State (2016–2018)
-- Built [@nftsalesbot](https://twitter.com/nftsalesbot) ([nft-sales-bot](https://github.com/Monte9/nft-sales-bot)), a Twitter bot of NFT flips and fumbles — grew it to 25k+ followers
 
 ## Agentic Engineering
 
@@ -26,13 +24,16 @@ _More on the way as I open-source them._
 - ⭐ **[react-native-ratings](https://github.com/Monte9/react-native-ratings)** (940+ stars) - Tap and swipe ratings component for React Native
 - 🌄 **[react-native-parallax-scrollview](https://github.com/Monte9/react-native-parallax-scrollview)** (270+ stars) - Parallax ScrollView component for React Native
 
-## Key Beliefs
+## Products
 
-- Strong opinions, weakly held
-- A high standard of success and a high tolerance for failure
-- Awareness of internal vs external validation is key to growth
-- Who you work with matters more than what you work on
-- Life is probabilistic, not deterministic
+Apps, bots, and a course I built before going deep on agents.
+
+- 😮 **Incredulous AI** - AI-powered fact generator delivering daily astonishment.
+- 🐦 **[Flip McBot](https://github.com/Monte9/nft-sales-bot)** - Twitter bot of NFT flips and fumbles — grew [@nftsalesbot](https://twitter.com/nftsalesbot) to 25k+ followers.
+- 🔴 **[Discover Mars](https://github.com/Monte9/DiscoverMars-ios)** - iOS app to explore Mars.
+- 🍅 **Catchup** - Mobile app for setting goals to stay in touch with the people you care about.
+- 🤝 **Kandou** - Volunteering app connecting people with local opportunities — 600 users across 17 SF nonprofits.
+- 📱 **[MobileSpace](https://github.com/mobilespace/Season2)** - Free in-person course teaching students mobile development at SF State (2016–2018).
 
 ## GitHub Activity
 

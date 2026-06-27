@@ -29,3 +29,4 @@ the sphere (src/components/globe-utils.ts buildCountryFill).
 | 2026-06-27 | travel-v2 s1 | PASS | filled per-category country polygons |
 | 2026-06-27 | travel-v2 s2 | PASS | rich info: bottom sheet / dialog |
 | 2026-06-27 | travel-v2 s3 | PASS | globe-first layout + legend; list removed |
+| 2026-06-27 | travel fix | shipped | globe no longer resets view on select (stable Canvas camera prop + orientation-preserving FitCamera). Self-verified: dragged orientation held through select+close |

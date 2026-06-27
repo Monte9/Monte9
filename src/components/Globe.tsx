@@ -3,13 +3,20 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { Color, DoubleSide, type PerspectiveCamera } from "three";
+import { Color, DoubleSide, Vector3, type PerspectiveCamera } from "three";
 import { TRAVEL_COUNTRIES, type TravelCountry } from "@/data/travel";
 import { buildBorderPositions, buildCountryFill } from "@/components/globe-utils";
 import { useTheme } from "@/components/ThemeProvider";
 import { GLOBE_COLORS } from "@/lib/theme";
 
 const GLOBE_RADIUS = 1;
+
+// Stable reference so r3f never re-applies (and thus resets) the camera on
+// re-render — e.g. when a country is selected.
+const CAMERA_PROPS: { position: [number, number, number]; fov: number } = {
+  position: [0, 0, 2.6],
+  fov: 45,
+};
 
 type Handlers = {
   activeName: string | null;
@@ -79,9 +86,17 @@ function FitCamera() {
     const aspect = size.width / Math.max(size.height, 1);
     const halfFov = ((camera.fov * Math.PI) / 180) / 2;
     const margin = 1.1;
-    const distForHeight = margin / Math.tan(halfFov);
-    const distForWidth = margin / (Math.tan(halfFov) * aspect);
-    camera.position.set(0, 0, Math.max(distForHeight, distForWidth));
+    const dist = Math.max(
+      margin / Math.tan(halfFov),
+      margin / (Math.tan(halfFov) * aspect)
+    );
+    // Preserve the current viewing direction; only change the distance, so a
+    // re-fit (e.g. on resize) never snaps the orientation back to the Americas.
+    const dir =
+      camera.position.lengthSq() > 1e-6
+        ? camera.position.clone().normalize()
+        : new Vector3(0, 0, 1);
+    camera.position.copy(dir.multiplyScalar(dist));
     camera.updateProjectionMatrix();
   }, [camera, size]);
   return null;
@@ -151,7 +166,7 @@ function Scene({ activeName, onHover, onSelect, paused }: Handlers) {
 
 export default function Globe(props: Handlers) {
   return (
-    <Canvas camera={{ position: [0, 0, 2.6], fov: 45 }} dpr={[1, 2]}>
+    <Canvas camera={CAMERA_PROPS} dpr={[1, 2]}>
       <Scene {...props} />
     </Canvas>
   );

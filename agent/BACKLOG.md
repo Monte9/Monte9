@@ -15,7 +15,7 @@ done/blocked history; mark it.
 
 ---
 
-## Sprint 1 — Route, data, nav, and a sized client globe mount (scaffold) [todo]
+## Sprint 1 — Route, data, nav, and a sized client globe mount (scaffold) [done]
 
 **GOAL:** Stand up `/travel` with the Travel nav link, the visited-countries
 data module, and a dynamically-imported (`ssr: false`) `'use client'` Three.js
@@ -40,7 +40,7 @@ WebGL.
 
 ---
 
-## Sprint 2 — Recognizable Earth + auto-rotation [todo]
+## Sprint 2 — Recognizable Earth + auto-rotation [done]
 
 **GOAL:** Turn the bare sphere into a recognizable, minimal Earth (vendored
 `world-atlas` country outlines as line geometry; lat/long graticule fallback)
@@ -63,7 +63,7 @@ aesthetic.
 
 ---
 
-## Sprint 3 — Pins + drag-to-rotate + pause-on-interact + labels [todo]
+## Sprint 3 — Pins + drag-to-rotate + pause-on-interact + labels [done]
 
 **GOAL:** Place an accent-colored pin at each of the seven countries, let the
 user drag to spin the globe (pausing auto-rotation during interaction), and
@@ -87,7 +87,7 @@ reveal a country's name + visit date on hover/click.
 
 ---
 
-## Sprint 4 — Mobile polish, legend, and resilience [todo]
+## Sprint 4 — Mobile polish, legend, and resilience [done]
 
 **GOAL:** Final pass — responsive composition, a static newest-first country
 legend that doubles as the no-WebGL fallback, and smooth/quiet motion that fits
@@ -114,4 +114,9 @@ the site.
 
 ## Done / Blocked history
 
-(none yet)
+- 2026-06-27: Sprints 1–4 built together in one pass and verified as a single
+  feature. Evaluator PASS on all 9 hard gates (real Playwright interaction):
+  build green, canvas sized at 1280/390, recognizable vector Earth,
+  auto-rotate on load, drag-to-rotate, pause-then-resume, pins reveal
+  name+date (Italy/France separable), seven countries server-rendered, no
+  regressions. Verdict: `agent/evals/20260627-024642-sprint-1-4.md`.

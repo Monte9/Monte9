@@ -3,34 +3,68 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
-import { DoubleSide, type PerspectiveCamera } from "three";
-import { TRAVEL_COUNTRIES } from "@/data/travel";
+import { Color, DoubleSide, type PerspectiveCamera } from "three";
+import { TRAVEL_COUNTRIES, type TravelCountry } from "@/data/travel";
 import { buildBorderPositions, buildCountryFill } from "@/components/globe-utils";
 import { useTheme } from "@/components/ThemeProvider";
 import { GLOBE_COLORS } from "@/lib/theme";
 
 const GLOBE_RADIUS = 1;
 
+type Handlers = {
+  activeName: string | null;
+  onHover: (c: TravelCountry | null) => void;
+  onSelect: (c: TravelCountry | null) => void;
+  paused: boolean;
+};
+
+function lighten(hex: string, amt: number): string {
+  const c = new Color(hex);
+  c.lerp(new Color(1, 1, 1), amt);
+  return `#${c.getHexString()}`;
+}
+
 function CountryFill({
-  atlasName,
+  country,
   color,
+  active,
+  onHover,
+  onSelect,
 }: {
-  atlasName: string;
+  country: TravelCountry;
   color: string;
-}) {
+  active: boolean;
+} & Pick<Handlers, "onHover" | "onSelect">) {
   const positions = useMemo(
-    () => buildCountryFill(atlasName, GLOBE_RADIUS * 1.004),
-    [atlasName]
+    () => buildCountryFill(country.atlasName, GLOBE_RADIUS * 1.004),
+    [country.atlasName]
   );
   return (
-    <mesh>
+    <mesh
+      scale={active ? 1.012 : 1}
+      renderOrder={active ? 2 : 1}
+      onPointerOver={(e) => {
+        e.stopPropagation();
+        onHover(country);
+        document.body.style.cursor = "pointer";
+      }}
+      onPointerOut={(e) => {
+        e.stopPropagation();
+        onHover(null);
+        document.body.style.cursor = "auto";
+      }}
+      onClick={(e) => {
+        e.stopPropagation();
+        onSelect(country);
+      }}
+    >
       <bufferGeometry>
         <bufferAttribute attach="attributes-position" args={[positions, 3]} />
       </bufferGeometry>
       <meshBasicMaterial
-        color={color}
+        color={active ? lighten(color, 0.4) : color}
         transparent
-        opacity={0.88}
+        opacity={active ? 1 : 0.88}
         side={DoubleSide}
         depthWrite={false}
       />
@@ -38,8 +72,6 @@ function CountryFill({
   );
 }
 
-// Pull the camera back so the radius-1 globe always fits the canvas, including
-// narrow/portrait mobile widths. Recomputes on resize.
 function FitCamera() {
   const camera = useThree((s) => s.camera) as PerspectiveCamera;
   const size = useThree((s) => s.size);
@@ -55,7 +87,7 @@ function FitCamera() {
   return null;
 }
 
-function Scene() {
+function Scene({ activeName, onHover, onSelect, paused }: Handlers) {
   const { theme, reduceMotion } = useTheme();
   const colors = GLOBE_COLORS[theme];
   const borders = useMemo(() => buildBorderPositions(GLOBE_RADIUS * 1.002), []);
@@ -68,7 +100,14 @@ function Scene() {
       <ambientLight intensity={0.9} />
       <directionalLight position={[3, 2, 2]} intensity={0.45} />
 
-      <mesh>
+      {/* Sphere occludes far-side picking; clicking the ocean deselects. */}
+      <mesh
+        onPointerOver={(e) => e.stopPropagation()}
+        onClick={(e) => {
+          e.stopPropagation();
+          onSelect(null);
+        }}
+      >
         <sphereGeometry args={[GLOBE_RADIUS, 64, 64]} />
         <meshStandardMaterial color={colors.sphere} roughness={1} metalness={0} />
       </mesh>
@@ -83,8 +122,11 @@ function Scene() {
       {TRAVEL_COUNTRIES.map((c) => (
         <CountryFill
           key={c.name}
-          atlasName={c.atlasName}
+          country={c}
           color={colors.cat[c.category]}
+          active={activeName === c.name}
+          onHover={onHover}
+          onSelect={onSelect}
         />
       ))}
 
@@ -93,7 +135,7 @@ function Scene() {
         enableZoom={false}
         enablePan={false}
         rotateSpeed={0.5}
-        autoRotate={!interacting && !reduceMotion}
+        autoRotate={!interacting && !reduceMotion && !paused}
         autoRotateSpeed={0.55}
         onStart={() => {
           if (resumeTimer.current) clearTimeout(resumeTimer.current);
@@ -107,10 +149,10 @@ function Scene() {
   );
 }
 
-export default function Globe() {
+export default function Globe(props: Handlers) {
   return (
     <Canvas camera={{ position: [0, 0, 2.6], fov: 45 }} dpr={[1, 2]}>
-      <Scene />
+      <Scene {...props} />
     </Canvas>
   );
 }

@@ -1,6 +1,9 @@
 "use client";
 
 import dynamic from "next/dynamic";
+import { useState } from "react";
+import { type TravelCountry } from "@/data/travel";
+import CountryInfo from "@/components/CountryInfo";
 
 const Globe = dynamic(() => import("@/components/Globe"), {
   ssr: false,
@@ -12,14 +15,26 @@ const Globe = dynamic(() => import("@/components/Globe"), {
 });
 
 export default function TravelGlobe() {
+  const [hovered, setHovered] = useState<TravelCountry | null>(null);
+  const [selected, setSelected] = useState<TravelCountry | null>(null);
+  const active = selected ?? hovered;
+
   return (
     <div>
       <div className="h-[420px] w-full sm:h-[480px]">
-        <Globe />
+        <Globe
+          activeName={active?.name ?? null}
+          onHover={setHovered}
+          onSelect={setSelected}
+          paused={!!selected}
+        />
       </div>
       <p className="mt-3 text-center text-sm text-muted">
-        Drag to spin the globe.
+        Tap a highlighted country.
       </p>
+      {selected && (
+        <CountryInfo country={selected} onClose={() => setSelected(null)} />
+      )}
     </div>
   );
 }

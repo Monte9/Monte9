@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import Link from "next/link";
 import fs from "fs";
 import path from "path";
+import MobileTabBar from "@/components/MobileTabBar";
 import "./globals.css";
 
 export const metadata: Metadata = {
@@ -24,12 +25,12 @@ export default function RootLayout({
   return (
     <html lang="en">
       <body className="font-sans antialiased">
-        <div className="mx-auto max-w-2xl px-5 py-10">
+        <div className="mx-auto max-w-2xl px-5 pt-10 pb-24 sm:pb-10">
           <header className="mb-12 flex items-baseline justify-between">
             <Link href="/" className="text-lg font-semibold hover:text-blue-600">
               Monte Thakkar
             </Link>
-            <nav className="flex gap-5 text-sm text-gray-600">
+            <nav className="hidden gap-5 text-sm text-gray-600 sm:flex">
               <Link href="/posts" className="hover:text-blue-600">
                 Posts
               </Link>
@@ -68,6 +69,7 @@ export default function RootLayout({
             </div>
           </footer>
         </div>
+        <MobileTabBar />
       </body>
     </html>
   );

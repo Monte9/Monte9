@@ -1,8 +1,9 @@
 "use client";
 
-import { useMemo, useRef, useState } from "react";
-import { Canvas } from "@react-three/fiber";
+import { useEffect, useMemo, useRef, useState } from "react";
+import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
+import type { PerspectiveCamera } from "three";
 import { VISITED_COUNTRIES, type VisitedCountry } from "@/data/travel";
 import { buildBorderPositions, latLngToVec3 } from "@/components/globe-utils";
 
@@ -52,6 +53,24 @@ function Pin({
   );
 }
 
+// Pull the camera back so the radius-1 globe always fits the canvas, including
+// narrow/portrait mobile widths (otherwise the sphere gets clipped on the
+// sides). Recomputes on resize.
+function FitCamera() {
+  const camera = useThree((s) => s.camera) as PerspectiveCamera;
+  const size = useThree((s) => s.size);
+  useEffect(() => {
+    const aspect = size.width / Math.max(size.height, 1);
+    const halfFov = ((camera.fov * Math.PI) / 180) / 2;
+    const margin = 1.2; // sphere radius 1; ~20% breathing room
+    const distForHeight = margin / Math.tan(halfFov);
+    const distForWidth = margin / (Math.tan(halfFov) * aspect);
+    camera.position.set(0, 0, Math.max(distForHeight, distForWidth));
+    camera.updateProjectionMatrix();
+  }, [camera, size]);
+  return null;
+}
+
 function Scene({ activeName, onHover, onSelect }: Handlers) {
   const borders = useMemo(() => buildBorderPositions(GLOBE_RADIUS * 1.002), []);
   const [interacting, setInteracting] = useState(false);
@@ -59,6 +78,7 @@ function Scene({ activeName, onHover, onSelect }: Handlers) {
 
   return (
     <>
+      <FitCamera />
       <ambientLight intensity={0.85} />
       <directionalLight position={[3, 2, 2]} intensity={0.5} />
 

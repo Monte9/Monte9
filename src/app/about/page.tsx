@@ -84,12 +84,9 @@ export default function AboutPage() {
         <li>Life is probabilistic, not deterministic</li>
       </ul>
 
-      <h2>Travel</h2>
       <p>
-        Away from the keyboard I&apos;m outdoorsy, play whatever sport is on
-        offer — table tennis, beach volleyball, pickleball, basketball — and
-        love to travel. Some favorites so far: 🇮🇹 Italy, 🇫🇷 France, 🇯🇵 Japan,
-        🇭🇷 Croatia, 🇹🇿 Tanzania, 🇨🇷 Costa Rica, and 🇹🇷 Turkey.
+        Away from the keyboard I&apos;m outdoorsy and play whatever sport is on
+        offer — table tennis, beach volleyball, pickleball, basketball.
       </p>
 
       <p>

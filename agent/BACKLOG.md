@@ -65,7 +65,8 @@ and Countries list may remain until Sprint 3; do not let them block this sprint.
 
 ---
 
-## Sprint 2 — Hover/tap rich info: bottom sheet (mobile) / dialog (desktop) [in progress]
+## Sprint 2 — Hover/tap rich info: bottom sheet (mobile) / dialog (desktop) [done]
+_PASS: agent/evals/20260627-142718-sprint-2.md (all 6)._
 
 **GOAL:** Make the filled countries interactive — hovering/tapping a country
 emphasizes it on the globe and opens a dismissible rich-info surface (name +
@@ -103,7 +104,7 @@ fold it in or cut at alignment to stay at the cap.)_
 
 ---
 
-## Sprint 3 — Globe-first layout, legend, hint, list removal & polish [todo]
+## Sprint 3 — Globe-first layout, legend, hint, list removal & polish [in progress]
 
 **GOAL:** Make the globe the centerpiece — fill the space below the header to the
 tab bar with no top clipping, overlay a theme-aware category legend and a short

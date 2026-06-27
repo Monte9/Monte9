@@ -31,9 +31,9 @@ Apps, bots, and a course I built before going deep on agents.
 - 😮 **[Incredulous AI](https://github.com/Monte9/incredulous-ai)** - AI-powered fact generator delivering daily astonishment.
 - 🐦 **[Flip McBot](https://github.com/Monte9/nft-sales-bot)** - Twitter bot of NFT flips and fumbles — grew [@nftsalesbot](https://twitter.com/nftsalesbot) to 25k+ followers.
 - 🔴 **[Discover Mars](https://github.com/Monte9/DiscoverMars-ios)** - iOS app to explore Mars.
-- 🍅 **Catchup** - Mobile app for setting goals to stay in touch with the people you care about.
-- 🤝 **Kandou** - Volunteering app connecting people with local opportunities — 600 users across 17 SF nonprofits.
-- 📱 **[MobileSpace](https://github.com/mobilespace/Season2)** - Free in-person course teaching students mobile development at SF State (2016–2018).
+- 🍅 **[Catchup](archive/catchup)** - Mobile app for setting goals to stay in touch with the people you care about.
+- 🤝 **[Kandou](archive/kandou)** - Volunteering app connecting people with local opportunities — 600 users across 17 SF nonprofits.
+- 📱 **[MobileSpace](archive/mobilespace)** - Free in-person course teaching students mobile development at SF State (2016–2018).
 
 ## GitHub Activity
 

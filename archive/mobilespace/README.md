@@ -12,4 +12,8 @@ helping students land internships and full-time engineering roles.
 - **Roadmap / curriculum:** https://github.com/mobilespace/Season2
 - **Org (all seasons, guides, projects):** https://github.com/mobilespace
 
-Screenshots kept in this folder for posterity.
+## Screenshots
+
+The MobileSpace website (mobilespace.xyz):
+
+![MobileSpace website](screencapture-mobilespace-xyz-2023-05-23-20_09_10.webp)

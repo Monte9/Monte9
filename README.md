@@ -28,7 +28,7 @@ _More on the way as I open-source them._
 
 Apps, bots, and a course I built before going deep on agents.
 
-- 😮 **Incredulous AI** - AI-powered fact generator delivering daily astonishment.
+- 😮 **[Incredulous AI](https://github.com/Monte9/incredulous-ai)** - AI-powered fact generator delivering daily astonishment.
 - 🐦 **[Flip McBot](https://github.com/Monte9/nft-sales-bot)** - Twitter bot of NFT flips and fumbles — grew [@nftsalesbot](https://twitter.com/nftsalesbot) to 25k+ followers.
 - 🔴 **[Discover Mars](https://github.com/Monte9/DiscoverMars-ios)** - iOS app to explore Mars.
 - 🍅 **Catchup** - Mobile app for setting goals to stay in touch with the people you care about.

@@ -19,9 +19,10 @@ settings page, reduce-motion, and nav changes then sit on top. Three sprints.
 
 ---
 
-## Sprint 1 — Theme engine + no-FOUC + site-wide token migration [in progress]
+## Sprint 1 — Theme engine + no-FOUC + site-wide token migration [done]
 
 _Aligned: agent/evals/20260627-034336-sprint-1-criteria.md (6 criteria)._
+_PASS: agent/evals/20260627-042528-sprint-1.md (all 6 criteria; static export, 3 themes, all pages)._
 
 **GOAL:** Establish the three-theme system (semantic CSS vars + Tailwind v4
 `@theme inline` tokens), a `ThemeProvider` with localStorage persistence and an
@@ -56,7 +57,7 @@ settings UI yet (theme set via `localStorage`/`data-theme` for evaluation).
 
 ---
 
-## Sprint 2 — Settings page + reduce-motion [todo]
+## Sprint 2 — Settings page + reduce-motion [in progress]
 
 **GOAL:** Add the `/settings` page with a theme picker (showing the active theme)
 and a persisted reduce-motion toggle wired to the provider, so users can switch
@@ -87,7 +88,7 @@ auto-rotating.
 
 ---
 
-## Sprint 3 — Nav tidy (hamburger + 5th Settings tab + desktop primary nav) [todo]
+## Sprint 3 — Nav tidy (hamburger + 5th Settings tab) [in progress]
 
 **GOAL:** Trim the hamburger to secondary links only, add Settings as the 5th
 far-right gear tab in the bottom bar, and give desktop a path to the primary

@@ -23,7 +23,8 @@ rendering it serves. Three sprints.
 
 ---
 
-## Sprint 1 — Filled, per-category country polygons on the themed globe [in progress]
+## Sprint 1 — Filled, per-category country polygons on the themed globe [done]
+_PASS: agent/evals/20260627-140334-sprint-1.md (all 6, 3 themes, pixel-sampled)._
 
 _Aligned: agent/evals/20260627-134750-sprint-1-criteria.md (6 criteria)._
 
@@ -64,7 +65,7 @@ and Countries list may remain until Sprint 3; do not let them block this sprint.
 
 ---
 
-## Sprint 2 — Hover/tap rich info: bottom sheet (mobile) / dialog (desktop) [todo]
+## Sprint 2 — Hover/tap rich info: bottom sheet (mobile) / dialog (desktop) [in progress]
 
 **GOAL:** Make the filled countries interactive — hovering/tapping a country
 emphasizes it on the globe and opens a dismissible rich-info surface (name +

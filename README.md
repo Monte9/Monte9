@@ -1,30 +1,12 @@
 # Hi, I'm Monte 👋
 
-📍 **Los Angeles, CA** | 💻 **Full-stack software engineer with a strong product sense** | 🚀 **0→1 builder at startups**
-
-Currently at an **AI startup**, where I've helped scale the business to **$1M ARR**. Outside of work, I'm going deep on **agentic engineering** — building full apps end-to-end with AI agents.
-
-![TypeScript](https://img.shields.io/badge/-TypeScript-3178C6?style=flat-square&logo=typescript&logoColor=white)
-![React](https://img.shields.io/badge/-React-20232A?style=flat-square&logo=react&logoColor=61DAFB)
-![Next.js](https://img.shields.io/badge/-Next.js-000000?style=flat-square&logo=next.js&logoColor=white)
-![React Native](https://img.shields.io/badge/-React_Native-20232A?style=flat-square&logo=react&logoColor=61DAFB)
-![Tailwind CSS](https://img.shields.io/badge/-Tailwind_CSS-06B6D4?style=flat-square&logo=tailwindcss&logoColor=white)
-![PostgreSQL](https://img.shields.io/badge/-PostgreSQL-4169E1?style=flat-square&logo=postgresql&logoColor=white)
-![LLMs](https://img.shields.io/badge/-LLMs-412991?style=flat-square&logo=openai&logoColor=white)
-
-## Highlights
-
 - 10 years of experience as a full-stack software engineer
+- Founding engineer at Rosebud, the AI journaling startup where I helped scale the business to 1M+ ARR and 3 -> 12 team members
 - Lead maintainer of [react-native-elements](https://github.com/react-native-elements/react-native-elements), the cross-platform React Native UI toolkit (25.8k+ stars) — ![@rneui/themed monthly downloads](https://img.shields.io/npm/dm/%40rneui%2Fthemed?style=flat-square&color=blueviolet&label=%40rneui%2Fthemed) ![@rneui/base monthly downloads](https://img.shields.io/npm/dm/%40rneui%2Fbase?style=flat-square&color=blueviolet&label=%40rneui%2Fbase)
-- Architected cross-platform subscription infrastructure processing $100K monthly revenue
-- Built and scaled notification infrastructure processing 20K+ daily notifications, improving open rates by 14% through personalization
 - Created and taught [MobileSpace](https://github.com/mobilespace/Season2), a free, in-person course at SF State that taught students mobile development (iOS, then React Native) to fill a gap in the CS curriculum and help them land internships and SWE roles (2016–2018)
 - Built [@nftsalesbot](https://twitter.com/nftsalesbot) ([nft-sales-bot](https://github.com/Monte9/nft-sales-bot)), a Twitter bot posting single-tweet stories of NFT flips and fumbles on the OpenSea API — grew it to 25k+ followers
-- 1.5k+ GitHub stars across personal projects
 
-## Building with AI Agents
-
-The net-new work. Each project is a different shape of app, built end-to-end with AI agents — the goal is learning the tools and scaffolding that agentic engineering takes: skills, hooks, sub-agents, eval harnesses, and CI that agents can drive.
+## Agentic Engineering
 
 - 🔁 **[stuck-problems-agent](https://github.com/Monte9/stuck-problems-agent)** - An autonomous research loop for important-but-stuck problems, run by a scheduled Claude Code routine. Scout, planner, generator, evaluator, and publisher sub-agents — the repo itself is the policy, the assets, and the memory.
 - 🏛️ **[history-stories](https://github.com/Monte9/history-stories)** - A 3D museum you can walk through in your browser, where every painting is a short story from history. Comes with its own content-agent harness — planner and evaluator sub-agents, skills, and evals. ([historystories.vercel.app](https://historystories.vercel.app))
@@ -37,8 +19,6 @@ The net-new work. Each project is a different shape of app, built end-to-end wit
 _More agentic experiments are in the works — I'll open-source them and add them here as they're ready._
 
 ## Open Source
-
-The proven work — React Native components used in production by other people's apps.
 
 - 🧰 **[react-native-elements](https://github.com/react-native-elements/react-native-elements)** (25.8k+ stars) - Cross-platform React Native UI toolkit — lead maintainer and longtime contributor
 - ⭐ **[react-native-ratings](https://github.com/Monte9/react-native-ratings)** (940+ stars) - Tap and swipe ratings component for React Native

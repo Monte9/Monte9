@@ -8,7 +8,7 @@ export default function SettingsPanel() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold">Settings</h1>
+      <h1 className="hidden text-2xl font-semibold sm:block">Settings</h1>
       <p className="mt-2 mb-8 text-muted">Make this site yours. Saved on this device.</p>
 
       <section className="mb-8">
@@ -62,13 +62,13 @@ export default function SettingsPanel() {
             aria-checked={reduceMotion}
             aria-label="Reduce motion"
             onClick={() => setReduceMotion(!reduceMotion)}
-            className={`relative h-6 w-11 shrink-0 rounded-full transition-colors ${
-              reduceMotion ? "bg-accent" : "border border-border bg-surface-2"
+            className={`inline-flex h-6 w-11 shrink-0 items-center rounded-full px-0.5 transition-colors ${
+              reduceMotion ? "bg-accent" : "bg-border"
             }`}
           >
             <span
-              className={`absolute top-0.5 h-5 w-5 rounded-full bg-white shadow-sm transition-all ${
-                reduceMotion ? "left-[22px]" : "left-0.5"
+              className={`h-5 w-5 rounded-full bg-white shadow-sm transition-transform ${
+                reduceMotion ? "translate-x-5" : "translate-x-0"
               }`}
             />
           </button>

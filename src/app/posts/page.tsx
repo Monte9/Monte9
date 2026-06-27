@@ -9,7 +9,7 @@ export default function PostsPage() {
 
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-6">Posts</h1>
+      <h1 className="mb-6 hidden text-2xl font-semibold sm:block">Posts</h1>
       {posts.length === 0 ? (
         <p className="text-muted">No posts yet.</p>
       ) : (

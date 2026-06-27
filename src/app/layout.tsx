@@ -1,9 +1,9 @@
 import type { Metadata } from "next";
-import Link from "next/link";
 import fs from "fs";
 import path from "path";
 import MobileTabBar from "@/components/MobileTabBar";
 import DesktopNav from "@/components/DesktopNav";
+import HeaderBrand from "@/components/HeaderBrand";
 import SiteMenu from "@/components/SiteMenu";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import { NO_FOUC_SCRIPT } from "@/lib/theme";
@@ -35,9 +35,7 @@ export default function RootLayout({
         <ThemeProvider>
           <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur">
             <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
-              <Link href="/" className="text-lg font-semibold hover:text-accent">
-                Monte Thakkar
-              </Link>
+              <HeaderBrand />
               <div className="flex items-center gap-5">
                 <DesktopNav />
                 <SiteMenu resumeUrl={resumeUrl} />

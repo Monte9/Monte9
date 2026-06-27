@@ -7,7 +7,6 @@ const LINKS = [
   { href: "/posts", label: "Posts" },
   { href: "/travel", label: "Travel" },
   { href: "/about", label: "About" },
-  { href: "/settings", label: "Settings" },
 ];
 
 export default function DesktopNav() {

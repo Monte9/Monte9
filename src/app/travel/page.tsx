@@ -7,7 +7,7 @@ export const metadata: Metadata = { title: "Travel" };
 export default function TravelPage() {
   return (
     <div>
-      <h1 className="text-2xl font-semibold mb-2">Travel</h1>
+      <h1 className="mb-2 hidden text-2xl font-semibold sm:block">Travel</h1>
       <p className="mb-6 text-muted">
         Places I&apos;ve been, on a globe you can spin. Drag to rotate; hover or
         tap a pin to see where and when.

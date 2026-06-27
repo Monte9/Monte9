@@ -5,7 +5,7 @@ export const metadata: Metadata = { title: "About" };
 export default function AboutPage() {
   return (
     <div className="article">
-      <h1 className="text-2xl font-semibold mb-6">About Me</h1>
+      <h1 className="mb-6 hidden text-2xl font-semibold sm:block">About Me</h1>
       <p>
         I&apos;m Monte Thakkar — curious, growth-minded, and driven. I&apos;m a
         product engineer with expertise in early-stage full-stack product

@@ -1,6 +1,6 @@
 ---
 title: "Which nonprofit hospitals to audit for charity care: a 28-hospital, FAP-text-and-Schedule-H scorecard"
-date: "2026-06-24"
+date: "2026-06-24T08:31"
 description: "US nonprofit hospitals must run a written financial assistance policy and give free or discounted care to low-income patients, a duty in force under IRC Section 501(r) since 2014."
 tags: ["Research", "Health"]
 aiGenerated: true

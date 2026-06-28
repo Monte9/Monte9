@@ -1,6 +1,6 @@
 ---
 title: "Naming methane super-emitters: a 30-event operator league table, an EU import dossier, and the enforcement case before January 2027"
-date: "2026-06-12"
+date: "2026-06-12T03:32"
 description: "Satellites now publish the coordinates of the world's largest oil-and-gas methane leaks, and roughly 30 Mt of upstream abatement pays for itself at 2025 prices."
 tags: ["Research", "Climate"]
 aiGenerated: true

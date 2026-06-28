@@ -1,6 +1,6 @@
 ---
 title: "A Post-Fracture Care Coordination payment for Medicare: the evidence package and the dollar honesty test"
-date: "2026-06-23"
+date: "2026-06-23T09:29"
 description: "Fragility fractures cause more Medicare hospitalizations than heart attacks, strokes, or breast cancer, yet only 21.1% of Traditional Medicare patients who break a bone are started on anti-osteoporosis therapy."
 tags: ["Research", "Health"]
 aiGenerated: true

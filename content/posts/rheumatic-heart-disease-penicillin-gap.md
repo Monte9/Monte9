@@ -1,6 +1,6 @@
 ---
 title: "Where the penicillin gap for rheumatic heart disease is widest: a country triage, a single supply chokepoint, and the case for not suspending prophylaxis"
-date: "2026-06-26"
+date: "2026-06-26T08:30"
 description: "Rheumatic heart disease (RHD) kills more than 373,000 people a year, almost all in low- and middle-income countries, and the prophylaxis that prevents it is one injection of benzathine penicillin G (BPG) every three to four weeks at a cost of cents per dose."
 tags: ["Research", "Global Health"]
 aiGenerated: true

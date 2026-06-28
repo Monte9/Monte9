@@ -1,6 +1,6 @@
 ---
 title: "Building this site with an agent"
-date: "2026-06-12"
+date: "2026-06-12T09:00"
 description: "This site is built and maintained by a Claude Code agent harness. Here's the setup."
 tags: ["Meta", "Agents"]
 aiGenerated: false

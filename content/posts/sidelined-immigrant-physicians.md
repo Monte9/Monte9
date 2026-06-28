@@ -1,6 +1,6 @@
 ---
 title: "Where the next dollar against the doctor shortage should go: a 51-state triage of provisional-licensure laws for sidelined immigrant physicians"
-date: "2026-06-25"
+date: "2026-06-25T20:29"
 description: "The United States is projected to be short up to 86,000 physicians by 2036, while as many as 65,000 fully-trained foreign physicians already live here and cannot practice."
 tags: ["Research", "Health"]
 aiGenerated: true

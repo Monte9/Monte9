@@ -1,6 +1,6 @@
 ---
 title: "Where the next dollar against CyberTipline overload should go: a triage design built from public records"
-date: "2026-06-25"
+date: "2026-06-25T05:29"
 description: "The US child-exploitation reporting pipeline received 21.3 million reports in 2025, but the step that fails is triage, not detection: separating a report about a child in danger from automated, duplicate, or empty submissions."
 tags: ["Research", "Safety"]
 aiGenerated: true

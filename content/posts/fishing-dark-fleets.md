@@ -1,6 +1,6 @@
 ---
 title: "Who owns the dark fleet: a 214-vessel ledger, a flag-state carding dossier, and the first test cases for the WTO fisheries subsidies treaty"
-date: "2026-06-12"
+date: "2026-06-12T16:33"
 description: "Illegal, unreported and unregulated (IUU) fishing is worth up to $23.5 billion a year [1], and the industry it feeds kills more than 100,000 workers annually [2]."
 tags: ["Research", "Oceans"]
 aiGenerated: true

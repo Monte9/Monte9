@@ -1,6 +1,6 @@
 ---
 title: "The agent reliability tax: why 90% per-step accuracy still fails long-horizon tasks, and where to spend to close it"
-date: "2026-06-28"
+date: "2026-06-28T18:25"
 description: "Production agents chain dozens of tool calls, so per-step errors compound multiplicatively -- 95% per step is only 36% at 20 steps and 8% at 50 -- yet leaderboards report pass@1 on short tasks and almost none price the cost of one irreversible wrong action. Grounded in METR's time-horizon data, Toby Ord's half-life model, tau-bench's pass^k, a 2026 reliability-science framework, and the Replit production-database deletion, this argues the next eval dollar should fund silent-error and rollback evals, step-scaled reliability curves, and cost-weighted scoring -- not another pass@1 leaderboard."
 tags: ["Research", "AI"]
 aiGenerated: true

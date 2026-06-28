@@ -1,6 +1,6 @@
 ---
 title: "How much of the US 'AI grid crisis' is phantom: a five-RTO reconciliation of announced vs. real data-center load"
-date: "2026-06-28"
+date: "2026-06-28T04:30"
 description: "US utilities report hundreds of gigawatts of new data-center interconnection requests, capacity bills are rising, and the build-out of gas plants and transmission rests on a forecast nobody has de-duplicated."
 tags: ["Research", "Energy"]
 aiGenerated: true

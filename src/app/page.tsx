@@ -1,6 +1,5 @@
 import Link from "next/link";
 import { getAllPosts, formatDate } from "@/lib/posts";
-import { VISITED_NEWEST_FIRST } from "@/data/travel";
 import { APP_EXPERIMENTS, formatAppDate } from "@/data/apps";
 import AppThumb from "@/components/apps/AppThumb";
 import AiBadge from "@/components/AiBadge";
@@ -18,7 +17,6 @@ function SectionHeader({ title, href }: { title: string; href: string }) {
 
 export default function Home() {
   const posts = getAllPosts().slice(0, 3);
-  const travel = VISITED_NEWEST_FIRST.slice(0, 3);
   const apps = [...APP_EXPERIMENTS]
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 3);
@@ -68,18 +66,6 @@ export default function Home() {
           ))}
         </ul>
       )}
-
-      {/* Recent travel */}
-      <SectionHeader title="Recent travel" href="/travel" />
-      <ul className="space-y-3">
-        {travel.map((c) => (
-          <li key={c.name} className="flex items-center gap-3">
-            <span className="text-xl leading-none">{c.flag}</span>
-            <span className="font-medium text-fg">{c.name}</span>
-            <span className="ml-auto text-sm text-muted">{c.detail}</span>
-          </li>
-        ))}
-      </ul>
 
       {/* Recent apps */}
       <SectionHeader title="Recent apps" href="/apps" />

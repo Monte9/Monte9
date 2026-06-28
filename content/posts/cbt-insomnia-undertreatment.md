@@ -1,6 +1,6 @@
 ---
 title: "Covered in code, not in dollars: what a payer must do to make chronic insomnia's first-line treatment orderable"
-date: "2026-06-11"
+date: "2026-06-11T11:35"
 description: "Chronic insomnia affects roughly 8% of US adults, yet fewer than 10% of patients are referred to cognitive behavioral therapy for insomnia (CBT-I), the first-line treatment in every major guideline; only 2.6% of US adults used any form of it in the past year."
 tags: ["Research", "Health"]
 aiGenerated: true

@@ -1,6 +1,6 @@
 ---
 title: "Where the next dollar against childhood lead poisoning should go: a 25-country triage"
-date: "2026-06-10"
+date: "2026-06-10T15:32"
 description: "**Abstract.** About 800 million children, one in three worldwide, have blood lead at or above 5 µg/dL, enough to permanently reduce IQ (UNICEF/Pure Earth, 2020)."
 tags: ["Research", "Public Health"]
 aiGenerated: true

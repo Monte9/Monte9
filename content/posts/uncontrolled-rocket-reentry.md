@@ -1,6 +1,6 @@
 ---
 title: "Which uncontrolled rocket stages to deorbit first: a 559-body, decade-long casualty-risk ledger and exported-burden map"
-date: "2026-06-27"
+date: "2026-06-27T07:30"
 description: "Spent rocket stages left in orbit fall back uncontrolled, and the industry's own safety line says any reentry above a 1-in-10,000 casualty risk should be a controlled deorbit."
 tags: ["Research", "Space"]
 aiGenerated: true

@@ -294,7 +294,7 @@ factual/numeric claim in a real, checkable source. NEVER invent statistics or ci
 Write content/posts/${t.slug}.md with YAML frontmatter:
   ---
   title: "<title>"
-  date: "$(date -u +%F)"
+  date: "$(date -u +%FT%H:%M)"
   description: "<1-sentence dek>"
   tags: [${t.tags.map((x) => '"' + x + '"').join(', ')}]
   aiGenerated: true
@@ -326,7 +326,7 @@ and the winner's 'registry' (title, description, tags). Be strict: do not publis
     `You are the SHIP agent for the Creator (repo /home/user/Monte9). Post evaluation done. Winner=${JSON.stringify(verdict.winner)}.
 All candidate slugs: ${JSON.stringify(allSlugs)} (drafts at content/posts/<slug>.md).
 ${verdict.winner
-  ? `1. KEEP content/posts/${verdict.winner}.md. Ensure its frontmatter has title ${JSON.stringify(verdict.registry.title)}, a date ($(date -u +%F)), description ${JSON.stringify(verdict.registry.description)}, tags ${JSON.stringify(verdict.registry.tags)}, aiGenerated: true. DELETE the other candidates' content/posts/*.md.
+  ? `1. KEEP content/posts/${verdict.winner}.md. Ensure its frontmatter has title ${JSON.stringify(verdict.registry.title)}, a full ISO date-time ($(date -u +%FT%H:%M)) so it sorts to the top, description ${JSON.stringify(verdict.registry.description)}, tags ${JSON.stringify(verdict.registry.tags)}, aiGenerated: true. DELETE the other candidates' content/posts/*.md.
 2. MEMORY: prepend a run block to agent/posts/JOURNAL.md (candidates, scores ${JSON.stringify(verdict.scores)}, winner, rationale) and agent/creator/JOURNAL.md (slate ${JSON.stringify(route.slate)}, chosen: post — winner, outcome). Add the 3 topics to agent/posts/IDEAS.md (winner 'shipped', others 'rejected'). Prepend ${JSON.stringify(verdict.ruleLesson)} to agent/posts/RUBRIC.md "## Lessons". Append a one-line lesson to agent/creator/DIRECTION.md "## Lessons".
 3. GREEN-GATE: rm -rf .next out && pnpm build must exit 0 (valid frontmatter, renders). Fix the winner if needed; if still broken, ABORT (delete the winner md too), log no-ship, return shipped=null.
 4. git add -A && git commit -m "creator: publish post ${verdict.winner}" && git push origin HEAD:main (retry x4 backoff). Return shipped="${verdict.winner}", kind="post", commit, pushed, notes.`

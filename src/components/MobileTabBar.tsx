@@ -7,8 +7,8 @@ import { Home, Newspaper, Globe, LayoutGrid, UserRound } from "lucide-react";
 const TABS = [
   { href: "/", label: "Home", Icon: Home },
   { href: "/posts", label: "Posts", Icon: Newspaper },
-  { href: "/travel", label: "Travel", Icon: Globe },
   { href: "/apps", label: "Apps", Icon: LayoutGrid },
+  { href: "/travel", label: "Travel", Icon: Globe },
   { href: "/about", label: "About", Icon: UserRound },
 ];
 

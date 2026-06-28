@@ -52,11 +52,11 @@ sed -n '1,40p'         agent/labs/TASTE.md       # current judging principles
 ## Operating it
 
 - Manual run: invoke the `labs-auto` skill (or `Workflow({name:'labs-auto'})`).
-- Hourly (durable): the GitHub Actions schedule in
-  `.github/workflows/labs-hourly.yml` (needs the `ANTHROPIC_API_KEY` repo secret).
-- Hourly (this session only): a `CronCreate` durable job — dies when the
-  container is reclaimed; the Action is the real 24/7 path.
+- Scheduled (durable, 24/7): a **Claude Code Routine** runs it on Anthropic's
+  cloud — survives container reclaim. Config + setup steps: `ROUTINE.md`.
+  Manage at https://claude.ai/code/routines or via the `/schedule` CLI.
 
-To pause: disable the Action workflow (or delete the cron job). To stop a bad
-streak: nothing live ever breaks (green-gate + isolation), but you can revert
-any shipped `/labs/<slug>` by deleting its files + registry line.
+To pause: pause/delete the Routine at claude.ai/code/routines (or `/schedule
+list` → update). To stop a bad streak: nothing live ever breaks (green-gate +
+isolation), but you can revert any shipped `/labs/<slug>` by deleting its files
++ registry line.

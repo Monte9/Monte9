@@ -58,8 +58,8 @@ Do nothing else — the workflow owns building, judging, memory, and the push.
 
 ## Scheduling
 
-- **Durable (24/7):** `.github/workflows/labs-hourly.yml` runs hourly on GitHub's
-  scheduler and invokes this routine headlessly. Needs the `ANTHROPIC_API_KEY`
-  repo secret.
-- **This-session only:** a `CronCreate` durable job can fire it hourly while the
-  container is alive (dies on reclaim — the Action is the real path).
+Runs on a schedule via a **Claude Code Routine** (Anthropic-managed cloud, so it
+survives container reclaim). The Routine clones `main`, runs this skill, and
+ships the winner. Exact config (prompt, environment, schedule, branch-push
+permission) lives in `agent/labs/ROUTINE.md`. Manage it at
+https://claude.ai/code/routines or with the `/schedule` CLI.

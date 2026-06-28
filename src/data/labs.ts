@@ -63,6 +63,14 @@ export const LAB_EXPERIMENTS: LabExperiment[] = [
     date: "2026-06-28T03:13",
     tags: ["WebGL", "Three.js", "Rendering", "ASCII", "Generative", "Interaction"],
   },
+  {
+    slug: "shatter-type",
+    title: "Shatter Type",
+    blurb:
+      "A word rendered as a pane of glass and fractured into a real Voronoi mosaic — click anywhere to crack it and the shards nearest the impact explode outward, tumble under gravity with spin and shadow, then drift back and re-fuse into the legible word. The fracture is computed from scratch (Sutherland–Hodgman bisector clipping, sites seeded only on the letterforms), so every fragment literally carries its slice of the glyph. Spells MONTE by default; tap to change.",
+    date: "2026-06-28T11:31",
+    tags: ["Canvas", "Computational Geometry", "Voronoi", "Physics", "Interaction", "Typography"],
+  },
 ];
 
 // Every distinct tag across experiments, alphabetized. Shown on cards.

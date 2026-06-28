@@ -20,6 +20,9 @@ Status legend: `shipped` · `rejected` · `proposed`
 | shipped | ascii-engine | A lit Three.js scene rendered to an offscreen render target (1 texel/char), read back, and re-typed as monospace glyphs via a hand-rolled luminance ramp — from-scratch render-to-ASCII; orbit, swap Knot/MT, toggle ASCII/Blocks, pause | WebGL, Three.js, Rendering, ASCII, Generative, Interaction | 3 |
 | rejected | murmuration | From-scratch Reynolds boids (counting-sort spatial hash, allocation-free loop, GPU-instanced cones) you herd like a hawk | WebGL, Three.js, Simulation, Boids, Generative, Interaction | 3 |
 | rejected | string-theory | Modal standing-wave string sim whose visual harmonics ARE its additive Web Audio voices — pluck to play; the gallery's first audio-reactive lab | Canvas, Web Audio, Audio-Reactive, Physics, Interaction | 3 |
+| shipped | shatter-type | A word rendered as a glass pane, fractured into a real Voronoi mosaic via from-scratch Sutherland–Hodgman bisector clipping (sites seeded only on the glyphs); click to crack, shards tumble under gravity then re-fuse — per-shard textured blits, no library | Canvas, Computational Geometry, Voronoi, Physics, Interaction, Typography | 4 |
+| rejected | caustics | A true optical caustic sim: in-shader animated height field, central-difference normals, Snell refraction, and the Jacobian-determinant of the ray-transport map for physically-correct brightness; tap to drop a pebble ripple | WebGL, GLSL, Shaders, Caustics, Generative | 4 |
+| rejected | kaleido-forge | Draw into a live kaleidoscope: symmetry-group feedback compositing on 2D canvas with adjustable fold count, bloom, and a 90-pass pre-seed; fun to draw but the captured stills come out faint/hollow | Canvas, Generative, Kaleidoscope, Feedback, Interaction | 4 |
 
 ## Concept space (for inspiration — not a commitment; keep pushing past these)
 

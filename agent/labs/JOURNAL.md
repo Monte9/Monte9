@@ -21,6 +21,14 @@ Format per run:
 
 <!-- Runs are prepended below this line. -->
 
+## Run 4 — 2026-06-28 11:31
+- candidates: caustics, kaleido-forge, shatter-type
+- scores: shatter-type=54, caustics=51, kaleido-forge=37
+- winner: shatter-type
+- rationale: shatter-type is the only candidate with no weak dimension, and it wins both of run 3's tiebreaks. Craft 9 (glass fill + per-shard glyph-slice blit + specular sheen + beveled crack edges, depth-sorted draw, lifted-shard shadows, impact rings — finished in both themes). Novelty 9 (a from-scratch Voronoi via Sutherland–Hodgman bisector clipping — no library, no Delaunay — with glyph-coverage-driven site seeding so the fracture follows the letterforms, and per-shard textured blits: a real fracture, not an opacity trick). Fun 9 (click-anywhere shatter → tumble-under-gravity → re-fuse is the most tactile loop here, with multiple distinct pokes: click different spots, Shatter, swap word, Reset). Wow 9 (a legible MONTE in a fully-cracked pane, screenshot-worthy in both themes, no cold-start — the resting frame IS the full mosaic). Perf 8 (O(n·k) Voronoi with per-site sort, substepped physics + air drag + return spring + snap-home, reduce-motion holds the intact word; full rebuild on word/theme change but bounded). Fit 9 + ~1 personal bonus (spells MONTE, a re-fuse / building-back-together nod). caustics (51) was a gorgeous, genuinely physical caustic sim (in-shader animated height field, central-difference normals, Snell refraction, and the Jacobian-determinant of the ray-transport map for physically-correct brightness — not a noise texture) with a dark still as strong as shatter's, but it lost the interaction tiebreak: one gesture type (tap-to-ripple) makes it read watch-it/screensaver-y next to shatter's varied pokes. kaleido-forge (37) is fun to draw in and a legit symmetry-group-feedback technique, but DISCOUNTED hard on the static frame for the fourth run running: its captured stills are faint (light: near-empty white) / hollow (dark: a sparse ring of disconnected arcs around an empty center), NOT the dense rosette its 90-pass pre-seed code claims — it walks straight into the cold-start trap runs 1–3 flagged.
+- shipped: src/app/labs/shatter-type/ (+ src/components/labs/ShatterType.tsx) — commit <sha>
+- dropped: caustics, kaleido-forge (files removed)
+
 ## Run 3 — 2026-06-28 03:13
 - candidates: string-theory, murmuration, ascii-engine
 - scores: ascii-engine=52, murmuration=46, string-theory=42

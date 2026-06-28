@@ -21,6 +21,14 @@ Format per run:
 
 <!-- Runs are prepended below this line. -->
 
+## Run 3 — 2026-06-28 03:13
+- candidates: string-theory, murmuration, ascii-engine
+- scores: ascii-engine=52, murmuration=46, string-theory=42
+- winner: ascii-engine
+- rationale: ascii-engine is the only candidate that wins on *both* novelty-of-technique and the strongest static first frame, with no weak dimension. Craft 9 (gamma lift to spread the density ramp, luminance-scaled phosphor alpha, scanlines+vignette baked into every repaint incl. the frozen frame, dpr-crisp 2D canvas, clean GL dispose, dirty/idle gating so a paused or reduced-motion scene costs nothing). Novelty 9 — the freshest *technique* in the gallery: a real lit Three.js scene rendered to an offscreen WebGLRenderTarget sized 1 texel-per-cell, read back with gl.readRenderTargetPixels, then re-typed as monospace glyphs; nothing else here is a render-to-text rasterizer. Fun 8 — swap Knot/MT forms, toggle ASCII/Blocks ramps live, drag to orbit, pause. Static first frame 9 — a full, detailed torus-knot silhouette in living blue glyphs is the single most screenshot-able still of the three and answers "wait, that's all TEXT?" in under 2s. Perf 8, Fit 9 (terminal/agentic aesthetic, and the extruded "MT" monogram is a tasteful personal nod that earns the bonus without being autobiographical). murmuration (46) was genuinely strong engineering — from-scratch Reynolds boids with a uniform spatial hash via counting-sort, allocation-free hot loop, fixed-step integration, GPU-instanced cones, demand frameloop, and a primed frame 0 — with a dense, pattern-rich wheeling-flock first frame, but "a flock of little arrows" reads as a familiar demo silhouette, so it lost a notch on novelty-of-technique and first-frame surprise. string-theory (42) was the most musically real piece — a modal standing-wave string sim whose visual harmonics and additive Web Audio voices are the same numbers, the gallery's first audio-reactive lab — but its static first frame is a near-empty harp of faint vertical lines with zero ripple until you pluck, walking straight into the cold-start trap run 2 flagged; it lost ~5 points purely on the still.
+- shipped: src/app/labs/ascii-engine/ (+ src/components/labs/AsciiEngine.tsx) — commit <sha>
+- dropped: string-theory, murmuration (files removed)
+
 ## Run 2 — 2026-06-28 02:32
 - candidates: liquid-chrome, rope-type, gray-scott
 - scores: rope-type=53, liquid-chrome=49, gray-scott=42

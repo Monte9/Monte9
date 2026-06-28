@@ -55,6 +55,14 @@ export const LAB_EXPERIMENTS: LabExperiment[] = [
     date: "2026-06-28T02:32",
     tags: ["Canvas", "Physics", "Verlet", "Interaction", "Typography", "Generative"],
   },
+  {
+    slug: "ascii-engine",
+    title: "ASCII Engine",
+    blurb:
+      "A spinning 3D form rendered entirely in living text. A real lit Three.js scene is drawn to an offscreen render target sized one texel per character, read back to the CPU, and re-typed as a grid of monospace glyphs through a hand-rolled luminance ramp — a from-scratch render-to-ASCII rasterizer, no off-the-shelf post-process. Drag to orbit, swap between a torus knot and an extruded MT monogram, toggle the density ramp from ASCII to Blocks, or pause the spin.",
+    date: "2026-06-28T03:13",
+    tags: ["WebGL", "Three.js", "Rendering", "ASCII", "Generative", "Interaction"],
+  },
 ];
 
 // Every distinct tag across experiments, alphabetized. Shown on cards.

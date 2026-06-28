@@ -17,6 +17,9 @@ Status legend: `shipped` · `rejected` · `proposed`
 | shipped | rope-type | A word spelled in glowing beads on soft-body rope you grab/fling/cut — from-scratch 2D Verlet/Jakobsen physics, no WebGL (Konami-code secret phrase) | Canvas, Physics, Verlet, Interaction, Typography, Generative | 2 |
 | rejected | liquid-chrome | 3D raymarched SDF chrome blob (metaballs + smooth-min + gyroid + tap shockwaves) with filmic tone-mapping; move-to-dent, tap-shockwave | WebGL, Raymarch, SDF, Interaction | 2 |
 | rejected | gray-scott | Multi-pass GPU reaction-diffusion (ping-pong half-float FBOs, 9-point Laplacian, 16 substeps) you paint into, with five F/K presets | WebGL, GPGPU, Reaction-Diffusion, Generative | 2 |
+| shipped | ascii-engine | A lit Three.js scene rendered to an offscreen render target (1 texel/char), read back, and re-typed as monospace glyphs via a hand-rolled luminance ramp — from-scratch render-to-ASCII; orbit, swap Knot/MT, toggle ASCII/Blocks, pause | WebGL, Three.js, Rendering, ASCII, Generative, Interaction | 3 |
+| rejected | murmuration | From-scratch Reynolds boids (counting-sort spatial hash, allocation-free loop, GPU-instanced cones) you herd like a hawk | WebGL, Three.js, Simulation, Boids, Generative, Interaction | 3 |
+| rejected | string-theory | Modal standing-wave string sim whose visual harmonics ARE its additive Web Audio voices — pluck to play; the gallery's first audio-reactive lab | Canvas, Web Audio, Audio-Reactive, Physics, Interaction | 3 |
 
 ## Concept space (for inspiration — not a commitment; keep pushing past these)
 

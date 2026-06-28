@@ -3,34 +3,27 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import {
-  LAB_EXPERIMENTS,
-  ALL_LAB_TAGS,
-  formatLabDate,
-} from "@/data/labs";
+import { LAB_EXPERIMENTS, formatLabDate } from "@/data/labs";
 
 type Sort = "recent" | "oldest";
 
 export default function LabsList() {
   const [sort, setSort] = useState<Sort>("recent");
-  const [tag, setTag] = useState<string | null>(null);
 
-  const items = useMemo(() => {
-    const filtered = tag
-      ? LAB_EXPERIMENTS.filter((e) => e.tags.includes(tag))
-      : LAB_EXPERIMENTS;
-    // Stable copy, then sort by date; ties keep registry order (newest authored last).
-    return [...filtered].sort((a, b) =>
-      sort === "recent"
-        ? b.date.localeCompare(a.date)
-        : a.date.localeCompare(b.date)
-    );
-  }, [sort, tag]);
+  const items = useMemo(
+    () =>
+      [...LAB_EXPERIMENTS].sort((a, b) =>
+        sort === "recent"
+          ? b.date.localeCompare(a.date)
+          : a.date.localeCompare(b.date)
+      ),
+    [sort]
+  );
 
   return (
     <div>
-      {/* Controls: sort toggle (left) + tag filter chips (wrap) */}
-      <div className="mb-6 flex flex-wrap items-center gap-2">
+      {/* Sort toggle */}
+      <div className="mb-6">
         <div
           className="inline-flex rounded-lg border border-border p-0.5 text-xs"
           role="group"
@@ -43,44 +36,10 @@ export default function LabsList() {
               onClick={() => setSort(s)}
               aria-pressed={sort === s}
               className={`rounded-md px-2.5 py-1 capitalize transition-colors ${
-                sort === s
-                  ? "bg-surface-2 text-fg"
-                  : "text-muted hover:text-fg"
+                sort === s ? "bg-surface-2 text-fg" : "text-muted hover:text-fg"
               }`}
             >
               {s}
-            </button>
-          ))}
-        </div>
-
-        <span className="mx-1 hidden text-border sm:inline">·</span>
-
-        <div className="flex flex-wrap items-center gap-1.5">
-          <button
-            type="button"
-            onClick={() => setTag(null)}
-            aria-pressed={tag === null}
-            className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
-              tag === null
-                ? "border-accent text-accent"
-                : "border-border text-muted hover:text-fg"
-            }`}
-          >
-            All
-          </button>
-          {ALL_LAB_TAGS.map((t) => (
-            <button
-              key={t}
-              type="button"
-              onClick={() => setTag((cur) => (cur === t ? null : t))}
-              aria-pressed={tag === t}
-              className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
-                tag === t
-                  ? "border-accent text-accent"
-                  : "border-border text-muted hover:text-fg"
-              }`}
-            >
-              {t}
             </button>
           ))}
         </div>
@@ -96,7 +55,7 @@ export default function LabsList() {
             >
               <div className="flex items-baseline justify-between gap-3">
                 <span className="text-lg font-semibold text-fg">{e.title}</span>
-                <span className="shrink-0 text-xs text-muted">
+                <span className="shrink-0 whitespace-nowrap text-xs text-muted">
                   {formatLabDate(e.date)}
                 </span>
               </div>
@@ -119,10 +78,6 @@ export default function LabsList() {
           </li>
         ))}
       </ul>
-
-      {items.length === 0 && (
-        <p className="text-sm text-muted">No experiments match that tag yet.</p>
-      )}
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import {
   Group,
+  Matrix4,
   Quaternion,
   Vector3,
   type PerspectiveCamera,
@@ -15,21 +16,26 @@ import { JOURNEY_STOPS, type JourneyStop } from "@/data/journey";
 
 const GLOBE_RADIUS = 1;
 
-// Camera looks down +Z at the origin, so "front-center" is the +Z pole.
-const FRONT = new Vector3(0, 0, 1);
-
 // Stable camera so re-renders (theme/active changes) never reset the view.
 const CAMERA_PROPS: { position: [number, number, number]; fov: number } = {
   position: [0, 0, 2.6],
   fov: 45,
 };
 
-// Quaternion that rotates a stop's surface point to face the camera (+Z),
-// i.e. brings that city to front-center. Precomputed per stop.
+// Orientation that brings a stop to front-center (+Z) AND keeps the globe's
+// north pointing up on screen (no roll), so the country reads upright. A plain
+// setFromUnitVectors(dir, +Z) centers the city but leaves the roll arbitrary,
+// which is why India looked tilted — building a full north-up basis fixes it.
 function targetQuaternion(stop: JourneyStop): Quaternion {
   const [x, y, z] = latLngToVec3(stop.lat, stop.lng, GLOBE_RADIUS);
-  const dir = new Vector3(x, y, z).normalize();
-  return new Quaternion().setFromUnitVectors(dir, FRONT);
+  const f = new Vector3(x, y, z).normalize(); // city → +Z (faces camera)
+  const north = new Vector3(0, 1, 0);
+  const right = new Vector3().crossVectors(north, f).normalize(); // → +X (screen right)
+  const up = new Vector3().crossVectors(f, right); // → +Y (screen up, toward north)
+  // makeBasis(right,up,f) maps local x,y,z → those axes; invert so the globe
+  // rotates to put the city at +Z with north up.
+  const m = new Matrix4().makeBasis(right, up, f);
+  return new Quaternion().setFromRotationMatrix(m).invert();
 }
 
 // Keep the globe fully framed regardless of viewport aspect; only adjusts

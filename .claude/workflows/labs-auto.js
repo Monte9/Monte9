@@ -164,10 +164,16 @@ Then propose 3 concepts that:
 - are each a self-contained /labs/<slug> page buildable with the installed deps only
   (react, next, three, @react-three/fiber, @react-three/drei, lucide-react),
 - are DIFFERENT from each other (different technique/feel) and from everything in IDEAS.md,
-- are personalized to Monte where possible (India→US arc, travel, web3/Curio, AI/Rosebud,
-  building agentically, open-source) — TASTE rewards personalization,
-- push web-dev craft and would make someone screenshot them,
-- avoid: another generic fullscreen noise shader, another plain globe (unless a truly new interaction).
+- PRIORITIZE fun, delight, interactivity, visual wow, and a NOVEL web-dev technique. The
+  north star is pushing the boundaries of web development and being genuinely fun to play
+  with — the abstract 'field' shader is the model, NOT a personal-story requirement.
+- MIX it up: at least ONE of the three must be a purely creative / experimental / playful
+  piece with NO personal angle (set its personalAngle to "n/a — pure creative experiment").
+  The others MAY be personal (India→US arc, travel, web3/Curio, AI/Rosebud, building
+  agentically, open-source) OR creative. Personalization is a nice bonus, NOT required.
+- would make someone screenshot them on first paint (strong static first frame),
+- don't duplicate an existing experiment, but fresh shaders / generative art / new
+  interactions are welcome if the technique or feel is genuinely new.
 
 Return the 3 concepts via the structured schema. slugs must be kebab-case and not in IDEAS.md.`,
   { schema: IDEATE_SCHEMA, phase: 'Ideate', label: 'ideate' }
@@ -194,8 +200,9 @@ Build EXACTLY this one prototype as a finished, tasteful /labs page:
 ${BUILDER_RULES}
 
 Make it genuinely good — it will be screenshotted and judged against the others on
-craft, novelty, personalization, wow-factor, performance, and fit. Return the files
-you created and an honest 'ok'.`,
+craft, novelty, fun/delight, wow-factor, performance, and fit (personalization is a
+bonus, not required). If the personal angle is "n/a", lean fully into the creative/
+experimental concept. Return the files you created and an honest 'ok'.`,
       { schema: BUILD_SCHEMA, phase: 'Build', label: `build:${c.slug}` }
     )
   )
@@ -281,7 +288,9 @@ TASTE and you refine it over time. Pick EXACTLY ONE winner from the candidates.
    Genuinely refine the taste — this is how the judge gets sharper.
 5. Provide the 'registry' entry for the winner (title, blurb ≈ the pitch, tags) for the
    live /labs list.
-Be decisive and have a point of view. Reward craft + novelty + personalization.`,
+Be decisive and have a point of view. Reward craft + novelty + fun/delight + a strong
+static first frame; personalization is a bonus, not a requirement (a purely creative,
+boundary-pushing piece like 'field' can absolutely win).`,
   { schema: JUDGE_SCHEMA, agentType: 'evaluator', phase: 'Judge', label: 'judge' }
 )
 log(`Judge picked: ${verdict.winner}`)
@@ -303,11 +312,13 @@ The judge picked winner='${verdict.winner}'. Ship EXACTLY this one to /labs on m
    Then 'git status' and remove ANY other untracked stray under src/app/labs or src/components/labs
    that is not the winner or an already-shipped experiment.
 2. ADD the winner to the live registry src/data/labs.ts — append ONE object to the
-   LAB_EXPERIMENTS array (keep existing entries; place the new one first or last):
+   LAB_EXPERIMENTS array (keep existing entries; place the new one LAST):
      { slug: "${verdict.winner}", title: ${JSON.stringify(verdict.registry.title)},
        blurb: ${JSON.stringify(verdict.registry.blurb)},
-       date: "<today: $(date -u +%F)>", tags: ${JSON.stringify(verdict.registry.tags)} }
-   Match the existing object style; tags should reuse existing tags where sensible.
+       date: "<now: $(date -u +%FT%H:%M)>", tags: ${JSON.stringify(verdict.registry.tags)} }
+   The date MUST be a full ISO date-time (yyyy-mm-ddThh:mm) so this newest winner sorts
+   to the top of the "Recent" list. Match the existing object style; reuse existing tags
+   where sensible.
 3. UPDATE memory (all in agent/labs/):
    - JOURNAL.md: prepend a run block (see its format) with timestamp ($(date -u '+%Y-%m-%d %H:%M')),
      candidates ${JSON.stringify(concepts.map((c) => c.slug))}, the judge scores

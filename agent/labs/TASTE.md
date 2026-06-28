@@ -14,17 +14,26 @@ history that produced them.
 
 1. **Craft & polish** — does it look intentional and finished, not a tech demo?
    Typography, spacing, motion easing, color harmony with the theme tokens.
-2. **Novelty** — is the *idea* fresh versus everything in `IDEAS.md`? Reskins of
-   shipped work score low. Reward a technique or interaction not done before.
-3. **Personalization** — does it connect to Monte specifically (his path,
-   work, interests: India→US, travel, web3/AI, building agentically)? Generic
-   eye-candy scores lower than something that could only be *his*.
-4. **"Wow" / shareability** — would someone screenshot it or send it to a friend?
-   The first 2 seconds matter most.
+2. **Novelty & technique** — is the *idea* fresh versus everything in `IDEAS.md`,
+   AND does it push a web-dev technique (shaders, GPU particles, WebGL/WebGPU,
+   canvas physics, generative art, audio-reactive, clever CSS)? Reskins score low.
+3. **Fun & delight** — is it genuinely *fun to play with*? Does it surprise you,
+   invite a second interaction, make you smile? This is the heart of Labs — the
+   abstract `field` shader is the model. Would Monte enjoy poking at it?
+4. **"Wow" / shareability** — strong **static first frame** (the Labs list, social
+   previews, and first paint are all stills, so motion-only beauty is a discount,
+   not a bonus) AND would someone screenshot it in the first 2 seconds.
 5. **Performance & robustness** — 60fps-feel, no console errors, no 390px
-   overflow, clean teardown, respects reduce-motion. A janky idea loses.
-6. **Fit** — does it belong in a personal-site Labs gallery (tasteful, not
-   gimmicky), and does it strengthen the "I build cool things agentically" story?
+   overflow, clean teardown, respects reduce-motion. The DQ gate includes errors
+   triggered by the candidate's **own advertised affordances** (preset chips,
+   demo buttons, default prompts) — click every preset/CTA at least once.
+6. **Fit & spark** — does it belong in a tasteful Labs gallery (not gimmicky) and
+   strengthen the "I build cool, interactive things" story?
+
+**Personalization bonus (optional, up to +5 total):** if a piece connects to Monte
+(India→US arc, travel, web3/Curio, AI/Rosebud, building agentically, open source),
+add up to +5. It is a *bonus, never a requirement* — a purely creative, boundary-
+pushing piece with no personal angle can and should win on dimensions 1–6 alone.
 
 ## Principles (current taste — refine over time)
 
@@ -36,9 +45,11 @@ history that produced them.
   purposeful motion over maximalism.
 - **P3. Interaction earns its place.** If it reacts to the user (pointer,
   scroll, input), the reaction must feel immediate and meaningful — not noise.
-- **P4. Personal > generic.** Tie goes to the candidate that says something about
-  Monte. A particle toy is fine; a particle toy made of his commit history is
-  better.
+- **P4. Fun & boundary-pushing first; personal is a bonus.** The goal is
+  delightful, experimental web-dev that's fun to play with (à la `field`). Don't
+  make everything autobiographical — variety wins, and at least one candidate per
+  run should be a purely creative experiment. Personalization adds points but is
+  never the deciding factor on its own.
 - **P5. Motion must respect reduce-motion** and never trap the main thread.
 - **P6. It must survive the green-gate.** Beautiful but broken ships nothing.
 
@@ -51,6 +62,14 @@ history that produced them.
 - Losers: why each fell short (one line each).
 - Refinement: one concrete update to the dimensions/principles above.
 -->
+
+### 2026-06-28 — Owner directive (taste rebalanced)
+Monte loves `field` and wants Labs to lean into **pure creative, fun, boundary-
+pushing interactive web-dev — not just autobiographical pieces**. Acted on it:
+"Personalization" is no longer a core scoring dimension (it's now an optional
+≤+5 bonus); added **"Fun & delight"** as a core dimension; ideation must now
+include at least one purely-creative concept per run with no personal angle.
+Goal restated: push the boundaries of web dev and be genuinely fun to play with.
 
 ### 2026-06-28-01 (run 1)
 - Candidates: commit-constellation, boarding-pass, latent-space

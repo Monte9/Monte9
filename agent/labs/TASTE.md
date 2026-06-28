@@ -63,6 +63,12 @@ pushing piece with no personal angle can and should win on dimensions 1–6 alon
 - Refinement: one concrete update to the dimensions/principles above.
 -->
 
+### 2026-06-28-02 (run 2)
+- Candidates: liquid-chrome, rope-type, gray-scott
+- Winner: rope-type — a from-scratch 2D Verlet/Jakobsen physics rig that spells MONTE in glowing beads you can grab, fling, and cut; it wins because it has the highest fun ceiling AND the strongest legible static first frame, with no weak dimension.
+- Losers: liquid-chrome — the most beautiful still frame and a real 3D-raymarch flex, but the interaction (move-to-dent, tap-shockwave) is subtle and passive, so it reads slightly screensaver-y and loses on Fun. gray-scott — technically the most advanced piece in the gallery (true ping-pong GPU FBO reaction-diffusion), but DISCOUNTED hard: both static first frames are essentially EMPTY because the seed blobs are too faint/undeveloped at capture, so the Labs thumbnail and first paint show a blank panel and it fails the 2-second wow test despite gorgeous motion.
+- Refinement: add a sub-rule to Dimension 4 (Wow/static first frame): a stateful/simulation piece (reaction-diffusion, particle life, cellular automata, anything that "warms up") MUST seed a visibly-developed, pattern-rich initial state — not a faint or blank field that only becomes interesting after the user works for it or after seconds of evolution. A cold-start canvas is the simulation equivalent of run-1's "faint dot smudge": the right fix is to bake in a few hundred pre-rolled steps (or a denser, higher-contrast seed) so the very first painted frame already shows the characteristic pattern. When judging such pieces, mentally (or literally) check what frame 0 looks like, because that is the frame the gallery, OG image, and first paint all ship.
+
 ### 2026-06-28 — Owner directive (taste rebalanced)
 Monte loves `field` and wants Labs to lean into **pure creative, fun, boundary-
 pushing interactive web-dev — not just autobiographical pieces**. Acted on it:

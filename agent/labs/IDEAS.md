@@ -14,6 +14,9 @@ Status legend: `shipped` · `rejected` · `proposed`
 | shipped | boarding-pass | Monte's immigration+career arc as a draggable/flippable/tearable stack of airline boarding passes (CSS-3D + canvas) | CSS 3D, Canvas, Physics, Interaction, Personal | 1 |
 | rejected | commit-constellation | GPU-instanced shader galaxy of real commit eras (Pillow/Vrbo/Curio/Rosebud) you scrub + orbit | WebGL, GLSL, Dataviz, Particles | 1 |
 | rejected | latent-space | Embedding cloud of Rosebud-style prompts (home/ship/build/reflect) clustering in a 2D latent space | Canvas, AI, Embeddings, Interaction | 1 |
+| shipped | rope-type | A word spelled in glowing beads on soft-body rope you grab/fling/cut — from-scratch 2D Verlet/Jakobsen physics, no WebGL (Konami-code secret phrase) | Canvas, Physics, Verlet, Interaction, Typography, Generative | 2 |
+| rejected | liquid-chrome | 3D raymarched SDF chrome blob (metaballs + smooth-min + gyroid + tap shockwaves) with filmic tone-mapping; move-to-dent, tap-shockwave | WebGL, Raymarch, SDF, Interaction | 2 |
+| rejected | gray-scott | Multi-pass GPU reaction-diffusion (ping-pong half-float FBOs, 9-point Laplacian, 16 substeps) you paint into, with five F/K presets | WebGL, GPGPU, Reaction-Diffusion, Generative | 2 |
 
 ## Concept space (for inspiration — not a commitment; keep pushing past these)
 

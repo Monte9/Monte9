@@ -21,6 +21,14 @@ Format per run:
 
 <!-- Runs are prepended below this line. -->
 
+## Run 2 — 2026-06-28 02:32
+- candidates: liquid-chrome, rope-type, gray-scott
+- scores: rope-type=53, liquid-chrome=49, gray-scott=42
+- winner: rope-type
+- rationale: Rope-type wins on the strongest fun ceiling AND the strongest legible static first frame, with no weak dimension. Craft 9: glowing beads on a custom 5x7 stroke font read as a finished neon-sign artifact, not a demo; theme palettes track light/dark/sunset; controls are tidy. Novelty 9: a from-scratch 2D Verlet integrator with Jakobsen constraint relaxation, arc-length resampling, and flood-fill attachment recompute on cut — real physics, no WebGL, distinct from everything in the gallery. Fun 10: grab-and-fling plus scissors-cut (strands actually detach and fall) is the most tactile, second-interaction-inviting piece here. Wow 9: the static first frame literally spells MONTE in glowing beads — instantly legible and screenshot-worthy at first paint, exactly what the Labs list/social previews show. Perf/robust 8: no WebGL keeps phones cheap, reduce-motion holds the legible pose, clean teardown of RAF/observers/listeners; three CTAs (Grab/Cut/Reset) plus phrase toggle all wire to real handlers. Fit 8 + personalization bonus: spells MONTE and hides 'MADE BY AGENTS' behind the Konami code. Liquid-chrome (49) was the most beautiful still frame and a real 3D-raymarch flex (metaballs + smooth-min + gyroid + tap shockwaves, filmic tone-mapping, Fresnel rim), but its interaction (move-to-dent, tap-shockwave) is subtle and passive, so it reads slightly screensaver-y and loses on Fun. Gray-scott (42) was technically the most advanced piece — true ping-pong GPU FBO reaction-diffusion with a 9-point Laplacian and 16 substeps/frame across five F/K presets — but DISCOUNTED hard: both static first frames are essentially EMPTY because the 7 seed blobs are too faint/undeveloped at capture, so the Labs thumbnail and first paint show a blank panel and it fails the 2-second wow test despite gorgeous motion.
+- shipped: src/app/labs/rope-type/ (+ src/components/labs/RopeType.tsx) — commit d978190
+- dropped: liquid-chrome, gray-scott (files removed)
+
 ## Run 1 — 2026-06-28 01:24
 - candidates: commit-constellation, boarding-pass, latent-space
 - scores: boarding-pass=50, commit-constellation=45, latent-space=30

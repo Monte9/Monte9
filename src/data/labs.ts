@@ -47,6 +47,14 @@ export const LAB_EXPERIMENTS: LabExperiment[] = [
     date: "2026-06-28T01:24",
     tags: ["CSS 3D", "Canvas", "Physics", "Interaction", "Personal"],
   },
+  {
+    slug: "rope-type",
+    title: "Rope Type",
+    blurb:
+      "A word spelled in glowing beads strung on soft-body rope. Grab a letter and fling it, switch to the scissors and cut a strand to watch it fall — a from-scratch Verlet physics engine, no WebGL. (There may be a secret phrase hiding behind an old cheat code.)",
+    date: "2026-06-28T02:32",
+    tags: ["Canvas", "Physics", "Verlet", "Interaction", "Typography", "Generative"],
+  },
 ];
 
 // Every distinct tag across experiments, alphabetized. Shown on cards.

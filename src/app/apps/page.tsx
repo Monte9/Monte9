@@ -1,0 +1,17 @@
+import type { Metadata } from "next";
+import AppsList from "@/components/apps/AppsList";
+
+export const metadata: Metadata = { title: "Apps" };
+
+export default function AppsPage() {
+  return (
+    <div>
+      <h1 className="mb-2 hidden text-2xl font-semibold sm:block">Apps</h1>
+      <p className="mb-8 text-muted">
+        A growing gallery of web-dev experiments — each one designed, built, and
+        evaluated agentically. Rough edges expected; that&apos;s the point.
+      </p>
+      <AppsList />
+    </div>
+  );
+}

@@ -2,13 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Newspaper, Globe, FlaskConical, UserRound } from "lucide-react";
+import { Home, Newspaper, Globe, LayoutGrid, UserRound } from "lucide-react";
 
 const TABS = [
   { href: "/", label: "Home", Icon: Home },
   { href: "/posts", label: "Posts", Icon: Newspaper },
   { href: "/travel", label: "Travel", Icon: Globe },
-  { href: "/labs", label: "Labs", Icon: FlaskConical },
+  { href: "/apps", label: "Apps", Icon: LayoutGrid },
   { href: "/about", label: "About", Icon: UserRound },
 ];
 

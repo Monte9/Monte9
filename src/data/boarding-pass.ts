@@ -1,6 +1,6 @@
 // "Boarding Pass" — Monte's immigration-and-career arc, reframed as a stack of
 // airline tickets. Each leg is one boarding pass: where he flew from/to, the
-// year, the role he "flew in for", and a flavor of flight metadata. The /labs
+// year, the role he "flew in for", and a flavor of flight metadata. The /apps
 // /boarding-pass experiment renders these as draggable, flippable, tearable
 // perforated cards drawn with CSS 3D + canvas (no WebGL).
 //

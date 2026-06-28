@@ -8,7 +8,7 @@ const TITLES: Record<string, string> = {
   "/posts": "Posts",
   "/travel": "Travel",
   "/about": "About",
-  "/labs": "Labs",
+  "/apps": "Apps",
   "/settings": "Settings",
 };
 
@@ -20,7 +20,7 @@ function titleFor(pathname: string): string {
       : pathname;
   if (TITLES[p]) return TITLES[p];
   if (p.startsWith("/posts")) return "Posts";
-  if (p.startsWith("/labs")) return "Labs";
+  if (p.startsWith("/apps")) return "Apps";
   return "Monte Thakkar";
 }
 

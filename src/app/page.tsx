@@ -1,8 +1,8 @@
 import Link from "next/link";
 import { getAllPosts, formatDate } from "@/lib/posts";
 import { VISITED_NEWEST_FIRST } from "@/data/travel";
-import { LAB_EXPERIMENTS, formatLabDate } from "@/data/labs";
-import LabThumb from "@/components/labs/LabThumb";
+import { APP_EXPERIMENTS, formatAppDate } from "@/data/apps";
+import AppThumb from "@/components/apps/AppThumb";
 
 function SectionHeader({ title, href }: { title: string; href: string }) {
   return (
@@ -18,7 +18,7 @@ function SectionHeader({ title, href }: { title: string; href: string }) {
 export default function Home() {
   const posts = getAllPosts().slice(0, 3);
   const travel = VISITED_NEWEST_FIRST.slice(0, 3);
-  const labs = [...LAB_EXPERIMENTS]
+  const apps = [...APP_EXPERIMENTS]
     .sort((a, b) => b.date.localeCompare(a.date))
     .slice(0, 3);
 
@@ -77,22 +77,22 @@ export default function Home() {
         ))}
       </ul>
 
-      {/* Recent labs */}
-      <SectionHeader title="Recent labs" href="/labs" />
+      {/* Recent apps */}
+      <SectionHeader title="Recent apps" href="/apps" />
       <ul className="space-y-3">
-        {labs.map((e) => (
+        {apps.map((e) => (
           <li key={e.slug}>
             <Link
-              href={`/labs/${e.slug}`}
+              href={`/apps/${e.slug}`}
               className="group flex items-center gap-3"
             >
-              <LabThumb slug={e.slug} className="h-11 w-11" />
+              <AppThumb slug={e.slug} className="h-11 w-11" />
               <span className="min-w-0">
                 <span className="block truncate font-medium text-fg group-hover:text-accent">
                   {e.title}
                 </span>
                 <span className="block text-sm text-muted">
-                  {formatLabDate(e.date)}
+                  {formatAppDate(e.date)}
                 </span>
               </span>
             </Link>

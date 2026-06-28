@@ -4,7 +4,7 @@
 // Evaluator, and only PASS work ships. Nothing here is invented beyond those
 // two files — `result` mirrors the History table's verdict column.
 //
-// Consumed by src/components/labs/BuildTimeline.tsx.
+// Consumed by src/components/apps/BuildTimeline.tsx.
 
 export type BuildResult = "PASS" | "shipped";
 

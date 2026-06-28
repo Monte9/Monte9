@@ -70,6 +70,32 @@ body {
 /* Rendered markdown articles */
 .article {
   line-height: 1.75;
+  overflow-wrap: anywhere;
+}
+/* Wide research tables scroll within their own box instead of widening the page. */
+.article table {
+  display: block;
+  width: 100%;
+  max-width: 100%;
+  overflow-x: auto;
+  border-collapse: collapse;
+  margin: 1rem 0;
+  font-size: 0.9em;
+}
+.article th,
+.article td {
+  border: 1px solid var(--border);
+  padding: 0.4rem 0.6rem;
+  text-align: left;
+  vertical-align: top;
+}
+.article th {
+  font-weight: 600;
+  background: var(--surface-2);
+}
+.article img {
+  max-width: 100%;
+  height: auto;
 }
 .article h2 {
   font-size: 1.25rem;

@@ -2,6 +2,8 @@
 title: "Building this site with an agent"
 date: "2026-06-12"
 description: "This site is built and maintained by a Claude Code agent harness. Here's the setup."
+tags: ["Meta", "Agents"]
+aiGenerated: false
 ---
 
 This site lives in my [GitHub profile repo](https://github.com/Monte9/Monte9) and is built and maintained by an AI agent.

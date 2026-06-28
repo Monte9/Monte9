@@ -2,6 +2,8 @@
 title: "God is Time: Insights from the Bhagavad Gita"
 date: "2026-06-12"
 description: "Time as the divine in the Gita — and how to live without being consumed by it."
+tags: ["Essay", "Philosophy"]
+aiGenerated: false
 ---
 
 ## Introduction

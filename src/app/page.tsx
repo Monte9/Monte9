@@ -3,6 +3,7 @@ import { getAllPosts, formatDate } from "@/lib/posts";
 import { VISITED_NEWEST_FIRST } from "@/data/travel";
 import { APP_EXPERIMENTS, formatAppDate } from "@/data/apps";
 import AppThumb from "@/components/apps/AppThumb";
+import AiBadge from "@/components/AiBadge";
 
 function SectionHeader({ title, href }: { title: string; href: string }) {
   return (
@@ -59,7 +60,10 @@ export default function Home() {
               >
                 {post.title}
               </Link>
-              <div className="text-sm text-muted">{formatDate(post.date)}</div>
+              <div className="flex items-center gap-2 text-sm text-muted">
+                <span>{formatDate(post.date)}</span>
+                {post.aiGenerated && <AiBadge />}
+              </div>
             </li>
           ))}
         </ul>

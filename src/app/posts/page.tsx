@@ -1,6 +1,6 @@
-import Link from "next/link";
 import type { Metadata } from "next";
-import { getAllPosts, formatDate } from "@/lib/posts";
+import { getAllPosts } from "@/lib/posts";
+import PostsList from "@/components/PostsList";
 
 export const metadata: Metadata = { title: "Posts" };
 
@@ -9,26 +9,16 @@ export default function PostsPage() {
 
   return (
     <div>
-      <h1 className="mb-6 hidden text-2xl font-semibold sm:block">Posts</h1>
+      <h1 className="mb-2 hidden text-2xl font-semibold sm:block">Posts</h1>
+      <p className="mb-8 text-muted">
+        Essays and research notes. Some are written by me; others (badged{" "}
+        <span className="text-fg">AI-generated</span>) are researched and drafted
+        by an autonomous agent on topics I care about.
+      </p>
       {posts.length === 0 ? (
         <p className="text-muted">No posts yet.</p>
       ) : (
-        <ul className="space-y-6">
-          {posts.map((post) => (
-            <li key={post.slug}>
-              <Link
-                href={`/posts/${post.slug}`}
-                className="text-2xl font-semibold hover:text-accent"
-              >
-                {post.title}
-              </Link>
-              <div className="text-sm text-muted">{formatDate(post.date)}</div>
-              {post.description && (
-                <p className="mt-1 text-fg">{post.description}</p>
-              )}
-            </li>
-          ))}
-        </ul>
+        <PostsList posts={posts} />
       )}
     </div>
   );

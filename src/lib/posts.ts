@@ -3,6 +3,8 @@ import path from "path";
 import matter from "gray-matter";
 import { marked } from "marked";
 
+export { formatDate } from "./format";
+
 const postsDir = path.join(process.cwd(), "content", "posts");
 
 export type PostMeta = {
@@ -10,6 +12,8 @@ export type PostMeta = {
   title: string;
   date: string;
   description: string;
+  tags: string[];
+  aiGenerated: boolean;
 };
 
 export type Post = PostMeta & { html: string };
@@ -27,6 +31,8 @@ export function getAllPosts(): PostMeta[] {
         title: data.title ?? slug,
         date: data.date ?? "",
         description: data.description ?? "",
+        tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
+        aiGenerated: data.aiGenerated === true,
       };
     })
     .sort((a, b) => (a.date < b.date ? 1 : -1));
@@ -42,15 +48,8 @@ export async function getPost(slug: string): Promise<Post | null> {
     title: data.title ?? slug,
     date: data.date ?? "",
     description: data.description ?? "",
+    tags: Array.isArray(data.tags) ? (data.tags as string[]) : [],
+    aiGenerated: data.aiGenerated === true,
     html,
   };
-}
-
-export function formatDate(date: string): string {
-  if (!date) return "";
-  return new Date(`${date}T00:00:00`).toLocaleDateString("en-US", {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  });
 }

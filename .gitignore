@@ -13,6 +13,7 @@ next-env.d.ts
 # Agent harness scratch
 agent/evals/shots/
 agent/evals/tmp/
+agent/labs/runs/
 
 # Always ignore Claude Code local overrides
 .claude/settings.local.json

@@ -63,6 +63,21 @@ const MOTIFS: Record<string, React.ReactNode> = {
       </g>
     </>
   ),
+  // Shatter type: a glyph fractured into Voronoi shards.
+  "shatter-type": (
+    <>
+      <rect x="4" y="7" width="24" height="18" rx="2" className={muted} fill="none" stroke="currentColor" strokeWidth="1.2" />
+      <g stroke="currentColor" strokeWidth="1.4" strokeLinecap="round" fill="none">
+        <path d="M16 7 L13 15 L18 20 L16 25" />
+        <path d="M13 15 L4 13" />
+        <path d="M13 15 L7 25" />
+        <path d="M18 20 L28 18" />
+        <path d="M18 20 L22 25" />
+        <path d="M13 15 L20 11 L28 9" />
+        <path d="M20 11 L18 20" />
+      </g>
+    </>
+  ),
   // ASCII engine: a little grid of glyphs.
   "ascii-engine": (
     <g

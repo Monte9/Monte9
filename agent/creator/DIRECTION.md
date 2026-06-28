@@ -53,6 +53,8 @@ Sum, pick the max. Break ties toward the under-represented kind (dimension 3).
 
 ## Lessons (append-only; newest at top)
 
+2026-06-28 (run 2): Routed to app over post — both app pitches tied the slate at 35 and out-scored the posts mainly on balance (last run shipped a post, so an app corrects the mix); shipped weather-pixels, a dense full-frame voxel skyscape. When two app pitches tie, break toward lower cold-start-frame risk and away from tonal overlap with an already-shipped piece (contribution-terrain beat glyph-flow-field because the latter risked a sparse frame 0 and echoed the existing `field` shader).
+
 2026-06-28 (run 1): Routed to post over app — the post pitches out-scored the apps mainly on balance (recent history was app-heavy) and interestingness; a timely, decision-shaped "where the next eval dollar goes" post beat two mid-novelty app pitches. When the chosen post pipeline returns a mono-thematic slate, ship only the single tightest winner rather than diluting with overlapping drafts.
 
 _(No creator runs yet. The app-only history lives in `agent/apps/JOURNAL.md`

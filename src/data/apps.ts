@@ -75,6 +75,16 @@ export const APP_EXPERIMENTS: AppExperiment[] = [
     date: "2026-06-28T11:31",
     tags: ["Canvas", "Computational Geometry", "Voronoi", "Physics", "Interaction", "Typography"],
   },
+  {
+    slug: "weather-pixels",
+    title: "Weather Pixels",
+    blurb:
+      "A living voxel skyscape: 3,000+ GPU-instanced cubes rise and fall on layered weather noise — a rolling pressure front, drifting cloud bands carved into dark gaps, and a dawn-to-storm color grade. Drag to orbit; tap to summon a drifting squall and watch lightning flash a whole column white.",
+    date: "2026-06-28T22:28",
+    tags: ["webgl", "three.js", "instancing", "generative", "noise", "voxel", "interactive", "r3f", "weather"],
+    motif:
+      "<g fill=\"currentColor\"><rect x=\"3\" y=\"20\" width=\"3\" height=\"8\" rx=\"0.5\"/><rect x=\"7\" y=\"16\" width=\"3\" height=\"12\" rx=\"0.5\"/><rect x=\"11\" y=\"22\" width=\"3\" height=\"6\" rx=\"0.5\"/><rect x=\"15\" y=\"13\" width=\"3\" height=\"15\" rx=\"0.5\"/><rect x=\"19\" y=\"18\" width=\"3\" height=\"10\" rx=\"0.5\"/><rect x=\"23\" y=\"15\" width=\"3\" height=\"13\" rx=\"0.5\"/><rect x=\"27\" y=\"21\" width=\"3\" height=\"7\" rx=\"0.5\"/></g><g className=\"text-muted\" fill=\"currentColor\"><rect x=\"3\" y=\"10\" width=\"3\" height=\"3\" rx=\"0.5\"/><rect x=\"11\" y=\"12\" width=\"3\" height=\"3\" rx=\"0.5\"/><rect x=\"23\" y=\"8\" width=\"3\" height=\"3\" rx=\"0.5\"/><rect x=\"27\" y=\"11\" width=\"3\" height=\"3\" rx=\"0.5\"/></g><path d=\"M18 3 L13.5 12 L16.5 12 L14.5 19 L21 9.5 L17.5 9.5 L20 3 Z\" fill=\"currentColor\"/>",
+  },
 ];
 
 // Every distinct tag across experiments, alphabetized. Shown on cards.

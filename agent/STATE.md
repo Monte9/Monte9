@@ -6,17 +6,25 @@ attempts: 0
 
 ## Notes
 
-NEXT-GOAL EXPLORATION (2026-06-28): built 3 throwaway MVP prototypes under
-`/lab` to decide the next direction (user: "build multiple MVP ideas to figure
-out what lands"). All 3 compile in one static export, zero console errors, work
-light/dark/sunset + mobile/desktop:
-  - `/lab/built-by-agents` — animated harness-loop diagram + scroll-revealed
+LABS GALLERY SHIPPED (2026-06-28): the prototype exploration became a permanent
+`/labs` section — a growing gallery of agentic web-dev experiments (user: "keep
+all 3 as MVPs and ship under /labs, make it a nav tab"). All compile in one
+static export, zero console errors, work light/dark/sunset + mobile/desktop.
+  - `/labs` hub — sortable (Recent/Oldest) + tag-filterable list of experiments,
+    driven by a registry at `src/data/labs.ts` (add new prototypes there).
+    Hub page = server (metadata) → `LabsList` client component (sort/filter).
+  - `/labs/built-by-agents` — animated harness-loop diagram + scroll-revealed
     sprint timeline, from the real STATE.md history. (data: src/data/buildlog.ts)
-  - `/lab/journey` — scrollytelling globe that flies Bangalore→SF→Austin→LA as
+  - `/labs/journey` — scrollytelling globe that flies Bangalore→SF→Austin→LA as
     you scroll, marker pulses on the active city. (data: src/data/journey.ts)
-  - `/lab/field` — interactive domain-warped GLSL flow-field shader, theme-tinted.
-Awaiting user pick of the winner to productionize via the harness. These are
-prototypes (rough edges expected); the chosen one gets a real GOAL/BACKLOG.
+  - `/labs/field` — interactive domain-warped GLSL flow-field shader, theme-tinted.
+  Nav: desktop = Posts·Travel·Labs·About; mobile tab bar = Home·Posts·Travel·
+  Labs·About (Labs flask replaced the Settings tab; Settings now lives in the
+  hamburger SiteMenu). Components live in `src/components/labs/`.
+  Known polish backlog (not blocking): Field's bottom hint text has low contrast
+  over the bright shader; the 3 experiments share today's date so Recent/Oldest
+  look identical until more land. Future prototypes: append to src/data/labs.ts
+  + add a page under src/app/labs/<slug>/.
 
 /travel globe-first revamp is COMPLETE — all 3 sprints shipped and passed the
 evaluator (static export, 3 themes, both viewports). Backlog empty.

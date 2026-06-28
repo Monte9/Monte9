@@ -1,5 +1,5 @@
 // "The Journey" — the cities of Monte's life and career, in chronological
-// order. Drives the scroll-driven storytelling globe at /lab/journey: each
+// order. Drives the scroll-driven storytelling globe at /labs/journey: each
 // stop is a caption section and a target orientation the globe flies to.
 //
 // lat/lng are city coordinates and feed `latLngToVec3` (shared globe math),

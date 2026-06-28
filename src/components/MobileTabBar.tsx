@@ -2,14 +2,14 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Newspaper, Globe, UserRound, Settings } from "lucide-react";
+import { Home, Newspaper, Globe, FlaskConical, UserRound } from "lucide-react";
 
 const TABS = [
   { href: "/", label: "Home", Icon: Home },
   { href: "/posts", label: "Posts", Icon: Newspaper },
   { href: "/travel", label: "Travel", Icon: Globe },
+  { href: "/labs", label: "Labs", Icon: FlaskConical },
   { href: "/about", label: "About", Icon: UserRound },
-  { href: "/settings", label: "Settings", Icon: Settings },
 ];
 
 export default function MobileTabBar() {

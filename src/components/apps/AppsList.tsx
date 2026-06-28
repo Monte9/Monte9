@@ -54,7 +54,11 @@ export default function AppsList() {
               href={`/apps/${e.slug}`}
               className="group flex gap-4 rounded-xl border border-border p-4 transition-colors hover:bg-surface-2"
             >
-              <AppThumb slug={e.slug} className="mt-0.5 h-14 w-14 sm:h-16 sm:w-16" />
+              <AppThumb
+                slug={e.slug}
+                motif={e.motif}
+                className="mt-0.5 h-14 w-14 sm:h-16 sm:w-16"
+              />
               <div className="min-w-0 flex-1">
                 <span className="block text-lg font-semibold text-fg">
                   {e.title}

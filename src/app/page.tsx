@@ -90,7 +90,7 @@ export default function Home() {
               href={`/apps/${e.slug}`}
               className="group flex items-center gap-3"
             >
-              <AppThumb slug={e.slug} className="h-11 w-11" />
+              <AppThumb slug={e.slug} motif={e.motif} className="h-11 w-11" />
               <span className="min-w-0">
                 <span className="block truncate font-medium text-fg group-hover:text-accent">
                   {e.title}

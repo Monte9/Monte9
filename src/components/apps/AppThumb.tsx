@@ -4,7 +4,7 @@
 // is drawn with `currentColor` + theme tokens (text-accent / text-muted) so it
 // looks right in light, dark, and sunset with no per-theme assets.
 
-type Props = { slug: string; className?: string };
+type Props = { slug: string; motif?: string; className?: string };
 
 // Secondary (muted) stroke/fill helper — Tailwind sets `color`, currentColor reads it.
 const muted = "text-muted";
@@ -131,15 +131,23 @@ function Identicon({ seed }: { seed: string }) {
   return <>{rects}</>;
 }
 
-export default function AppThumb({ slug, className }: Props) {
-  const motif = MOTIFS[slug] ?? <Identicon seed={slug} />;
+export default function AppThumb({ slug, motif, className }: Props) {
+  // Priority: hand-drawn motif for the original experiments → a registry motif
+  // emitted by the routine's builder (theme-agnostic SVG markup) → identicon.
+  const hand = MOTIFS[slug];
   return (
     <span
       className={`grid shrink-0 place-items-center rounded-lg border border-border bg-surface-2 text-accent ${className ?? ""}`}
       aria-hidden
     >
       <svg viewBox="0 0 32 32" className="h-[70%] w-[70%]">
-        {motif}
+        {hand ? (
+          hand
+        ) : motif ? (
+          <g dangerouslySetInnerHTML={{ __html: motif }} />
+        ) : (
+          <Identicon seed={slug} />
+        )}
       </svg>
     </span>
   );

@@ -12,6 +12,10 @@ export type AppExperiment = {
   blurb: string;
   date: string; // ISO yyyy-mm-ddThh:mm (UTC)
   tags: string[];
+  // Optional theme-agnostic SVG inner markup (viewBox 0 0 32 32, uses
+  // currentColor / text-muted) for the card thumbnail. The routine's builder
+  // emits this per app; the original 7 use hand-drawn motifs in AppThumb.
+  motif?: string;
 };
 
 export const APP_EXPERIMENTS: AppExperiment[] = [

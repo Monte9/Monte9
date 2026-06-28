@@ -21,6 +21,9 @@ Status legend: `shipped` · `rejected` · `proposed`
 | shipped | uncontrolled-rocket-reentry | Which uncontrolled rocket stages to deorbit first | Research, Space | migrated |
 | proposed | ai-benchmark-deployment-gap | The gap between AI benchmark scores and real deployment | Research, AI | from spa (was in-progress) |
 | proposed | zombie-trials-evidence-base | "Zombie" clinical trials still cited despite retraction/failure | Research, Health | from spa (was in-progress) |
+| shipped | agent-reliability-tax | Why 90% per-step accuracy still fails long-horizon tasks; where the next eval dollar goes | Research, AI | run 1 |
+| rejected | contamination-resistant-eval-funding | Clean eval as an unprofitable public good; consortium governance to fund it | Research, AI | run 1 |
+| rejected | ai-eval-procurement-gap | The one RFP line to change: buyer-owned held-out, cost-weighted acceptance test | Research, AI | run 1 |
 
 ## Domain space (pick + dedup; scout adjacent stalled problems)
 

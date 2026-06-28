@@ -41,5 +41,7 @@ length. Depth is a dial (more research budget) we can raise later.
 
 ## Lessons (append-only; newest at top)
 
+2026-06-28: First single-run batch (3 drafts, all on contamination-resistant AI eval). All three passed the hard gate and grounding was genuinely strong -- verified by resolving every arXiv ID to a real paper with an exact title match and spot-checking load-bearing numbers against primary pages (GAO, IFP, MLCommons, paper abstracts). Lessons for future runs: (1) Future-dated arXiv IDs (e.g. 25xx/26xx) are NOT a fabrication tell -- arXiv uses YYMM numbering, so check them, don't reject them; all such IDs here resolved. (2) Verify the title, not just that the URL 200s -- a real URL can host a different paper. (3) Bot-walled fetches (403/empty from Fortune, The Register, Cloudflare-fronted blogs) are access failures, not falsification; only fail a claim if it is BOTH unverifiable AND single-sourced. The drafts here correctly hedged stats that rest on secondary blogs (e.g. 80.9%/45.9% via DigitalApplied) -- reward that honesty rather than penalizing the secondary source. (4) When a batch is mono-thematic, pick the ONE with the tightest math->evidence->recommendation spine and a concrete real-world anchor; rank survey-shaped "menu of levers" drafts below a draft that commits to a prioritized "first dollar." Ship only the winner when topics overlap heavily.
+
 _(No single-run posts yet. The 11 migrated reports are the deep back-catalogue
 this pipeline succeeds.)_

@@ -53,5 +53,7 @@ Sum, pick the max. Break ties toward the under-represented kind (dimension 3).
 
 ## Lessons (append-only; newest at top)
 
+2026-06-28 (run 1): Routed to post over app — the post pitches out-scored the apps mainly on balance (recent history was app-heavy) and interestingness; a timely, decision-shaped "where the next eval dollar goes" post beat two mid-novelty app pitches. When the chosen post pipeline returns a mono-thematic slate, ship only the single tightest winner rather than diluting with overlapping drafts.
+
 _(No creator runs yet. The app-only history lives in `agent/apps/JOURNAL.md`
 runs 1–4; the post back-catalogue was migrated from stuck-problems-agent.)_

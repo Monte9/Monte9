@@ -11,6 +11,9 @@ Status legend: `shipped` · `rejected` · `proposed`
 | shipped | built-by-agents | Animated harness-loop diagram + scroll-revealed sprint timeline from real STATE.md history | Agentic, Dataviz, Animation | seed |
 | shipped | journey | Scroll-driven globe flying Bangalore→SF→Austin→LA through Monte's life | WebGL, Three.js, Scrollytelling | seed |
 | shipped | field | Interactive domain-warped GLSL flow-field reacting to the cursor | WebGL, GLSL, Shaders | seed |
+| shipped | boarding-pass | Monte's immigration+career arc as a draggable/flippable/tearable stack of airline boarding passes (CSS-3D + canvas) | CSS 3D, Canvas, Physics, Interaction, Personal | 1 |
+| rejected | commit-constellation | GPU-instanced shader galaxy of real commit eras (Pillow/Vrbo/Curio/Rosebud) you scrub + orbit | WebGL, GLSL, Dataviz, Particles | 1 |
+| rejected | latent-space | Embedding cloud of Rosebud-style prompts (home/ship/build/reflect) clustering in a 2D latent space | Canvas, AI, Embeddings, Interaction | 1 |
 
 ## Concept space (for inspiration — not a commitment; keep pushing past these)
 

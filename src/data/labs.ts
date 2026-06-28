@@ -38,6 +38,14 @@ export const LAB_EXPERIMENTS: LabExperiment[] = [
     date: "2026-06-28",
     tags: ["WebGL", "GLSL", "Shaders"],
   },
+  {
+    slug: "boarding-pass",
+    title: "Boarding Pass",
+    blurb:
+      "Monte's immigration-and-career arc as a tactile stack of airline tickets — drag the top pass to tear it off, tap Story to flip it. Four legs from Bangalore to LA (BLR → SFO at 18, on through Pillow/Expedia, Vrbo, Curio, and founding-engineer at Rosebud), each a real boarding pass with a procedural barcode and perforation. Pure CSS-3D + canvas with spring physics, no WebGL.",
+    date: "2026-06-28",
+    tags: ["CSS 3D", "Canvas", "Physics", "Interaction", "Personal"],
+  },
 ];
 
 // Every distinct tag across experiments, alphabetized — drives the filter chips.

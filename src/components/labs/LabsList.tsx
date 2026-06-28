@@ -4,6 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { LAB_EXPERIMENTS, formatLabDate } from "@/data/labs";
+import LabThumb from "@/components/labs/LabThumb";
 
 type Sort = "recent" | "oldest";
 
@@ -51,28 +52,31 @@ export default function LabsList() {
           <li key={e.slug}>
             <Link
               href={`/labs/${e.slug}`}
-              className="group block rounded-xl border border-border p-4 transition-colors hover:bg-surface-2"
+              className="group flex gap-4 rounded-xl border border-border p-4 transition-colors hover:bg-surface-2"
             >
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-lg font-semibold text-fg">{e.title}</span>
-                <span className="shrink-0 whitespace-nowrap text-xs text-muted">
+              <LabThumb slug={e.slug} className="mt-0.5 h-14 w-14 sm:h-16 sm:w-16" />
+              <div className="min-w-0 flex-1">
+                <span className="block text-lg font-semibold text-fg">
+                  {e.title}
+                </span>
+                <span className="mt-0.5 block text-xs text-muted">
                   {formatLabDate(e.date)}
                 </span>
-              </div>
-              <span className="mt-1 block text-sm text-muted">{e.blurb}</span>
-              <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                {e.tags.map((t) => (
-                  <span
-                    key={t}
-                    className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted"
-                  >
-                    {t}
-                  </span>
-                ))}
-                <ArrowRight
-                  className="ml-auto h-4 w-4 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-accent"
-                  aria-hidden
-                />
+                <span className="mt-1.5 block text-sm text-muted">{e.blurb}</span>
+                <div className="mt-3 flex flex-wrap items-center gap-1.5">
+                  {e.tags.map((t) => (
+                    <span
+                      key={t}
+                      className="rounded-full bg-surface-2 px-2 py-0.5 text-[11px] text-muted"
+                    >
+                      {t}
+                    </span>
+                  ))}
+                  <ArrowRight
+                    className="ml-auto h-4 w-4 text-muted transition-transform group-hover:translate-x-0.5 group-hover:text-accent"
+                    aria-hidden
+                  />
+                </div>
               </div>
             </Link>
           </li>

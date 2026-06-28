@@ -6,6 +6,18 @@ attempts: 0
 
 ## Notes
 
+NEXT-GOAL EXPLORATION (2026-06-28): built 3 throwaway MVP prototypes under
+`/lab` to decide the next direction (user: "build multiple MVP ideas to figure
+out what lands"). All 3 compile in one static export, zero console errors, work
+light/dark/sunset + mobile/desktop:
+  - `/lab/built-by-agents` — animated harness-loop diagram + scroll-revealed
+    sprint timeline, from the real STATE.md history. (data: src/data/buildlog.ts)
+  - `/lab/journey` — scrollytelling globe that flies Bangalore→SF→Austin→LA as
+    you scroll, marker pulses on the active city. (data: src/data/journey.ts)
+  - `/lab/field` — interactive domain-warped GLSL flow-field shader, theme-tinted.
+Awaiting user pick of the winner to productionize via the harness. These are
+prototypes (rough edges expected); the chosen one gets a real GOAL/BACKLOG.
+
 /travel globe-first revamp is COMPLETE — all 3 sprints shipped and passed the
 evaluator (static export, 3 themes, both viewports). Backlog empty.
 

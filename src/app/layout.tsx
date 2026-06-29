@@ -34,7 +34,7 @@ export default function RootLayout({
       <body className="font-sans antialiased">
         <ThemeProvider>
           <header className="sticky top-0 z-40 border-b border-border bg-bg/80 backdrop-blur">
-            <div className="mx-auto flex max-w-2xl items-center justify-between px-5 py-4">
+            <div className="mx-auto flex h-16 max-w-2xl items-center justify-between px-5">
               <HeaderBrand />
               <div className="flex items-center gap-5">
                 <DesktopNav />

@@ -1,151 +1,321 @@
-# BACKLOG — Travel: Globe-First Interactive Map
+# BACKLOG — "Learn": a 2–3 minute variable-reward learning feed
 
 Ordered sprints toward `agent/GOAL.md`, building on `agent/SPEC.md`. Each sprint
-is buildable AND evaluable in a single run, keeps `pnpm build` (static export)
-green, never touches `README.md`, and every acceptance criterion is verifiable
-by interacting with the running site (Playwright-checkable).
+is buildable AND evaluable in a single run, keeps `pnpm build` green and the site
+deployable on Vercel, never touches `README.md`, and every acceptance criterion
+is verifiable by interacting with the running site (Playwright-checkable).
 
 Acceptance criteria below are **DRAFT** — finalized at sprint start via
 builder/evaluator alignment (per `agent/RUBRIC.md`) and recorded as "aligned" in
 this file and in `agent/evals/<ts>-sprint-N-criteria.md` before feature code is
-written.
+written. The evaluator may strengthen, add, or cut to the ~6 cap, but every
+criterion stays interaction-verifiable.
 
 Status legend: `todo` / `in progress` / `done` / `blocked`. Never delete
 done/blocked history; mark it.
 
-**Ordering rationale:** the value chain is (1) get filled, per-category country
-polygons rendering correctly on the themeable globe — this is the riskiest piece
-(Earcut triangulation + sphere projection of large countries) and everything
-else depends on it; then (2) make them interactive with the rich-info
-sheet/dialog (the core "info on demand" GOAL); then (3) the globe-first layout,
-legend, hint, list removal, and polish. Data lands in Sprint 1 with the
-rendering it serves. Three sprints.
+**Note on the build gate:** RUBRIC hard-gate #1 currently reads "static export
+must succeed". From Sprint 1 onward the site is a standard Next.js app on Vercel,
+NOT a static export — the green-gate is `pnpm build` exits 0 (which also produces
+the serverless build). The evaluator should read hard-gate #1 as "`pnpm build`
+exits 0" for this backlog; there is no `out/` after Sprint 1.
+
+**Ordering rationale:** the value chain is gated by one foundational, risky
+change, so it goes first: (1) drop `output: "export"` so a route handler can run
+as a Vercel serverless function, and in the same sprint fix the Creator routine's
+verify/ship stages (which serve `out/`) to serve `next start` instead — proving
+the whole site still builds, deploys, and renders before any feature lands. Then
+(2) the pure-UI nav + root change (Learn → `/`, Home tab removed, bio → `/about`),
+which is independent of any LLM and evaluable immediately. Then (3) the entire
+Learn feed UX driven by committed MOCK fixtures, so the full session loop —
+stack, reveal+why, instant quiz grading, session-complete, streak, new-set,
+pull-to-refresh, dynamic title — is shippable and evaluable with NO function and
+NO key. Then (4) the live serverless `GET /api/learn` wired behind the exact same
+data contract, so the UI is unchanged but content is now live + fresh, degrading
+to mock on error. Then (5) News cards and (6) the fast-follow content types +
+personalization/discover that widen the variable reward. Each sprint keeps the
+site shippable and is verified by interacting with the running site. Six sprints.
 
 ---
 
-## Sprint 1 — Filled, per-category country polygons on the themed globe [done]
-_PASS: agent/evals/20260627-140334-sprint-1.md (all 6, 3 themes, pixel-sampled)._
+## Sprint 1 — Drop static export → serverless-ready app; fix the Creator routine [todo]
 
-_Aligned: agent/evals/20260627-134750-sprint-1-criteria.md (6 criteria)._
-
-**GOAL:** Replace the pin dots with filled, category-colored country regions for
-all 9 countries (Home=India, Lived=US, Visited=the other 7), built from vendored
-TopoJSON and projected onto the sphere, colored from the active theme — keeping
-drag + auto-rotate + outlines for every other country.
+**GOAL:** Switch the site off pure static export so server route handlers can run
+as Vercel serverless functions, WITHOUT regressing any existing page, and update
+the `creator` workflow's verify/ship stages so they no longer depend on `out/`
+(serve the built app via `next start` for screenshots) — keeping `pnpm build`
+green and the routine functional. No Learn feature code this sprint; this is the
+foundation everything else stands on.
 
 **DRAFT acceptance criteria**
 
-1. On `/travel`, after rotating the globe to each hemisphere, all **9 countries
-   render as filled regions** (not dots) hugging the sphere surface (no fill
-   sinking below or floating obviously off the globe), and **other countries
-   still show their outlines** — verifiable in screenshots covering India/US/the
-   visited set.
-2. The fills use **exactly 3 distinct colors by category**: India in the Home
-   color, the United States in the Lived color, and Italy/France/Japan/Croatia/
-   Tanzania/Costa Rica/Turkey all in the Visited color; the three colors are
-   clearly distinguishable from each other and from the sphere (screenshot/
-   computed-color check).
-3. The fills are **theme-aware**: setting `data-theme` to light, dark, and
-   sunset (or switching via `/settings`) re-colors the category fills with no
-   reload, and all three categories stay legible/distinct against the sphere in
-   each theme (screenshots in all 3 themes).
-4. **Globe behaviors preserved:** the globe auto-rotates on load with
-   reduce-motion off (two screenshots ~1s apart differ in the globe region) and
-   a drag rotates it; with `data-reduce-motion="true"` it does not auto-spin but
-   a drag still rotates it.
-5. The large countries (United States, India) render as **complete, correctly
-   shaped fills** (mainland filled, no gaping triangulation holes/spikes across
-   the polygon) — confirmed by screenshot when each is centered.
-6. **Gates:** no horizontal overflow at 390px on `/travel`, zero console/page
-   errors on `/travel`, and `pnpm build` exits 0 (static export succeeds).
+1. `next.config.ts` no longer sets `output: "export"`; `pnpm build` exits 0 and
+   produces a standard Next build (a server/serverless target, not an `out/`
+   static export) — verifiable from build output and the absence of `out/`.
+2. A trivial **smoke route handler exists and responds at runtime**: with the app
+   served by `next start`, `GET /api/health` (or equivalent) returns a 200 JSON
+   body — proving route handlers run server-side now (the capability the whole
+   GOAL depends on). The endpoint takes no secrets and is safe to keep.
+3. **No regressions across the existing site:** the homepage, `/posts` (+ one
+   post detail), `/apps` (+ one WebGL app detail e.g. `/apps/field`), `/travel`,
+   `/about`, and `/settings` all render correctly with **zero console/page
+   errors** at 1280px and 390px when served by `next start` — verified by
+   screenshots of each.
+4. The **WebGL/Canvas apps and the globe still mount and animate** under the
+   non-export build (e.g. `/apps/field` and `/travel` show their live frame, not
+   a stuck "Loading…") — confirmed by screenshots ~1s apart differing in the
+   canvas region with reduce-motion off.
+5. The **Creator routine no longer references `out/`**: `.claude/workflows/creator.js`
+   verify/ship stages serve the built app via `next start` (or equivalent local
+   server of the real build) on a port and screenshot from there; the green-gate
+   remains `pnpm build` exit 0. Demonstrated by a dry-run of the verify serving
+   command producing a reachable URL + a screenshot of an existing `/apps` page.
+6. **Gates:** no horizontal overflow at 390px on the homepage and one touched
+   page; the sticky header + tab bar still work; `pnpm build` exits 0.
 
-_Note: data model changes (add India/US, add category/atlasName/id/detail/blurb)
-land in this sprint since the rendering consumes them. The old below-globe label
-and Countries list may remain until Sprint 3; do not let them block this sprint._
+_Note: `output: "export"` + `trailingSlash: true` interact with internal links
+and `routeInfo()`'s trailing-slash handling — verify nav/active-state still works
+after the switch. Adding `zod`/`@anthropic-ai/sdk` is NOT part of this sprint
+(the smoke route needs neither); keep the diff minimal and reversible._
 
 ---
 
-## Sprint 2 — Hover/tap rich info: bottom sheet (mobile) / dialog (desktop) [done]
-_PASS: agent/evals/20260627-142718-sprint-2.md (all 6)._
+## Sprint 2 — Nav + root change: Learn becomes `/`, Home tab removed, bio → `/about` [todo]
 
-**GOAL:** Make the filled countries interactive — hovering/tapping a country
-emphasizes it on the globe and opens a dismissible rich-info surface (name +
-category chip + detail + blurb) that is a bottom sheet on mobile and a dialog/
-modal on desktop.
+**GOAL:** Make the site land on a Learn placeholder at `/`, remove the Home tab,
+add Learn as the first tab (with a fitting lucide icon), and relocate the current
+homepage hero/bio + recent posts/apps into `/about` so nothing is lost. Pure UI,
+no LLM, no serverless — fully evaluable on its own. The Learn page this sprint may
+be a minimal placeholder ("Learn — coming next") since the real feed lands in
+Sprint 3; the value here is the IA change.
 
 **DRAFT acceptance criteria**
 
-1. Clicking/tapping a filled country opens a surface showing that country's
-   **flag + name, a category chip (Home/Lived/Visited in the category color),
-   the detail** (visit date for Visited; duration for India/US), **and the
-   blurb** — verified for at least one Home, one Lived, and one Visited country
-   (e.g. India "~18 years", US "~13 years", Japan "May 2024").
-2. The opened country is **emphasized on the globe** (distinct from the resting
-   fill — e.g. brighter/raised/outlined) while its surface is open.
-3. The surface is **dismissible**: a close control hides it, **Escape** closes
-   it (desktop), and clicking the ocean / scrim closes it; after dismissal the
-   globe is interactive again.
-4. **Mobile vs desktop treatments visibly differ:** at 390px the surface is a
-   **bottom-anchored sheet** (pinned to the bottom edge, globe still visible
-   above it, above the tab bar); at 1280px it is a **centered or side dialog**
-   (not a full-width bottom bar). The difference is observable in screenshots at
-   both viewports.
-4b. (desktop a11y) The desktop dialog is keyboard-accessible: focus moves into
-   it on open, Escape closes, and focus is not permanently trapped after close.
-5. Opening a country **pauses auto-rotation** so it stays readable; closing
-   resumes it (when reduce-motion is off). Under reduce-motion the globe stays
-   non-spinning but tap-to-open and drag still work.
-6. **Gates:** the surface and chips use theme tokens and stay legible in all 3
-   themes; no horizontal overflow at 390px with the sheet open; zero console/
-   page errors on `/travel`; `pnpm build` exits 0.
+1. **Tabs are `Learn · Posts · Apps · Travel · About`** with Learn first and a
+   fitting Learn icon (e.g. spark/bolt/cap from lucide); there is **no Home tab**
+   anywhere in `MobileTabBar` or `DesktopNav` — verified in screenshots at 390px
+   (tab bar) and 1280px (desktop nav).
+2. **`/` renders the Learn page** (placeholder is fine this sprint), the Learn tab
+   shows active (`aria-current="page"`) when on `/`, and the desktop wordmark +
+   mobile header title resolve correctly for `/` (the mobile header reads "Learn",
+   the wordmark still links to `/`).
+3. **The homepage bio is relocated to `/about`**: visiting `/about` shows the "Hi,
+   I'm Monte" intro (or a sensibly folded version) AND the recent Posts/Apps
+   sections that used to be on the homepage, with all their links working — the
+   intro/content is NOT lost or orphaned.
+4. **Navigation works end-to-end:** clicking each of the 5 tabs navigates to the
+   right route and sets the active state; `routeInfo()`/`HeaderBrand` give the
+   right title per route (no "Monte Thakkar" fallback where a real title exists),
+   verified by clicking through all tabs at 390px.
+5. **No regressions:** `/posts`, `/apps`, `/travel` still render at 1280px and
+   390px with zero console errors; the SiteMenu hamburger still opens; themes
+   (light/dark/sunset) still apply on `/` and `/about`.
+6. **Gates:** no horizontal overflow at 390px on `/`, `/about`, and one other
+   touched page; `pnpm build` exits 0.
 
-_(6 criteria; 4b is a sub-clause of the mobile/desktop criterion — evaluator may
-fold it in or cut at alignment to stay at the cap.)_
+_Note: SPEC §5 fixes the tab set to Learn · Posts · Apps · Travel · About;
+`/labs` pages remain reachable but stay out of the primary nav (unchanged from
+today). Update `MobileTabBar`, `DesktopNav`, `HeaderBrand`, and `src/lib/nav.ts`
+(home→learn kind/title) together._
 
 ---
 
-## Sprint 3 — Globe-first layout, legend, hint, list removal & polish [done]
-_PASS: agent/evals/20260627-145608-sprint-3.md (all 6 + Sprint 1-2 regression)._
+## Sprint 3 — The Learn feed: full session loop on MOCK data [todo]
 
-**GOAL:** Make the globe the centerpiece — fill the space below the header to the
-tab bar with no top clipping, overlay a theme-aware category legend and a short
-one-line hint, and remove the static Countries list and verbose copy.
+**GOAL:** Build the complete Learn experience driven entirely by committed mock
+fixtures and the shared `Card` types — the card stack, per-card answer/reveal +
+"why", instant quiz grading, session-complete with score + streak (localStorage),
+"New set" + pull-to-refresh, dynamic tab title, mobile-first and theme-aware.
+**Fully shippable and evaluable with NO serverless function and NO API key.** The
+data is sourced through a provider seam so Sprint 4 can swap in live data with
+zero UI change. Quiz + Trivia card types render this sprint.
 
 **DRAFT acceptance criteria**
 
-1. The globe **fills the available area** below the sticky header down to the tab
-   bar at both 1280×900 and 390×844: its **top is not clipped** by the header,
-   it is large and centered, and the globe stage **causes no vertical page
-   scroll** (no scrollbar introduced just by the stage).
-2. A **category legend** is overlaid on the globe showing 3 swatches + labels
-   (Home / Lived / Visited) in the **same colors as the fills**, in a corner,
-   legible in all 3 themes, not obscuring the globe and not colliding with the
-   bottom sheet or tab bar on mobile.
-3. The static **Countries list and the verbose intro/help copy are removed**:
-   there is **no list of countries + dates rendered as page text** below the
-   globe; at most a single short hint line (e.g. "Tap a country") remains, and
-   it does not block globe interaction.
-4. **All Sprint 1–2 behavior still works** in the new layout: filled fills
-   visible, tap opens the sheet/dialog with correct info, drag rotates,
-   auto-rotate + reduce-motion gating intact, theme switching re-colors globe +
-   legend + sheet/dialog.
-5. **No regressions elsewhere:** homepage and at least one other page
-   (`/about` or `/posts`) render correctly at 1280px and 390px; the sticky
-   header and 5-tab bar still work; `/travel` has no horizontal overflow at
-   390px.
-6. **Gates:** zero console/page errors on `/travel` and the homepage; `pnpm
-   build` exits 0 (static export succeeds).
+1. **Session loop runs end-to-end on mock data:** loading `/` shows a stack of ~5
+   cards one at a time; a **quiz card grades instantly and correctly** on tap
+   (right vs wrong visibly distinguished) and every card reveals an **answer + a
+   "why"/explanation** (no dead ends); advancing through all cards reaches a
+   **"session complete"** screen showing this session's **score**. Verified by
+   playing a full session at 390px.
+2. **Streak + state persist in localStorage:** completing a session sets/advances
+   a **day-streak** and it survives a page reload (visible on the
+   session-complete or a header/title indicator); seen-card ids are recorded so
+   refreshes avoid immediate repeats. Verified by completing a session, reloading,
+   and observing the persisted streak.
+3. **The loop closes via "New set" AND pull-to-refresh:** the primary "New set →"
+   button starts a fresh session, and a pull-to-refresh gesture at the top of the
+   feed (at 390px) also starts a fresh session; two consecutive sessions are
+   **not identical** (different cards/order from the fixture pool, not a repeat of
+   the same five). Verified by triggering both and comparing the served cards.
+4. **Variable + educational feel:** a session visibly **mixes content types**
+   (at least quiz + trivia) and topics — not a monotype run of five quizzes;
+   fixtures span every v1 type and several topics. Verified by inspecting one
+   session's card types/topics in the DOM.
+5. **Dynamic tab title + theme-aware mobile-first feel:** `document.title`
+   reflects an external trigger (e.g. `🔥 N-day streak · Learn` on load, "New set
+   ready · Learn" after completing one) and restores a sane title when navigating
+   away; the card stack reads and interacts well at 390px and is legible in
+   light/dark/sunset. Verified by observing `document.title` transitions and
+   theme screenshots.
+6. **Gates:** the first card is interactive quickly (no long blank wait), a full
+   5-card session is completable in ≤ ~3 minutes, no horizontal overflow at 390px,
+   zero console/page errors on `/`, `pnpm build` exits 0.
+
+_Note: introduce the client-safe `Card` union + `LearnSession` types module (no
+server imports), the committed `learn` fixtures (~12–15 cards, every v1 type,
+realistic + correct — they double as live-prompt examples), and a data-provider
+seam that returns a session; mock mode is the only path this sprint. `?mock=1`
+toggling is exercised more in Sprint 4 — here mock is the default/only source._
+
+---
+
+## Sprint 4 — Live serverless `GET /api/learn` behind the same contract [todo]
+
+**GOAL:** Add the Vercel serverless route handler that generates a fresh,
+Zod-validated session on demand via the Anthropic API (key from server env),
+wired behind the identical data contract so the Sprint-3 UI is unchanged but
+content is now live and fresh on every refresh. Quiz + Trivia first. Graceful
+degradation: on error/missing key the client falls back to mock with a small
+"offline sample" note — never a blank screen. `?mock=1` forces the mock path.
+
+**DRAFT acceptance criteria**
+
+1. **Live generation works on demand:** with `ANTHROPIC_API_KEY` set and the app
+   served by `next start`, `GET /api/learn` returns a 200 `LearnSession` of
+   quiz+trivia cards; loading `/` (mock OFF) renders a live session, and "New
+   set" / pull-to-refresh fetches a **different** live session (no within-session
+   repeats; respects the `seen` param). Verified by two refreshes returning
+   different cards.
+2. **Validated + safe contract:** the response is Zod-validated against the Card
+   union; a card that fails validation is **dropped/repaired rather than 500-ing
+   the whole set** (verified by inspecting the endpoint's behavior on a forced bad
+   card), and the endpoint exposes **no secret to the client** (network panel /
+   page source contain no API key). Query params `n` (cap), `topics`, `seen` are
+   honored.
+3. **Graceful degradation, never blank:** with the key unavailable (or the
+   endpoint forced to error), the client **falls back to mock cards** with a
+   visible small "offline sample" note and a still-playable session — verified by
+   simulating the failure and confirming a full session still runs with the note.
+4. **`?mock=1` forces mock with zero network/key:** appending `?mock=1` (and/or
+   `NEXT_PUBLIC_LEARN_MOCK=1`) renders a full session using fixtures with **no
+   request to `/api/learn`** — verified by an empty/absent learn request in the
+   network panel while a full session still plays.
+5. **UI is unchanged by the data source:** the exact same Sprint-3 session loop
+   (stack, instant quiz grade, reveal+why, session-complete, streak, new-set,
+   dynamic title) works identically against live data — verified by playing a
+   full live session and confirming the same interactions as Sprint 3.
+6. **Gates:** first cards appear reasonably quickly (snappy loading state, no long
+   blank wait); no horizontal overflow at 390px on `/`; zero console/page errors
+   on `/` in both live and mock modes; `pnpm build` exits 0 with the route handler
+   present.
+
+_Note: adds `zod` and an Anthropic client as deps; route at `src/app/api/learn/route.ts`.
+Use a small/fast model tier for quiz/trivia. Light per-IP rate limiting is
+acceptable; no PII, no logging of content. The fixtures from Sprint 3 are the
+prompt's worked examples. Confirm Vercel deploy with the env var as part of
+alignment if the evaluator can reach a preview; otherwise verify locally via
+`next start` + the key._
+
+---
+
+## Sprint 5 — News cards: fresh server-side sourcing + summary + "so what" [todo]
+
+**GOAL:** Add the News card type — current, summarized headlines with a short
+"so what" for Monte, sourced server-side and cited — into the live `/api/learn`
+mix and the mock fixtures, so a session can surface timely news alongside quiz +
+trivia. News deepens the variable reward (timeliness) and rounds out the v1
+content set.
+
+**DRAFT acceptance criteria**
+
+1. **News cards render with the full shape:** a News card shows a **headline, a
+   ≤2-sentence summary, and a "so what"/why**, plus a source name/link when
+   present; the source link is clickable and points off-site. Verified in both
+   mock (`?mock=1`) and live modes via the DOM/screenshot.
+2. **News is current + server-sourced:** in live mode the route handler sources
+   recent news server-side (e.g. a public feed/search) and the resulting cards
+   reference **recent** events with a real, checkable source — verified by
+   inspecting a live News card's content + source URL (not an obviously stale or
+   fabricated source).
+3. **News joins the mix:** a live session can include News alongside quiz +
+   trivia (the mix is variable, not all-news and not never-news), and News cards
+   are **read-only** (answer/reveal pattern: read → "so what", no grading dead
+   end). Verified by observing a session that contains a News card played to
+   completion.
+4. **Degrades gracefully:** if news sourcing fails or returns nothing, the
+   session still completes with the other card types (or the offline-sample mock),
+   **never a blank or broken card** — verified by simulating a news-source
+   failure and confirming a full session still plays.
+5. **Mock fixtures include News:** committed fixtures gain realistic News cards
+   so `?mock=1` and the error-fallback render News with no network — verified by
+   a `?mock=1` session containing a well-formed News card.
+6. **Gates:** News cards are theme-aware and legible at 390px in light/dark/sunset
+   with no overflow; zero console/page errors on `/`; `pnpm build` exits 0.
+
+_Note: News may be slower than quiz/trivia — keep loading snappy (e.g. fill the
+stack with fast types first, or cap news per session). Zod-validate the News
+shape; hedge/skip rather than assert when unsure; cite a real source. No content
+logging._
+
+---
+
+## Sprint 6 — Fast-follow content types + personalization + discover lane [todo]
+
+**GOAL:** Widen the variable reward: add the fast-follow card types (flashcard,
+this-day-in-history, big-question think-prompt) to types/fixtures/generation, and
+add lightweight personalization — a small settings affordance to pick interest
+topics (stored in localStorage, passed to `/api/learn` via `topics`) plus a
+"discover" lane that occasionally serves a topic outside the set for serendipity.
+
+**DRAFT acceptance criteria**
+
+1. **New card types render and reveal correctly:** flashcard (term → definition
+   reveal), this-day (year + event + why), and big-question (think-prompt, no
+   grading) each render with their reveal/"why" pattern and are not dead ends —
+   verified in `?mock=1` (fixtures present) and, where generated, in live mode.
+2. **Topic preferences work and persist:** a small settings affordance lets Monte
+   pick/edit interest topics; the selection **persists in localStorage** across
+   reloads and is reflected in subsequent sessions (live sessions pass the chosen
+   `topics` to `/api/learn`; mock biases toward them) — verified by changing
+   topics, reloading, and observing the session/topic mix shift.
+3. **Discover lane adds serendipity:** sessions occasionally include a card whose
+   topic is **outside** the selected interest set (a visibly "discover" / rare
+   card), so the feed isn't a closed loop of the same topics — verified across a
+   couple of sessions surfacing an off-set topic.
+4. **Variable reward is richer:** a session can now mix across more than the v1
+   three types and across in-set + discover topics, and two consecutive sessions
+   differ in type/topic mix — verified by inspecting two sessions' card
+   types/topics.
+5. **Degrades + stays correct:** new types are Zod-validated (live) and drop
+   rather than break a session on bad data; with personalization unset, sensible
+   default interests still drive a good session — verified by playing a session
+   with no saved prefs and one with custom prefs.
+6. **Gates:** new types + the settings affordance are theme-aware and legible at
+   390px with no overflow; zero console/page errors on `/` and the settings
+   affordance; `pnpm build` exits 0.
+
+_Note: types added to the client-safe `Card` union (flashcard {term,definition},
+thisday {year,event,why}, bigq {prompt}); fixtures gain examples of each; the
+generation prompt + Zod schema extend to cover them. The settings affordance can
+live inline on Learn or in `/settings` — builder's call at alignment._
 
 ---
 
 ## Done / Blocked history
 
-- **Settings, Theming, and Nav Tidy** (prior GOAL) — Sprints 1–3 shipped and
-  evaluator PASS. **Closed/superseded** by this backlog. Verdicts:
-  `agent/evals/20260627-042528-sprint-1.md`,
-  `agent/evals/20260627-044006-sprint-2-3.md`. The theme engine, `ThemeProvider`/
-  `useTheme`, semantic tokens, reduce-motion, and 5-tab nav from that work are
-  now infrastructure this backlog builds on (do not re-do).
-- **/travel interactive 3D globe** (earlier GOAL) — Sprints 1–4 shipped, PASS:
-  `agent/evals/20260627-024642-sprint-1-4.md`. That produced the outline+pins
-  globe this backlog evolves into a filled choropleth.
+- **Travel: Globe-First Interactive Map** (prior GOAL) — Sprints 1–3 shipped and
+  evaluator PASS, plus a follow-up stability fix. **Closed/superseded** by this
+  backlog. Verdicts: `agent/evals/20260627-140334-sprint-1.md`,
+  `agent/evals/20260627-142718-sprint-2.md`,
+  `agent/evals/20260627-145608-sprint-3.md`. The `/travel` page (filled
+  per-category country polygons, rich info sheet/dialog, overlaid legend, globe
+  geometry in `src/components/globe-utils.ts`) remains live and is a page this
+  backlog must not regress.
+- **Labs gallery** (`/labs`, intervening GOAL) — shipped per STATE.md (the `/labs`
+  hub + `built-by-agents`, `journey`, `field` experiments). **Closed/superseded**
+  by this backlog; `/labs` pages remain reachable but stay out of the primary nav
+  (consistent with the current site). Do not re-do or remove them.
+- **Settings, Theming, and Nav Tidy** (earlier GOAL) — shipped + PASS; the theme
+  engine (`ThemeProvider`/`useTheme`, semantic tokens, reduce-motion) and the
+  sticky-header tab nav are infrastructure this backlog builds on. Do not re-do.

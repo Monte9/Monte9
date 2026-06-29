@@ -152,3 +152,40 @@ body {
   color: var(--muted);
   margin: 1rem 0;
 }
+
+/* ---- Learn feed animations (transform/opacity only, 60fps; gated in JS by
+   reduceMotion so these classes are simply not applied under reduce-motion) ---- */
+@keyframes learn-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.05); }
+  100% { transform: scale(1); }
+}
+@keyframes learn-shake {
+  0%, 100% { transform: translateX(0); }
+  20% { transform: translateX(-5px); }
+  40% { transform: translateX(5px); }
+  60% { transform: translateX(-3px); }
+  80% { transform: translateX(3px); }
+}
+@keyframes learn-reveal {
+  from { opacity: 0; transform: translateY(6px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+@keyframes learn-card-in {
+  from { opacity: 0; transform: translateY(14px) scale(0.98); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+@keyframes learn-burst {
+  0% { transform: translate(0, 0) scale(1); opacity: 1; }
+  100% { transform: translate(var(--dx), var(--dy)) scale(0.2); opacity: 0; }
+}
+@keyframes learn-countup {
+  from { opacity: 0; transform: translateY(8px) scale(0.9); }
+  to { opacity: 1; transform: translateY(0) scale(1); }
+}
+.learn-pop { animation: learn-pop 0.45s ease-out; }
+.learn-shake { animation: learn-shake 0.4s ease-out; }
+.learn-reveal { animation: learn-reveal 0.32s ease-out; }
+.learn-card-in { animation: learn-card-in 0.32s ease-out; }
+.learn-countup { animation: learn-countup 0.5s ease-out; }
+.learn-burst-dot { animation: learn-burst 0.7s ease-out forwards; }

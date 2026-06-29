@@ -168,11 +168,16 @@ export default function LearnFeed() {
   if (phase === "complete") {
     return (
       <div className="flex min-h-[60vh] flex-col items-center justify-center text-center">
-        <div className="mb-2 flex items-center gap-2 text-2xl font-semibold text-fg">
+        <div
+          className={`relative mb-2 flex items-center gap-2 text-2xl font-semibold text-fg ${
+            reduceMotion ? "" : "learn-countup"
+          }`}
+        >
+          {!reduceMotion && <Burst />}
           <Flame className="h-6 w-6 text-accent" aria-hidden /> {streak}-day streak
         </div>
         {quizCount > 0 && (
-          <p className="mb-1 text-fg">
+          <p className={`mb-1 text-fg ${reduceMotion ? "" : "learn-countup"}`}>
             {correct}/{quizCount} correct this set
           </p>
         )}
@@ -253,7 +258,12 @@ export default function LearnFeed() {
         </span>
       </div>
 
-      <div className="rounded-2xl border border-border bg-surface p-5">
+      <div
+        key={card.id}
+        className={`rounded-2xl border border-border bg-surface p-5 ${
+          reduceMotion ? "" : "learn-card-in"
+        }`}
+      >
         <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-wide text-muted">
           <span className="rounded-full bg-surface-2 px-2 py-0.5 capitalize">
             {card.type}
@@ -265,6 +275,7 @@ export default function LearnFeed() {
           <QuizView
             card={card}
             chosen={chosen}
+            reduceMotion={reduceMotion}
             onChoose={(i) => {
               if (chosen !== null) return;
               setChosen(i);
@@ -278,7 +289,11 @@ export default function LearnFeed() {
           <div>
             <p className="text-lg leading-relaxed text-fg">{card.fact}</p>
             {revealed ? (
-              <p className="mt-4 border-l-2 border-accent pl-3 text-sm text-muted">
+              <p
+                className={`mt-4 border-l-2 border-accent pl-3 text-sm text-muted ${
+                  reduceMotion ? "" : "learn-reveal"
+                }`}
+              >
                 {card.why}
               </p>
             ) : (
@@ -300,7 +315,11 @@ export default function LearnFeed() {
             </h2>
             <p className="mt-2 text-sm leading-relaxed text-fg">{card.summary}</p>
             {revealed ? (
-              <div className="mt-4 border-l-2 border-accent pl-3">
+              <div
+                className={`mt-4 border-l-2 border-accent pl-3 ${
+                  reduceMotion ? "" : "learn-reveal"
+                }`}
+              >
                 <p className="text-sm text-muted">{card.why}</p>
                 {card.source && (
                   <a
@@ -327,7 +346,11 @@ export default function LearnFeed() {
           <div>
             <p className="text-lg font-semibold text-fg">{card.term}</p>
             {revealed ? (
-              <p className="mt-3 border-l-2 border-accent pl-3 text-sm leading-relaxed text-muted">
+              <p
+                className={`mt-3 border-l-2 border-accent pl-3 text-sm leading-relaxed text-muted ${
+                  reduceMotion ? "" : "learn-reveal"
+                }`}
+              >
                 {card.definition}
               </p>
             ) : (
@@ -349,7 +372,11 @@ export default function LearnFeed() {
             </p>
             <p className="mt-1 text-lg leading-relaxed text-fg">{card.event}</p>
             {revealed ? (
-              <p className="mt-3 border-l-2 border-accent pl-3 text-sm text-muted">
+              <p
+                className={`mt-3 border-l-2 border-accent pl-3 text-sm text-muted ${
+                  reduceMotion ? "" : "learn-reveal"
+                }`}
+              >
                 {card.why}
               </p>
             ) : (
@@ -396,38 +423,71 @@ export default function LearnFeed() {
   );
 }
 
+// One-shot accent particle burst (the reward beat on a correct answer).
+function Burst() {
+  const dots = Array.from({ length: 14 }, (_, i) => {
+    const a = (Math.PI * 2 * i) / 14;
+    const r = 34 + (i % 3) * 12;
+    return { dx: Math.cos(a) * r, dy: Math.sin(a) * r };
+  });
+  return (
+    <div
+      className="pointer-events-none absolute inset-0 z-10 flex items-center justify-center"
+      aria-hidden
+    >
+      {dots.map((d, i) => (
+        <span
+          key={i}
+          className="learn-burst-dot absolute h-1.5 w-1.5 rounded-full bg-accent"
+          style={
+            { "--dx": `${d.dx}px`, "--dy": `${d.dy}px` } as React.CSSProperties
+          }
+        />
+      ))}
+    </div>
+  );
+}
+
 function QuizView({
   card,
   chosen,
   onChoose,
   trans,
+  reduceMotion,
 }: {
   card: Extract<LearnCard, { type: "quiz" }>;
   chosen: number | null;
   onChoose: (i: number) => void;
   trans: string;
+  reduceMotion: boolean;
 }) {
   const answered = chosen !== null;
+  const gotIt = answered && chosen === card.correctIndex;
   return (
     <div>
       <p className="text-lg font-medium leading-snug text-fg">{card.question}</p>
-      <div className="mt-4 space-y-2">
+      <div className="relative mt-4 space-y-2">
+        {gotIt && !reduceMotion && <Burst />}
         {card.options.map((opt, i) => {
           const isCorrect = i === card.correctIndex;
           const isChosen = i === chosen;
           let cls = "border-border bg-bg text-fg";
-          if (answered && isCorrect)
+          let anim = "";
+          if (answered && isCorrect) {
             cls = "border-accent bg-surface-2 text-fg";
-          else if (answered && isChosen)
+            if (!reduceMotion) anim = "learn-pop";
+          } else if (answered && isChosen) {
             cls = "border-border bg-surface-2 text-muted line-through";
+            if (!reduceMotion) anim = "learn-shake";
+          }
           return (
             <button
               key={i}
               type="button"
               onClick={() => onChoose(i)}
               disabled={answered}
-              className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-sm ${trans} ${cls} ${
-                answered ? "" : "hover:bg-surface-2"
+              className={`flex w-full items-center justify-between rounded-xl border px-4 py-3 text-left text-sm ${trans} ${cls} ${anim} ${
+                answered ? "" : "hover:bg-surface-2 active:scale-[0.99]"
               }`}
             >
               <span>{opt}</span>
@@ -442,7 +502,11 @@ function QuizView({
         })}
       </div>
       {answered && (
-        <p className="mt-4 border-l-2 border-accent pl-3 text-sm text-muted">
+        <p
+          className={`mt-4 border-l-2 border-accent pl-3 text-sm text-muted ${
+            reduceMotion ? "" : "learn-reveal"
+          }`}
+        >
           {card.explanation}
         </p>
       )}

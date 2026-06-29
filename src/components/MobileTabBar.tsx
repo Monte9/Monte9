@@ -2,10 +2,10 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Home, Newspaper, Globe, LayoutGrid, UserRound } from "lucide-react";
+import { GraduationCap, Newspaper, Globe, LayoutGrid, UserRound } from "lucide-react";
 
 const TABS = [
-  { href: "/", label: "Home", Icon: Home },
+  { href: "/", label: "Learn", Icon: GraduationCap },
   { href: "/posts", label: "Posts", Icon: Newspaper },
   { href: "/apps", label: "Apps", Icon: LayoutGrid },
   { href: "/travel", label: "Travel", Icon: Globe },

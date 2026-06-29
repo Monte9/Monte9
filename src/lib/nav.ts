@@ -19,7 +19,7 @@ export function routeInfo(pathname: string): { kind: PageKind; title: string } {
     pathname !== "/" && pathname.endsWith("/")
       ? pathname.slice(0, -1)
       : pathname;
-  if (p === "/") return { kind: "home", title: "Monte Thakkar" };
+  if (p === "/") return { kind: "home", title: "Learn" };
   if (p.startsWith("/apps/")) {
     const slug = p.slice("/apps/".length);
     const app = APP_EXPERIMENTS.find((e) => e.slug === slug);

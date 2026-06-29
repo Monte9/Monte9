@@ -81,7 +81,8 @@ after the switch. Adding `zod`/`@anthropic-ai/sdk` is NOT part of this sprint
 
 ---
 
-## Sprint 2 — Nav + root change: Learn becomes `/`, Home tab removed, bio → `/about` [todo]
+## Sprint 2 — Nav + root change: Learn becomes `/`, Home tab removed, bio → `/about` [done]
+_Done 2026-06-28: Learn is the first tab (mobile + desktop) and the site root `/`; Home tab removed; the bio already lives in full at `/about` (the old home recents were redundant with the Posts/Apps tabs and were dropped). HeaderBrand shows "Learn" at `/`._
 
 **GOAL:** Make the site land on a Learn placeholder at `/`, remove the Home tab,
 add Learn as the first tab (with a fitting lucide icon), and relocate the current
@@ -121,7 +122,8 @@ today). Update `MobileTabBar`, `DesktopNav`, `HeaderBrand`, and `src/lib/nav.ts`
 
 ---
 
-## Sprint 3 — The Learn feed: full session loop on MOCK data [todo]
+## Sprint 3 — The Learn feed: full session loop on MOCK data [done]
+_Done 2026-06-28: 5-card session from a committed mock deck (quiz/trivia/news across Monte's topics) behind a `getSession` seam (`src/lib/learn-client.ts`, LIVE=false), shared `learn-types`. Card stack with progress dots, instant quiz grading + explanation, trivia/news reveal-the-why, gated Next, session-complete with score + 🔥 day-streak (localStorage), New-set, dynamic tab title, `?mock=1`, mobile-first + theme-aware. Verified under `next start`: zero console errors, no overflow._
 
 **GOAL:** Build the complete Learn experience driven entirely by committed mock
 fixtures and the shared `Card` types — the card stack, per-card answer/reveal +

@@ -147,4 +147,45 @@ export const LEARN_FIXTURES: LearnCard[] = [
       "As agents do work rather than assist humans, more companies are experimenting with charging per resolved task or outcome instead of per user seat.",
     why: "Pricing model is product strategy: outcome pricing aligns cost with value but makes revenue harder to forecast — a live tension for any founder building agentic products.",
   },
+
+  // ---- Flashcard ----
+  {
+    id: "f-systems-idempotency",
+    type: "flashcard",
+    topic: "Systems engineering",
+    difficulty: "medium",
+    term: "Idempotency",
+    definition:
+      "An operation is idempotent if doing it twice has the same effect as doing it once. It's why safe retries exist: a client can resend a request after a timeout without double-charging or duplicating the work.",
+  },
+  {
+    id: "f-startups-cac-ltv",
+    type: "flashcard",
+    topic: "Startups",
+    difficulty: "easy",
+    term: "LTV : CAC",
+    definition:
+      "Lifetime value of a customer divided by the cost to acquire them. A rough rule of thumb is 3:1 — below ~1:1 you lose money on every customer; far above it you may be under-investing in growth.",
+  },
+
+  // ---- This day ----
+  {
+    id: "d-moon-apollo11",
+    type: "thisday",
+    topic: "The Moon",
+    difficulty: "easy",
+    year: "1969",
+    event: "Apollo 11 lands and Armstrong steps onto the Moon.",
+    why: "The descent computer threw 1202/1201 alarms (it was overloaded but shedding low-priority work) — a landmark in graceful degradation: the system kept the critical task running instead of crashing.",
+  },
+
+  // ---- Big question ----
+  {
+    id: "b-agentic-judgment",
+    type: "bigq",
+    topic: "AI",
+    difficulty: "hard",
+    prompt:
+      "If an autonomous agent ships work while you sleep, what's the one check you'd never let it skip — and why that one?",
+  },
 ];

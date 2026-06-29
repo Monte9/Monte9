@@ -6,6 +6,23 @@
 import { LEARN_FIXTURES } from "@/data/learn-fixtures";
 import type { LearnCard, LearnSession } from "@/lib/learn-types";
 
+// Monte's selectable topics (the chips in the Learn topic picker). Passed to
+// /api/learn as the `topics` filter; the route adds a discover lane on top.
+export const TOPICS = [
+  "Porsche",
+  "Roman history",
+  "Indian mythology",
+  "Systems engineering",
+  "Algorithms",
+  "Data structures",
+  "Pickleball",
+  "Geography",
+  "The Moon",
+  "Mars",
+  "Startups",
+  "AI",
+];
+
 // Live as of Sprint 4: the client hits /api/learn (which itself returns mock
 // cards when ANTHROPIC_API_KEY isn't set, so the feed works key or no key).
 const LIVE = true;

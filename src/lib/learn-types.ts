@@ -2,7 +2,13 @@
 // fixtures, and (Sprint 4) the /api/learn serverless function + its Zod schema.
 
 export type Difficulty = "easy" | "medium" | "hard";
-export type CardType = "quiz" | "trivia" | "news";
+export type CardType =
+  | "quiz"
+  | "trivia"
+  | "news"
+  | "flashcard"
+  | "thisday"
+  | "bigq";
 
 export type QuizCard = {
   id: string;
@@ -35,7 +41,40 @@ export type NewsCard = {
   source?: { name: string; url: string };
 };
 
-export type LearnCard = QuizCard | TriviaCard | NewsCard;
+export type FlashcardCard = {
+  id: string;
+  type: "flashcard";
+  topic: string;
+  difficulty: Difficulty;
+  term: string;
+  definition: string;
+};
+
+export type ThisDayCard = {
+  id: string;
+  type: "thisday";
+  topic: string;
+  difficulty: Difficulty;
+  year: string; // keep as string ("1969", "49 BC")
+  event: string;
+  why: string;
+};
+
+export type BigQCard = {
+  id: string;
+  type: "bigq";
+  topic: string;
+  difficulty: Difficulty;
+  prompt: string; // a think-prompt; no grading
+};
+
+export type LearnCard =
+  | QuizCard
+  | TriviaCard
+  | NewsCard
+  | FlashcardCard
+  | ThisDayCard
+  | BigQCard;
 
 export type LearnSession = {
   cards: LearnCard[];

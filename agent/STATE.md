@@ -1,7 +1,7 @@
 # STATE
 
-phase: building
-sprint: 6 (next, final) — Sprints 1–5 done
+phase: idle
+sprint: - (Learn goal COMPLETE — Sprints 1–6 done)
 attempts: 0
 
 ## Notes

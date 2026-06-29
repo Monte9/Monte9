@@ -48,7 +48,35 @@ const News = z.object({
   why: z.string().min(10),
   source: z.object({ name: z.string(), url: z.string().url() }),
 });
-const GenCard = z.discriminatedUnion("type", [Quiz, Trivia, News]);
+const Flashcard = z.object({
+  type: z.literal("flashcard"),
+  topic: z.string(),
+  difficulty: Difficulty,
+  term: z.string().min(2),
+  definition: z.string().min(10),
+});
+const ThisDay = z.object({
+  type: z.literal("thisday"),
+  topic: z.string(),
+  difficulty: Difficulty,
+  year: z.coerce.string(),
+  event: z.string().min(8),
+  why: z.string().min(10),
+});
+const BigQ = z.object({
+  type: z.literal("bigq"),
+  topic: z.string(),
+  difficulty: Difficulty,
+  prompt: z.string().min(12),
+});
+const GenCard = z.discriminatedUnion("type", [
+  Quiz,
+  Trivia,
+  News,
+  Flashcard,
+  ThisDay,
+  BigQ,
+]);
 
 // Fresh, real headlines from the public Hacker News API (no key). Returns a few
 // {title,url} so the model can summarize them into grounded news cards.
@@ -132,9 +160,12 @@ Return ONLY a JSON array of exactly ${n} cards (no prose, no markdown fences). M
 Each card is one of:
 - {"type":"quiz","topic":string,"difficulty":"easy"|"medium"|"hard","question":string,"options":[3-4 strings],"correctIndex":integer (0-based index of the correct option),"explanation":string}
 - {"type":"trivia","topic":string,"difficulty":"easy"|"medium"|"hard","fact":string,"why":string}
+- {"type":"flashcard","topic":string,"difficulty":"easy"|"medium"|"hard","term":string,"definition":string}
+- {"type":"thisday","topic":string,"difficulty":"easy"|"medium"|"hard","year":string,"event":string,"why":string}
+- {"type":"bigq","topic":string,"difficulty":"easy"|"medium"|"hard","prompt":string (an open, thought-provoking question — no single right answer)}
 - {"type":"news","topic":string,"difficulty":"easy"|"medium"|"hard","headline":string,"summary":string (≤2 sentences),"why":string (the so-what),"source":{"name":"Hacker News","url":string}}${newsBlock}
 
-Rules: be factually correct and self-contained; quiz options must be plausible (no throwaways) and exactly one correct; "explanation"/"why"/"summary" is the teaching payoff in 1-2 sentences. For news cards, the headline and source.url MUST be copied verbatim from the provided headlines (do not invent news). Vary difficulty. Do NOT repeat well-worn clichés. Output the JSON array only.`;
+Rules: be factually correct and self-contained; quiz options must be plausible (no throwaways) and exactly one correct; "explanation"/"why"/"summary"/"definition" is the teaching payoff in 1-2 sentences. For news cards, the headline and source.url MUST be copied verbatim from the provided headlines (do not invent news). Mix at least 3 different card TYPES across the set. Include exactly ONE "discover" card on an interesting topic OUTSIDE the reader's set above (label its topic honestly). Vary difficulty. Do NOT repeat well-worn clichés. Output the JSON array only.`;
 
   try {
     const client = new Anthropic({ apiKey });

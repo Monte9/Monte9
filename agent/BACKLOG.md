@@ -265,7 +265,8 @@ logging._
 
 ---
 
-## Sprint 6 — Fast-follow content types + personalization + discover lane [todo]
+## Sprint 6 — Fast-follow content types + personalization + discover lane [done]
+_Done 2026-06-28: added flashcard (term→reveal definition), this-day (year/event→why), and big-question (think-prompt, no grading) card types end-to-end (types + route Zod union + prompt + renderers + fixtures). Topic personalization: a chip picker on the session-complete screen (Monte's 12 topics) persisted to localStorage and passed to /api/learn; the route adds one off-set "discover" card per session for serendipity. Verified under next start (mock walk through mixed types → complete; topic picker renders; zero errors, no overflow)._
 
 **GOAL:** Widen the variable reward: add the fast-follow card types (flashcard,
 this-day-in-history, big-question think-prompt) to types/fixtures/generation, and

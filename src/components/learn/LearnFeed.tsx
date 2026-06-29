@@ -3,11 +3,12 @@
 import { useCallback, useEffect, useRef, useState } from "react";
 import { RotateCw, Check, X, ArrowRight, Flame } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
-import { getSession } from "@/lib/learn-client";
+import { getSession, TOPICS } from "@/lib/learn-client";
 import type { LearnCard, LearnSession } from "@/lib/learn-types";
 
 const SEEN_KEY = "learn-seen";
 const STREAK_KEY = "learn-streak";
+const TOPICS_KEY = "learn-topics";
 const SESSION_N = 5;
 
 // ---- small localStorage helpers (guarded for SSR) ----
@@ -43,6 +44,8 @@ export default function LearnFeed() {
   const [correct, setCorrect] = useState(0);
   const [quizCount, setQuizCount] = useState(0);
   const [streak, setStreak] = useState(0);
+  const [topics, setTopics] = useState<string[]>(TOPICS);
+  const topicsRef = useRef<string[]>(TOPICS);
   const mockRef = useRef(false);
 
   // current streak for display (broken if last completion > 1 day ago)
@@ -52,9 +55,23 @@ export default function LearnFeed() {
       lastDate: string;
     }>(STREAK_KEY, { streak: 0, lastDate: "" });
     setStreak(lastDate && daysBetween(lastDate, today()) <= 1 ? s : 0);
+    const savedTopics = readJSON<string[]>(TOPICS_KEY, TOPICS);
+    if (Array.isArray(savedTopics) && savedTopics.length) {
+      setTopics(savedTopics);
+      topicsRef.current = savedTopics;
+    }
     mockRef.current =
       typeof window !== "undefined" &&
       new URLSearchParams(window.location.search).get("mock") === "1";
+  }, []);
+
+  const toggleTopic = useCallback((t: string) => {
+    setTopics((cur) => {
+      const next = cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t];
+      topicsRef.current = next;
+      writeJSON(TOPICS_KEY, next);
+      return next;
+    });
   }, []);
 
   const load = useCallback(async () => {
@@ -64,6 +81,7 @@ export default function LearnFeed() {
       n: SESSION_N,
       seen,
       mock: mockRef.current,
+      topics: topicsRef.current.length ? topicsRef.current : undefined,
     });
     // remember these cards so the next set avoids them (ring buffer ~60)
     const nextSeen = [...session.cards.map((c) => c.id), ...seen].slice(0, 60);
@@ -139,6 +157,33 @@ export default function LearnFeed() {
           </p>
         )}
         <p className="mb-6 text-sm text-muted">Nice — that&apos;s your 2 minutes.</p>
+
+        <div className="mb-6 w-full max-w-sm">
+          <p className="mb-2 text-xs uppercase tracking-wide text-muted">
+            Topics for your next set
+          </p>
+          <div className="flex flex-wrap justify-center gap-1.5">
+            {TOPICS.map((t) => {
+              const on = topics.includes(t);
+              return (
+                <button
+                  key={t}
+                  type="button"
+                  onClick={() => toggleTopic(t)}
+                  aria-pressed={on}
+                  className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
+                    on
+                      ? "border-accent text-accent"
+                      : "border-border text-muted hover:text-fg"
+                  }`}
+                >
+                  {t}
+                </button>
+              );
+            })}
+          </div>
+        </div>
+
         <button
           type="button"
           onClick={load}
@@ -239,6 +284,56 @@ export default function LearnFeed() {
             )}
           </div>
         )}
+
+        {card.type === "flashcard" && (
+          <div>
+            <p className="text-lg font-semibold text-fg">{card.term}</p>
+            {revealed ? (
+              <p className="mt-3 border-l-2 border-accent pl-3 text-sm leading-relaxed text-muted">
+                {card.definition}
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setRevealed(true)}
+                className="mt-4 text-sm font-medium text-accent hover:opacity-80"
+              >
+                Reveal →
+              </button>
+            )}
+          </div>
+        )}
+
+        {card.type === "thisday" && (
+          <div>
+            <p className="text-xs uppercase tracking-wide text-accent">
+              On this day · {card.year}
+            </p>
+            <p className="mt-1 text-lg leading-relaxed text-fg">{card.event}</p>
+            {revealed ? (
+              <p className="mt-3 border-l-2 border-accent pl-3 text-sm text-muted">
+                {card.why}
+              </p>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setRevealed(true)}
+                className="mt-4 text-sm font-medium text-accent hover:opacity-80"
+              >
+                Why it matters →
+              </button>
+            )}
+          </div>
+        )}
+
+        {card.type === "bigq" && (
+          <div>
+            <p className="text-lg leading-relaxed text-fg">{card.prompt}</p>
+            <p className="mt-3 text-sm text-muted">
+              Take a beat — there&apos;s no wrong answer.
+            </p>
+          </div>
+        )}
       </div>
 
       {/* next — enabled once the card has been engaged */}
@@ -246,7 +341,13 @@ export default function LearnFeed() {
         <button
           type="button"
           onClick={next}
-          disabled={card.type === "quiz" ? chosen === null : !revealed}
+          disabled={
+            card.type === "quiz"
+              ? chosen === null
+              : card.type === "bigq"
+                ? false
+                : !revealed
+          }
           className="inline-flex items-center gap-1.5 rounded-xl border border-border px-4 py-2 text-sm font-medium text-fg hover:bg-surface-2 disabled:opacity-40"
         >
           {idx === cards.length - 1 ? "Finish" : "Next"}

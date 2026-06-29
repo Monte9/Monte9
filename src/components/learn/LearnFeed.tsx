@@ -50,6 +50,7 @@ export default function LearnFeed() {
   const [degraded, setDegraded] = useState(false);
   const [pull, setPull] = useState(0);
   const pullStartY = useRef<number | null>(null);
+  const cardRef = useRef<HTMLDivElement>(null);
 
   // current streak for display (broken if last completion > 1 day ago)
   useEffect(() => {
@@ -156,6 +157,24 @@ export default function LearnFeed() {
     setPull(0);
   };
 
+  // 2.5D pointer tilt on the card (desktop/mouse). Mutates the transform
+  // directly on the node to stay off the React render path (60fps).
+  const onCardMove = (e: React.MouseEvent) => {
+    if (reduceMotion) return;
+    const el = cardRef.current;
+    if (!el) return;
+    const r = el.getBoundingClientRect();
+    const px = (e.clientX - r.left) / r.width - 0.5;
+    const py = (e.clientY - r.top) / r.height - 0.5;
+    el.style.transform = `perspective(900px) rotateX(${(-py * 4).toFixed(
+      2
+    )}deg) rotateY(${(px * 4).toFixed(2)}deg)`;
+  };
+  const onCardLeave = () => {
+    const el = cardRef.current;
+    if (el) el.style.transform = "";
+  };
+
   // ---------- render ----------
   if (phase === "loading") {
     return (
@@ -247,8 +266,8 @@ export default function LearnFeed() {
             <span
               key={i}
               className={`h-1.5 rounded-full ${
-                i === idx ? "w-6 bg-accent" : "w-1.5 bg-border"
-              }`}
+                reduceMotion ? "" : "transition-all duration-300"
+              } ${i === idx ? "w-6 bg-accent" : "w-1.5 bg-border"}`}
             />
           ))}
         </div>
@@ -260,7 +279,10 @@ export default function LearnFeed() {
 
       <div
         key={card.id}
-        className={`rounded-2xl border border-border bg-surface p-5 ${
+        ref={cardRef}
+        onMouseMove={onCardMove}
+        onMouseLeave={onCardLeave}
+        className={`rounded-2xl border border-border bg-surface p-5 [transition:transform_.2s_ease-out] ${
           reduceMotion ? "" : "learn-card-in"
         }`}
       >
@@ -343,26 +365,11 @@ export default function LearnFeed() {
         )}
 
         {card.type === "flashcard" && (
-          <div>
-            <p className="text-lg font-semibold text-fg">{card.term}</p>
-            {revealed ? (
-              <p
-                className={`mt-3 border-l-2 border-accent pl-3 text-sm leading-relaxed text-muted ${
-                  reduceMotion ? "" : "learn-reveal"
-                }`}
-              >
-                {card.definition}
-              </p>
-            ) : (
-              <button
-                type="button"
-                onClick={() => setRevealed(true)}
-                className="mt-4 text-sm font-medium text-accent hover:opacity-80"
-              >
-                Reveal →
-              </button>
-            )}
-          </div>
+          <FlashcardFlip
+            card={card}
+            reduceMotion={reduceMotion}
+            onFlip={() => setRevealed(true)}
+          />
         )}
 
         {card.type === "thisday" && (
@@ -445,6 +452,45 @@ function Burst() {
         />
       ))}
     </div>
+  );
+}
+
+// A real 3D flip (CSS 3D, no WebGL) — term on the front, definition on the back.
+function FlashcardFlip({
+  card,
+  reduceMotion,
+  onFlip,
+}: {
+  card: Extract<LearnCard, { type: "flashcard" }>;
+  reduceMotion: boolean;
+  onFlip: () => void;
+}) {
+  const [flipped, setFlipped] = useState(false);
+  return (
+    <button
+      type="button"
+      onClick={() => {
+        setFlipped((f) => !f);
+        onFlip();
+      }}
+      className="block w-full text-left [perspective:1000px]"
+      aria-label="Flip flashcard"
+    >
+      <div
+        className={`relative grid min-h-[6rem] [transform-style:preserve-3d] ${
+          reduceMotion ? "" : "transition-transform duration-500"
+        } ${flipped ? "[transform:rotateY(180deg)]" : ""}`}
+      >
+        <div className="[grid-area:1/1] [backface-visibility:hidden]">
+          <p className="text-lg font-semibold text-fg">{card.term}</p>
+          <p className="mt-3 text-xs text-muted">Tap to flip ↻</p>
+        </div>
+        <div className="[grid-area:1/1] [backface-visibility:hidden] [transform:rotateY(180deg)]">
+          <p className="text-sm leading-relaxed text-fg">{card.definition}</p>
+          <p className="mt-3 text-xs text-muted">Tap to flip back ↻</p>
+        </div>
+      </div>
+    </button>
   );
 }
 

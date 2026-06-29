@@ -1,7 +1,7 @@
 # STATE
 
-phase: planning
-sprint: -
+phase: building
+sprint: 2 (next) — Sprint 1 done
 attempts: 0
 
 ## Notes

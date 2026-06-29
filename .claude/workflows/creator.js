@@ -226,9 +226,9 @@ Make it genuinely good — judged on craft, novelty, fun, wow, performance, fit.
   const verify = await agent(
     `You are the VERIFIER for the Creator (repo /home/user/Monte9). Candidate /apps pages just built:
 ${JSON.stringify(attempted.map(({ slug, componentName, files }) => ({ slug, componentName, files })), null, 2)}
-1. cd /home/user/Monte9 && rm -rf .next out && pnpm build (timeout 300s).
+1. cd /home/user/Monte9 && rm -rf .next && pnpm build (timeout 300s). (The site is a standard Next app now — NOT a static export, so there is no out/ dir.)
 2. If it FAILS, find the offending slug, delete its files (src/app/apps/<slug>/, its component, any src/data/<slug>.ts), rebuild; repeat until green or none left. Track brokenSlugs/builtSlugs.
-3. Once green: ts=$(date -u +%Y%m%d-%H%M%S); mkdir -p agent/apps/runs/$ts (runDir). cd out && (python3 -m http.server 4137 >/dev/null 2>&1 &); sleep 1; cd .. . For each built slug + theme light,dark write a Playwright .cjs that sets localStorage theme, visits http://localhost:4137/apps/<slug>/ at 1280x900, waits ~1500ms, moves the mouse across + scrolls, screenshots agent/apps/runs/$ts/<slug>-<theme>.png. Run with PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers NODE_PATH=/opt/node22/lib/node_modules node <script>.cjs (or 'npx playwright install chromium' first on CI). Capture console/page errors. Kill: lsof -ti tcp:4137 | xargs -r kill. Screenshots are best-effort (shots:[] if they fail).
+3. Once green: ts=$(date -u +%Y%m%d-%H%M%S); mkdir -p agent/apps/runs/$ts (runDir). Serve the built app with Next: (pnpm start -p 4137 >/dev/null 2>&1 &); then poll until http://localhost:4137 responds (sleep ~3s). For each built slug + theme light,dark write a Playwright .cjs that sets localStorage theme, visits http://localhost:4137/apps/<slug>/ at 1280x900, waits ~1500ms, moves the mouse across + scrolls, screenshots agent/apps/runs/$ts/<slug>-<theme>.png. Run with PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers NODE_PATH=/opt/node22/lib/node_modules node <script>.cjs (or 'npx playwright install chromium' first on CI). Capture console/page errors. Kill the server: lsof -ti tcp:4137 | xargs -r kill. Screenshots are best-effort (shots:[] if they fail).
 Return green, builtSlugs, brokenSlugs, runDir, shots, notes.`,
     { schema: APP_VERIFY_SCHEMA, phase: 'Judge', label: 'verify' }
   )
@@ -236,7 +236,7 @@ Return green, builtSlugs, brokenSlugs, runDir, shots, notes.`,
   if (!verify.green || verify.builtSlugs.length === 0) {
     phase('Ship')
     const noship = await agent(
-      `SHIP/LOG agent (repo /home/user/Monte9). No green app build this run — ship NOTHING. Remove any untracked stray files under src/app/apps + src/components/apps that are not shipped experiments. Prepend a no-ship entry to agent/apps/JOURNAL.md and agent/creator/JOURNAL.md (timestamp $(date -u '+%Y-%m-%d %H:%M'), candidates ${JSON.stringify(concepts.map((c) => c.slug))}, reason from ${JSON.stringify(verify.notes)}). Add the 3 concepts to agent/apps/IDEAS.md as 'rejected'. rm -rf .next out && pnpm build must be green for the existing site. git add -A && git commit -m "creator: no-ship app round" && git push origin HEAD:main (retry x4 backoff). Return shipped=null, kind="app".`,
+      `SHIP/LOG agent (repo /home/user/Monte9). No green app build this run — ship NOTHING. Remove any untracked stray files under src/app/apps + src/components/apps that are not shipped experiments. Prepend a no-ship entry to agent/apps/JOURNAL.md and agent/creator/JOURNAL.md (timestamp $(date -u '+%Y-%m-%d %H:%M'), candidates ${JSON.stringify(concepts.map((c) => c.slug))}, reason from ${JSON.stringify(verify.notes)}). Add the 3 concepts to agent/apps/IDEAS.md as 'rejected'. rm -rf .next && pnpm build must be green for the existing site. git add -A && git commit -m "creator: no-ship app round" && git push origin HEAD:main (retry x4 backoff). Return shipped=null, kind="app".`,
       { schema: SHIP_SCHEMA, phase: 'Ship', label: 'no-ship' }
     )
     return { route, branch: 'app', verify, ship: noship }
@@ -260,7 +260,7 @@ READ agent/apps/TASTE.md and apply it. LOOK at each candidate's screenshots (Rea
    { slug: "${verdict.winner}", title: ${JSON.stringify(verdict.registry.title)}, blurb: ${JSON.stringify(verdict.registry.blurb)}, date: "<now: $(date -u +%FT%H:%M)>", tags: ${JSON.stringify(verdict.registry.tags)}, motif: ${JSON.stringify(winMotif)} }
    date MUST be full ISO date-time so it sorts to the top. Keep the motif string intact (it's SVG inner markup). Match existing style.
 3. MEMORY: prepend run blocks to agent/apps/JOURNAL.md (candidates, scores ${JSON.stringify(verdict.scores)}, winner, rationale, dropped) and agent/creator/JOURNAL.md (slate ${JSON.stringify(route.slate)}, chosen: app — winner, outcome). Add the 3 concepts to agent/apps/IDEAS.md (winner 'shipped', others 'rejected'). Prepend this to agent/apps/TASTE.md "## Lessons": ${JSON.stringify(verdict.tasteLesson)}. Append a one-line lesson to agent/creator/DIRECTION.md "## Lessons".
-4. GREEN-GATE: rm -rf .next out && pnpm build must exit 0 with the winner wired in. If not green, try to fix; if still broken, ABORT (revert winner + registry line), log no-ship, return shipped=null.
+4. GREEN-GATE: rm -rf .next && pnpm build must exit 0 with the winner wired in. If not green, try to fix; if still broken, ABORT (revert winner + registry line), log no-ship, return shipped=null.
 5. git add -A && git commit -m "creator: ship app ${verdict.winner} to /apps" && git push origin HEAD:main (retry x4 backoff). Return shipped, kind="app", commit, pushed, notes.`,
     { schema: SHIP_SCHEMA, phase: 'Ship', label: `ship:${verdict.winner}` }
   )
@@ -328,11 +328,11 @@ All candidate slugs: ${JSON.stringify(allSlugs)} (drafts at content/posts/<slug>
 ${verdict.winner
   ? `1. KEEP content/posts/${verdict.winner}.md. Ensure its frontmatter has title ${JSON.stringify(verdict.registry.title)}, a full ISO date-time ($(date -u +%FT%H:%M)) so it sorts to the top, description ${JSON.stringify(verdict.registry.description)}, tags ${JSON.stringify(verdict.registry.tags)}, aiGenerated: true. DELETE the other candidates' content/posts/*.md.
 2. MEMORY: prepend a run block to agent/posts/JOURNAL.md (candidates, scores ${JSON.stringify(verdict.scores)}, winner, rationale) and agent/creator/JOURNAL.md (slate ${JSON.stringify(route.slate)}, chosen: post — winner, outcome). Add the 3 topics to agent/posts/IDEAS.md (winner 'shipped', others 'rejected'). Prepend ${JSON.stringify(verdict.ruleLesson)} to agent/posts/RUBRIC.md "## Lessons". Append a one-line lesson to agent/creator/DIRECTION.md "## Lessons".
-3. GREEN-GATE: rm -rf .next out && pnpm build must exit 0 (valid frontmatter, renders). Fix the winner if needed; if still broken, ABORT (delete the winner md too), log no-ship, return shipped=null.
+3. GREEN-GATE: rm -rf .next && pnpm build must exit 0 (valid frontmatter, renders). Fix the winner if needed; if still broken, ABORT (delete the winner md too), log no-ship, return shipped=null.
 4. git add -A && git commit -m "creator: publish post ${verdict.winner}" && git push origin HEAD:main (retry x4 backoff). Return shipped="${verdict.winner}", kind="post", commit, pushed, notes.`
   : `1. NO winner passed the grounding floor — publish NOTHING. DELETE all candidate drafts: ${JSON.stringify(allSlugs)} (rm content/posts/<slug>.md).
 2. Prepend a no-ship entry to agent/posts/JOURNAL.md and agent/creator/JOURNAL.md (timestamp, candidates, reason: no draft passed the rubric). Add the 3 topics to agent/posts/IDEAS.md as 'rejected'.
-3. rm -rf .next out && pnpm build must be green. git add -A && git commit -m "creator: no-ship post round" && git push origin HEAD:main (retry x4 backoff). Return shipped=null, kind="post".`}`,
+3. rm -rf .next && pnpm build must be green. git add -A && git commit -m "creator: no-ship post round" && git push origin HEAD:main (retry x4 backoff). Return shipped=null, kind="post".`}`,
     { schema: SHIP_SCHEMA, phase: 'Ship', label: verdict.winner ? `publish:${verdict.winner}` : 'no-ship' }
   )
   result = { route, branch: 'post', verdict, ship }

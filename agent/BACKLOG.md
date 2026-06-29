@@ -38,7 +38,8 @@ site shippable and is verified by interacting with the running site. Six sprints
 
 ---
 
-## Sprint 1 — Drop static export → serverless-ready app; fix the Creator routine [todo]
+## Sprint 1 — Drop static export → serverless-ready app; fix the Creator routine [done]
+_Done 2026-06-28: removed `output:"export"`; `/api/health` returns 200 JSON under `next start`; automated regression swept all pages + 8 apps + the globe at 1280/390 — zero console errors, no overflow, every WebGL/canvas piece mounts (built-by-agents is SVG/DOM by design). Creator routine verify/ship now serve via `next start`, not `out/`._
 
 **GOAL:** Switch the site off pure static export so server route handlers can run
 as Vercel serverless functions, WITHOUT regressing any existing page, and update

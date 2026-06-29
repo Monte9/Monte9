@@ -130,10 +130,15 @@ the "why"/explanation is the payoff. Quiz options are plausible (no throwaways).
 
 ## 6. Personalization
 
-Default interest set (editable in a small settings affordance, stored in
-localStorage): AI, Startups, History, Finance, Health & Fitness, Space, Science,
-Sports/Pickleball. Plus a **discover** lane that occasionally serves a topic
-outside the set. (Monte to confirm/extend the list; reasonable defaults ship.)
+Default interest set = Monte's actual `quiz-me` seed (editable, stored in
+localStorage): **Porsche / cars, Roman history, Indian mythology, systems
+engineering, data structures (L5), algorithms (L5), pickleball, geography, the
+Moon, Mars, startups & product**, plus recents (opera history, medieval
+architecture, medieval weaponry) — and the broader set (AI, startups, finance,
+health/fitness, space, science). The L5 data-structures/algorithms topics map to
+his "interview-ready by Dec 2026" goal — lean into interview-prep flavored cards
+there. Two lanes mirror quiz-me: **random** (within his topics) and **discover**
+(occasionally serves a topic outside the set for serendipity).
 
 ## 7. Mock mode
 

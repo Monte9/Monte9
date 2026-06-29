@@ -39,7 +39,43 @@ const Trivia = z.object({
   fact: z.string().min(10),
   why: z.string().min(10),
 });
-const GenCard = z.discriminatedUnion("type", [Quiz, Trivia]);
+const News = z.object({
+  type: z.literal("news"),
+  topic: z.string(),
+  difficulty: Difficulty,
+  headline: z.string().min(8),
+  summary: z.string().min(10),
+  why: z.string().min(10),
+  source: z.object({ name: z.string(), url: z.string().url() }),
+});
+const GenCard = z.discriminatedUnion("type", [Quiz, Trivia, News]);
+
+// Fresh, real headlines from the public Hacker News API (no key). Returns a few
+// {title,url} so the model can summarize them into grounded news cards.
+async function fetchHeadlines(k: number): Promise<{ title: string; url: string }[]> {
+  try {
+    const ids: number[] = await fetch(
+      "https://hacker-news.firebaseio.com/v0/topstories.json",
+      { cache: "no-store" }
+    ).then((r) => r.json());
+    const picks = ids.slice(0, k * 3);
+    const items = await Promise.all(
+      picks.map((id) =>
+        fetch(`https://hacker-news.firebaseio.com/v0/item/${id}.json`, {
+          cache: "no-store",
+        })
+          .then((r) => r.json())
+          .catch(() => null)
+      )
+    );
+    return items
+      .filter((it) => it && it.title && it.url)
+      .slice(0, k)
+      .map((it) => ({ title: it.title as string, url: it.url as string }));
+  } catch {
+    return [];
+  }
+}
 
 function mockSession(n: number, seen: string[]): LearnSession {
   const fresh = LEARN_FIXTURES.filter((c) => !seen.includes(c.id));
@@ -80,6 +116,15 @@ export async function GET(req: Request) {
   // No key (e.g. before it's set in Vercel) → graceful mock so the feed still works.
   if (!apiKey) return Response.json(mockSession(n, seen));
 
+  // Fresh real headlines for grounded news cards (best-effort).
+  const headlines = await fetchHeadlines(3);
+  const headlineUrls = new Set(headlines.map((h) => h.url));
+  const newsBlock = headlines.length
+    ? `\n\nCURRENT REAL HEADLINES (use 1-2 of these as "news" cards — copy the headline and url VERBATIM into the card; write your own summary + so-what):\n${headlines
+        .map((h, i) => `[${i + 1}] ${h.title} — ${h.url}`)
+        .join("\n")}`
+    : "";
+
   const prompt = `You are a sharp, accurate quizmaster generating ${n} bite-size LEARNING cards for a personal "Learn" feed. The reader has ~2 minutes and wants to learn something and be entertained.
 
 Return ONLY a JSON array of exactly ${n} cards (no prose, no markdown fences). Mix the TYPES and TOPICS so it feels varied. Draw topics from this set (use the reader's interests): ${topicList.join(", ")}.
@@ -87,8 +132,9 @@ Return ONLY a JSON array of exactly ${n} cards (no prose, no markdown fences). M
 Each card is one of:
 - {"type":"quiz","topic":string,"difficulty":"easy"|"medium"|"hard","question":string,"options":[3-4 strings],"correctIndex":integer (0-based index of the correct option),"explanation":string}
 - {"type":"trivia","topic":string,"difficulty":"easy"|"medium"|"hard","fact":string,"why":string}
+- {"type":"news","topic":string,"difficulty":"easy"|"medium"|"hard","headline":string,"summary":string (≤2 sentences),"why":string (the so-what),"source":{"name":"Hacker News","url":string}}${newsBlock}
 
-Rules: be factually correct and self-contained; quiz options must be plausible (no throwaways) and exactly one correct; "explanation"/"why" is the teaching payoff in 1-2 sentences (the chain of facts to the answer / why it matters). Vary difficulty. Do NOT repeat well-worn clichés. Output the JSON array only.`;
+Rules: be factually correct and self-contained; quiz options must be plausible (no throwaways) and exactly one correct; "explanation"/"why"/"summary" is the teaching payoff in 1-2 sentences. For news cards, the headline and source.url MUST be copied verbatim from the provided headlines (do not invent news). Vary difficulty. Do NOT repeat well-worn clichés. Output the JSON array only.`;
 
   try {
     const client = new Anthropic({ apiKey });
@@ -109,6 +155,8 @@ Rules: be factually correct and self-contained; quiz options must be plausible (
       if (!parsed.success) continue;
       const c = parsed.data;
       if (c.type === "quiz" && c.correctIndex >= c.options.length) continue;
+      // Drop hallucinated news: the source URL must be one we actually fetched.
+      if (c.type === "news" && !headlineUrls.has(c.source.url)) continue;
       cards.push({ ...c, id: `live-${crypto.randomUUID().slice(0, 8)}` } as LearnCard);
     }
     if (cards.length === 0) return Response.json(mockSession(n, seen));

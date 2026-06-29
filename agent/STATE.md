@@ -1,7 +1,7 @@
 # STATE
 
 phase: building
-sprint: 5 (next) — Sprints 1–4 done
+sprint: 6 (next, final) — Sprints 1–5 done
 attempts: 0
 
 ## Notes

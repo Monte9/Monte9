@@ -223,7 +223,8 @@ alignment if the evaluator can reach a preview; otherwise verify locally via
 
 ---
 
-## Sprint 5 — News cards: fresh server-side sourcing + summary + "so what" [todo]
+## Sprint 5 — News cards: fresh server-side sourcing + summary + "so what" [done]
+_Done 2026-06-28: route fetches fresh real headlines from the public Hacker News API (no key), passes them to Claude to write summary + so-what as `news` cards (headline + source.url copied verbatim; hallucinated URLs dropped via a fetched-URL allowlist). News added to the Zod union + the mock fixtures; the NewsCard renderer (headline → summary → "So what?" reveal + source link) already shipped in Sprint 3. Best-effort: if HN fetch fails, the session is just quiz/trivia. Build green._
 
 **GOAL:** Add the News card type — current, summarized headlines with a short
 "so what" for Monte, sourced server-side and cited — into the live `/api/learn`

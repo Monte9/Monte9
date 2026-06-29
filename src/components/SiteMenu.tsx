@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useRef, useState } from "react";
 import {
   FileText,
@@ -11,6 +12,7 @@ import {
   Menu,
   X,
 } from "lucide-react";
+import { isDetailRoute } from "@/lib/nav";
 
 const iconCls = "h-[18px] w-[18px]";
 
@@ -42,6 +44,7 @@ type Item = { href: string; label: string; kind: Kind; icon: React.ReactNode };
 export default function SiteMenu({ resumeUrl }: { resumeUrl: string }) {
   const [open, setOpen] = useState(false);
   const ref = useRef<HTMLDivElement>(null);
+  const pathname = usePathname();
 
   useEffect(() => {
     if (!open) return;
@@ -97,6 +100,10 @@ export default function SiteMenu({ resumeUrl }: { resumeUrl: string }) {
       </a>
     );
   };
+
+  // Hide the hamburger on detail pages (post + app) so they read as clean,
+  // standalone, shareable pages. (After all hooks, per rules of hooks.)
+  if (isDetailRoute(pathname)) return null;
 
   return (
     <div className="relative" ref={ref}>

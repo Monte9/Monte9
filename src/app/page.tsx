@@ -2,24 +2,33 @@ import Link from "next/link";
 import { getAllPosts, formatDate } from "@/lib/posts";
 import { APP_EXPERIMENTS, formatAppDate } from "@/data/apps";
 import AppThumb from "@/components/apps/AppThumb";
-import AiBadge from "@/components/AiBadge";
 
-function SectionHeader({ title, href }: { title: string; href: string }) {
+function SectionHeader({
+  title,
+  href,
+  count,
+}: {
+  title: string;
+  href: string;
+  count: number;
+}) {
   return (
     <div className="mt-12 mb-4 flex items-baseline justify-between">
       <h2 className="text-lg font-semibold">{title}</h2>
       <Link href={href} className="text-sm text-muted hover:text-accent">
-        All →
+        All ({count}) →
       </Link>
     </div>
   );
 }
 
 export default function Home() {
-  const posts = getAllPosts().slice(0, 3);
-  const apps = [...APP_EXPERIMENTS]
-    .sort((a, b) => b.date.localeCompare(a.date))
-    .slice(0, 3);
+  const allPosts = getAllPosts();
+  const posts = allPosts.slice(0, 3);
+  const allApps = [...APP_EXPERIMENTS].sort((a, b) =>
+    b.date.localeCompare(a.date)
+  );
+  const apps = allApps.slice(0, 3);
 
   return (
     <div>
@@ -44,8 +53,8 @@ export default function Home() {
         agents — including this site.
       </p>
 
-      {/* Recent posts */}
-      <SectionHeader title="Recent posts" href="/posts" />
+      {/* Posts */}
+      <SectionHeader title="Posts" href="/posts" count={allPosts.length} />
       {posts.length === 0 ? (
         <p className="text-muted">No posts yet.</p>
       ) : (
@@ -58,17 +67,14 @@ export default function Home() {
               >
                 {post.title}
               </Link>
-              <div className="flex items-center gap-2 text-sm text-muted">
-                <span>{formatDate(post.date)}</span>
-                {post.aiGenerated && <AiBadge />}
-              </div>
+              <div className="text-sm text-muted">{formatDate(post.date)}</div>
             </li>
           ))}
         </ul>
       )}
 
-      {/* Recent apps */}
-      <SectionHeader title="Recent apps" href="/apps" />
+      {/* Apps */}
+      <SectionHeader title="Apps" href="/apps" count={allApps.length} />
       <ul className="space-y-3">
         {apps.map((e) => (
           <li key={e.slug}>

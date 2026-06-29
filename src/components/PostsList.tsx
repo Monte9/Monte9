@@ -5,7 +5,6 @@ import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { formatDate } from "@/lib/format";
 import type { PostMeta } from "@/lib/posts";
-import AiBadge from "@/components/AiBadge";
 
 type Sort = "recent" | "oldest";
 
@@ -53,21 +52,19 @@ export default function PostsList({ posts }: { posts: PostMeta[] }) {
               href={`/posts/${post.slug}`}
               className="group block rounded-xl border border-border p-4 transition-colors hover:bg-surface-2"
             >
-              <div className="flex items-baseline justify-between gap-3">
-                <span className="text-lg font-semibold text-fg">
-                  {post.title}
-                </span>
-                <span className="shrink-0 whitespace-nowrap text-xs text-muted">
-                  {formatDate(post.date)}
-                </span>
-              </div>
+              {/* Full-width title; date stacked beneath so the title never wraps narrow. */}
+              <span className="block text-lg font-semibold text-fg">
+                {post.title}
+              </span>
+              <span className="mt-0.5 block text-xs text-muted">
+                {formatDate(post.date)}
+              </span>
               {post.description && (
-                <span className="mt-1 block text-sm text-muted">
+                <span className="mt-1.5 block text-sm text-muted">
                   {post.description}
                 </span>
               )}
               <div className="mt-3 flex flex-wrap items-center gap-1.5">
-                {post.aiGenerated && <AiBadge />}
                 {post.tags.map((t) => (
                   <span
                     key={t}

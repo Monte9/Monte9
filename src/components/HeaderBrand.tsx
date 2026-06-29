@@ -1,39 +1,40 @@
 "use client";
 
 import Link from "next/link";
+import { ChevronLeft } from "lucide-react";
 import { usePathname } from "next/navigation";
+import { routeInfo } from "@/lib/nav";
 
-const TITLES: Record<string, string> = {
-  "/": "Monte Thakkar",
-  "/posts": "Posts",
-  "/travel": "Travel",
-  "/about": "About",
-  "/apps": "Apps",
-  "/settings": "Settings",
-};
-
-function titleFor(pathname: string): string {
-  // Static export uses trailing-slash paths (e.g. "/settings/").
-  const p =
-    pathname !== "/" && pathname.endsWith("/")
-      ? pathname.slice(0, -1)
-      : pathname;
-  if (TITLES[p]) return TITLES[p];
-  if (p.startsWith("/posts")) return "Posts";
-  if (p.startsWith("/apps")) return "Apps";
-  return "Monte Thakkar";
-}
-
-// Desktop: the "Monte Thakkar" wordmark (links home). Mobile: the current
-// page's title, like a native app's top bar.
+// Header left side, route-aware:
+// - post detail → a "← Back" link to /posts (no page title; keeps reading clean)
+// - app detail  → the app's own name as the title (standalone-link friendly)
+// - everything else → the wordmark (desktop) / page title (mobile)
 export default function HeaderBrand() {
   const pathname = usePathname();
+  const info = routeInfo(pathname);
+
+  if (info.kind === "post-detail") {
+    return (
+      <Link
+        href="/posts"
+        className="-ml-1 flex items-center gap-0.5 text-lg font-semibold hover:text-accent"
+      >
+        <ChevronLeft className="h-5 w-5" aria-hidden />
+        Back
+      </Link>
+    );
+  }
+
+  if (info.kind === "app-detail") {
+    return <div className="truncate text-lg font-semibold">{info.title}</div>;
+  }
+
   return (
     <div className="text-lg font-semibold">
       <Link href="/" className="hidden hover:text-accent sm:inline">
         Monte Thakkar
       </Link>
-      <span className="sm:hidden">{titleFor(pathname)}</span>
+      <span className="sm:hidden">{info.title}</span>
     </div>
   );
 }

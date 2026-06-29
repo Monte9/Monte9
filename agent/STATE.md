@@ -1,8 +1,19 @@
 # STATE
 
-phase: idle
+phase: planning
 sprint: -
 attempts: 0
+
+## Notes
+
+ACTIVE GOAL (2026-06-28): "Learn" — a 2–3 min variable-reward micro-learning
+feed (quiz + trivia + news), the simplified/diversified descendant of quiz-me.
+Live generation via a Vercel serverless function (Anthropic key in env),
+mockable frontend, Learn as the first tab + site root (Home tab removed).
+GOAL.md + SPEC.md written; planner is producing BACKLOG sprints. North star:
+"would Monte pull-to-refresh again?" NOTE: this drops `output: export` (route
+handlers need a real Next server) — ripples into the Creator routine's
+build/screenshot (serve via next start, not out/).
 
 ## Notes
 

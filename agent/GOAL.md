@@ -1,54 +1,56 @@
-# GOAL
+# GOAL — "Learn": a 2–3 minute variable-reward learning feed
 
-Revamp `/travel` into a globe-first, interactive map. Keep the site shell
-(sticky header, tab bar, themes) — only the page body changes: it becomes
-essentially just the globe, with little/no static text, and all the
-information lives ON the globe, surfaced by interaction.
+Build a **Learn** experience that makes **Monte** want to come back, daily, to
+**learn and grow** — in quick 2–3 minute sessions, where every pull-to-refresh
+delivers something **new** and **a little unpredictable** (the variable reward).
+
+It is the simplified, diversified descendant of Monte's `quiz-me`
+(github.com/Monte9/quiz-me): keep the soul (an AI quizmaster that asks fresh,
+interest-scoped questions and teaches you the *why*), drop the machinery
+(no Postgres, no accounts, no multi-user portfolio), and **widen the content**
+beyond quizzes into a mixed feed (quiz, trivia/did-you-know, news, more).
+
+## North star (the only metric that matters)
+
+> Would Monte **pull to refresh again** — today, and tomorrow?
+
+Every decision optimizes for that return: fast (a full session ≤ 3 min), always
+fresh (no repeats, a different mix each time), genuinely educational (every card
+teaches something with a short "why"), and delightful (you don't know what
+you'll get next).
 
 ## Must have
 
-### Globe-first layout
-- The globe is the centerpiece and fills the available space below the header
-  (down to the tab bar) on both mobile and desktop. No globe clipping at the
-  top edge.
-- Remove the static "Countries" list at the bottom and the verbose intro/help
-  copy. A short one-line hint (e.g. "Tap a country") is fine; otherwise let the
-  globe speak.
+- **Learn is the first tab and the site's landing** (`/`). There is **no Home
+  tab** anymore. (Monte's bio moves to `/about`.)
+- **A session is a short stack of cards** (~5, ≈2–3 min): open → card → answer or
+  read (~20s) → instant reveal + the "why" → next → "session complete" with a
+  **streak**. **Pull-to-refresh / "new set" starts a fresh session.**
+- **Diverse, mixed content** — at minimum Quiz (multiple-choice, instant grade),
+  Trivia / Did-you-know, and News (current, summarized + "so what"). The mix of
+  *type, topic, and difficulty* is the variable reward.
+- **Live, on-demand generation via a Vercel serverless function** holding the
+  Anthropic API key — so Monte can pull-to-refresh for new content **as often as
+  he wants**, NOT gated on the hourly Creator routine.
+- **Mockable frontend** — a mock mode returns canned cards so the UI/content can
+  be iterated and tested without the function or a key.
+- **Interest-scoped** to Monte (AI, startups, history, finance, health/fitness,
+  space, science, sports/pickleball…) plus a "discover" lane for serendipity.
+- **Dynamic tab title** as the external trigger (e.g. streak / "new set ready").
+- Keep the site shell (sticky header, tab bar, themes, reduce-motion).
 
-### Countries colored by category (not just dots)
-Color the actual countries (filled regions), with three categories in three
-distinct, theme-aware colors, plus a small legend:
-- **Home** — 🇮🇳 India (grew up there, ~18 years).
-- **Lived** — 🇺🇸 United States (~13 years).
-- **Visited** — Italy, France, Japan, Croatia, Tanzania, Costa Rica, Turkey.
+## Must not
 
-Visit dates (already in `src/data/travel.ts`): Italy Oct 2025, France Oct 2025,
-Japan May 2024, Croatia Aug 2023, Tanzania Mar 2023, Costa Rica Nov 2022,
-Turkey Jul 2013. India/US have no single date — show the duration instead.
+- No accounts, login, or backend database. State (streak, score, seen-ids,
+  topic prefs) lives in `localStorage`.
+- No API key in the browser — generation happens server-side in the function.
+- Not slow, not long: never make a session feel like homework.
 
-### Rich info on demand
-- Hovering or tapping a highlighted country reveals rich info: country name +
-  category + the detail (years lived / visit date) and a short blurb. The
-  active country is emphasized on the globe.
-- **Bottom sheet on mobile, dialog/modal (or side panel) on desktop** for that
-  rich info. Dismissible.
-- The globe stays draggable to rotate; auto-rotates on load (respecting the
-  reduce-motion setting), pausing during interaction.
+## Out of scope (later, not now)
 
-## Constraints
-- Static export stays green (`output: "export"`); client-side only, no backend.
-  Any geo data/assets must be vendored (e.g. `world-atlas`), no runtime fetch.
-- Theme-aware (light/dark/sunset) and reduce-motion aware, like the current
-  globe. Legible category colors + text in all three themes.
-- Keep the existing globe's good behaviors (drag, no 390px overflow, no console
-  errors). Never modify the profile `README.md`.
+- Per-card social/sharing, public history/portfolio, leaderboards.
+- Tying the deck to the hourly Creator routine (explicitly rejected — live is
+  the point).
 
-## Notes for planning
-- The current globe (`src/components/Globe.tsx`, react-three-fiber) draws country
-  *outlines* + pin dots. This goal needs filled country polygons with per-country
-  category colors and hover/click picking. Consider whether to extend the r3f
-  globe (triangulate + project country polygons onto the sphere) or adopt a
-  purpose-built library (e.g. `three-globe` / `react-globe.gl`) that supports
-  polygon choropleths + onHover/onClick out of the box. Weigh bundle size,
-  static-export/SSR compatibility, theming control, and reduce-motion.
-- The evaluator should define detailed success criteria at sprint start.
+This goal is handed to the planner to expand into `agent/SPEC.md` detail and an
+ordered `agent/BACKLOG.md` of small, evaluable sprints.

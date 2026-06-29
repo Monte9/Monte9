@@ -80,4 +80,5 @@ export type LearnSession = {
   cards: LearnCard[];
   generatedAt: string;
   mode: "live" | "mock";
+  degraded?: boolean; // true when a live fetch failed and we fell back to mock
 };

@@ -65,7 +65,8 @@ export async function getSession(opts: SessionOpts = {}): Promise<LearnSession> 
     if (!data?.cards?.length) throw new Error("empty session");
     return data;
   } catch {
-    // Never blank: degrade to the mock deck on any error.
-    return mockSession(n, seen);
+    // Never blank: degrade to the mock deck on any error, flagged so the UI can
+    // show an "offline sample" note.
+    return { ...mockSession(n, seen), degraded: true };
   }
 }

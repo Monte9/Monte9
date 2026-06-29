@@ -47,6 +47,9 @@ export default function LearnFeed() {
   const [topics, setTopics] = useState<string[]>(TOPICS);
   const topicsRef = useRef<string[]>(TOPICS);
   const mockRef = useRef(false);
+  const [degraded, setDegraded] = useState(false);
+  const [pull, setPull] = useState(0);
+  const pullStartY = useRef<number | null>(null);
 
   // current streak for display (broken if last completion > 1 day ago)
   useEffect(() => {
@@ -86,6 +89,7 @@ export default function LearnFeed() {
     // remember these cards so the next set avoids them (ring buffer ~60)
     const nextSeen = [...session.cards.map((c) => c.id), ...seen].slice(0, 60);
     writeJSON(SEEN_KEY, nextSeen);
+    setDegraded(!!session.degraded);
     setCards(session.cards);
     setQuizCount(session.cards.filter((c) => c.type === "quiz").length);
     setIdx(0);
@@ -135,6 +139,22 @@ export default function LearnFeed() {
 
   const card = cards[idx];
   const trans = reduceMotion ? "" : "transition-colors";
+
+  // Pull-to-refresh: pull down past threshold while scrolled to the top → new set.
+  const onTouchStart = (e: React.TouchEvent) => {
+    if (typeof window !== "undefined" && window.scrollY <= 0)
+      pullStartY.current = e.touches[0].clientY;
+  };
+  const onTouchMove = (e: React.TouchEvent) => {
+    if (pullStartY.current == null) return;
+    const d = e.touches[0].clientY - pullStartY.current;
+    if (d > 0 && window.scrollY <= 0) setPull(Math.min(d, 90));
+  };
+  const onTouchEnd = () => {
+    if (pull > 70) load();
+    pullStartY.current = null;
+    setPull(0);
+  };
 
   // ---------- render ----------
   if (phase === "loading") {
@@ -196,7 +216,25 @@ export default function LearnFeed() {
   }
 
   return (
-    <div className="mx-auto max-w-xl">
+    <div
+      className="mx-auto max-w-xl"
+      onTouchStart={onTouchStart}
+      onTouchMove={onTouchMove}
+      onTouchEnd={onTouchEnd}
+    >
+      {pull > 0 && (
+        <div
+          className="mb-1 text-center text-xs text-muted"
+          style={{ opacity: Math.min(pull / 70, 1) }}
+        >
+          {pull > 70 ? "Release for a new set ↻" : "Pull for a new set ↓"}
+        </div>
+      )}
+      {degraded && (
+        <div className="mb-3 rounded-lg border border-border bg-surface-2 px-3 py-1.5 text-center text-xs text-muted">
+          Showing sample cards — couldn&apos;t reach the generator.
+        </div>
+      )}
       {/* progress + streak */}
       <div className="mb-4 flex items-center justify-between text-xs text-muted">
         <div className="flex gap-1.5">

@@ -173,7 +173,8 @@ toggling is exercised more in Sprint 4 — here mock is the default/only source.
 
 ---
 
-## Sprint 4 — Live serverless `GET /api/learn` behind the same contract [todo]
+## Sprint 4 — Live serverless `GET /api/learn` behind the same contract [done]
+_Done 2026-06-28: `src/app/api/learn/route.ts` (Node runtime) generates quiz+trivia via Claude Haiku, Zod-validates the discriminated union (drops/repairs bad cards, checks correctIndex bounds), returns a LearnSession. No `ANTHROPIC_API_KEY` → returns mock; any model error → returns mock (never blank). Client `LIVE=true` now hits `/api/learn`; UI unchanged. Verified under `next start` (no key → mock session JSON, feed renders, zero errors). **Action for Monte: add `ANTHROPIC_API_KEY` in Vercel env to switch on live generation.**_
 
 **GOAL:** Add the Vercel serverless route handler that generates a fresh,
 Zod-validated session on demand via the Anthropic API (key from server env),

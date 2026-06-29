@@ -6,8 +6,9 @@
 import { LEARN_FIXTURES } from "@/data/learn-fixtures";
 import type { LearnCard, LearnSession } from "@/lib/learn-types";
 
-// Sprint 4 flips this to true (and adds /api/learn). Until then, always mock.
-const LIVE = false;
+// Live as of Sprint 4: the client hits /api/learn (which itself returns mock
+// cards when ANTHROPIC_API_KEY isn't set, so the feed works key or no key).
+const LIVE = true;
 
 function shuffle<T>(arr: T[]): T[] {
   const a = [...arr];

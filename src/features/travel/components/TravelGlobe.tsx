@@ -6,6 +6,7 @@ import { CATEGORY_LABELS, type TravelCountry } from "@/features/travel/data/trav
 import CountryInfo from "@/features/travel/components/CountryInfo";
 import { useTheme } from "@/components/theme/ThemeProvider";
 import { GLOBE_COLORS } from "@/lib/theme";
+import FullBleedStage from "@/components/ui/FullBleedStage";
 
 const Globe = dynamic(() => import("@/features/travel/components/Globe"), {
   ssr: false,
@@ -24,9 +25,8 @@ export default function TravelGlobe() {
   const cat = GLOBE_COLORS[theme].cat;
 
   return (
-    // Globe-first stage: cancel the page padding and fill from below the header
-    // down toward the tab bar (mobile) / viewport bottom (desktop).
-    <div className="relative -mx-5 -mt-10 -mb-28 h-[calc(100svh-8.5rem)] sm:-mb-12 sm:h-[calc(100svh-4.5rem)]">
+    // Globe-first full-bleed stage with overlays (legend, hint, country sheet).
+    <FullBleedStage>
       <div className="absolute inset-0">
         <Globe
           activeName={active?.name ?? null}
@@ -57,6 +57,6 @@ export default function TravelGlobe() {
       {selected && (
         <CountryInfo country={selected} onClose={() => setSelected(null)} />
       )}
-    </div>
+    </FullBleedStage>
   );
 }

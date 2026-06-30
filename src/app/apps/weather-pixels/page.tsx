@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import WeatherPixels from "@/features/apps/components/WeatherPixels";
+import FullBleedStage from "@/components/ui/FullBleedStage";
 
 export const metadata: Metadata = {
   title: "Weather Pixels",
@@ -9,12 +10,10 @@ export const metadata: Metadata = {
 
 export default function WeatherPixelsPage() {
   return (
-    // Full-bleed stage: cancel page padding and fill from below the header
-    // toward the tab bar (mobile) / viewport bottom (desktop).
-    <div className="relative -mx-5 -mt-10 -mb-28 h-[calc(100svh-8.5rem)] sm:-mb-12 sm:h-[calc(100svh-4.5rem)]">
+    <FullBleedStage>
       <div className="absolute inset-0">
         <WeatherPixels />
       </div>
-    </div>
+    </FullBleedStage>
   );
 }

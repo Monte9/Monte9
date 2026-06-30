@@ -2,15 +2,7 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { GraduationCap, Newspaper, Globe, LayoutGrid, UserRound } from "lucide-react";
-
-const TABS = [
-  { href: "/", label: "Learn", Icon: GraduationCap },
-  { href: "/posts", label: "Posts", Icon: Newspaper },
-  { href: "/apps", label: "Apps", Icon: LayoutGrid },
-  { href: "/travel", label: "Travel", Icon: Globe },
-  { href: "/about", label: "About", Icon: UserRound },
-];
+import { PRIMARY_NAV } from "@/lib/nav";
 
 export default function MobileTabBar() {
   const pathname = usePathname();
@@ -22,7 +14,7 @@ export default function MobileTabBar() {
       aria-label="Primary"
     >
       <ul className="mx-auto flex max-w-2xl">
-        {TABS.map(({ href, label, Icon }) => {
+        {PRIMARY_NAV.map(({ href, label, Icon }) => {
           const active =
             href === "/" ? pathname === "/" : pathname.startsWith(href);
           return (

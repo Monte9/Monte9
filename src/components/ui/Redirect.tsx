@@ -2,8 +2,8 @@
 
 import { useEffect } from "react";
 
-// Client-side redirect for the static export (no server redirects under
-// `output: export`). Used by the legacy /labs stubs to forward to /apps.
+// Lightweight client-side redirect used by the legacy /labs stubs to forward to
+// the matching /apps route (keeps old shared links working).
 export default function Redirect({ to }: { to: string }) {
   useEffect(() => {
     window.location.replace(to);

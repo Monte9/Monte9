@@ -2,20 +2,13 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
-const LINKS = [
-  { href: "/", label: "Learn" },
-  { href: "/posts", label: "Posts" },
-  { href: "/apps", label: "Apps" },
-  { href: "/travel", label: "Travel" },
-  { href: "/about", label: "About" },
-];
+import { PRIMARY_NAV } from "@/lib/nav";
 
 export default function DesktopNav() {
   const pathname = usePathname();
   return (
     <nav className="hidden items-center gap-5 text-sm sm:flex">
-      {LINKS.map((l) => {
+      {PRIMARY_NAV.map((l) => {
         const active = pathname === l.href || pathname.startsWith(l.href + "/");
         return (
           <Link

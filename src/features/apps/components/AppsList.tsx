@@ -3,7 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { APP_EXPERIMENTS, formatAppDate } from "@/features/apps/data/apps";
+import { APP_EXPERIMENTS } from "@/features/apps/data/apps";
+import { formatDate } from "@/lib/format";
 import AppThumb from "@/features/apps/components/AppThumb";
 
 type Sort = "recent" | "oldest";
@@ -64,7 +65,7 @@ export default function AppsList() {
                   {e.title}
                 </span>
                 <span className="mt-0.5 block text-xs text-muted">
-                  {formatAppDate(e.date)}
+                  {formatDate(e.date)}
                 </span>
                 <span className="mt-1.5 block text-sm text-muted">{e.blurb}</span>
                 <div className="mt-3 flex flex-wrap items-center gap-1.5">

@@ -92,21 +92,5 @@ export const ALL_APP_TAGS: string[] = Array.from(
   new Set(APP_EXPERIMENTS.flatMap((e) => e.tags))
 ).sort((a, b) => a.localeCompare(b));
 
-const MONTHS = [
-  "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec",
-];
-
-// Format an ISO date-time as e.g. "Jun 28, 2026 · 1:24 AM" (no date lib, no TZ
-// conversion — the stored time is shown as-is). Falls back to date-only input.
-export function formatAppDate(iso: string): string {
-  const [datePart, timePart] = iso.split("T");
-  const [y, m, d] = datePart.split("-").map(Number);
-  const dateStr = `${MONTHS[(m ?? 1) - 1]} ${d}, ${y}`;
-  if (!timePart) return dateStr;
-  const [hStr, min = "00"] = timePart.split(":");
-  let h = Number(hStr);
-  const ampm = h >= 12 ? "PM" : "AM";
-  h = h % 12 || 12;
-  return `${dateStr} · ${h}:${min} ${ampm}`;
-}
+// Date formatting lives in @/lib/format (formatDate) — a data file shouldn't
+// carry presentation logic. AppsList imports it directly.

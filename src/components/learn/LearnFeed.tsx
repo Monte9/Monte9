@@ -5,7 +5,7 @@ import {
   Check,
   X,
   ArrowRight,
-  Flame,
+  Brain,
   Layers,
   BarChart3,
   Play,
@@ -13,9 +13,9 @@ import {
 import { useTheme } from "@/components/ThemeProvider";
 import { getSession, TOPICS, CARD_TYPES } from "@/lib/learn-client";
 import type { LearnCard, LearnSession } from "@/lib/learn-types";
+import Sheet from "@/components/Sheet";
 
 const SEEN_KEY = "learn-seen";
-const STREAK_KEY = "learn-streak";
 const TOPICS_KEY = "learn-topics";
 const SETS_KEY = "learn-sets";
 const HISTORY_KEY = "learn-history";
@@ -24,6 +24,27 @@ const CARD_TYPES_KEY = "learn-card-types";
 const SESSION_N = 5;
 const HISTORY_CAP = 80;
 const ALL_TYPE_KEYS = CARD_TYPES.map((t) => t.key as string);
+
+// Progress levels keyed off total sets completed. Each set ≈ 5 cards / ~2 min.
+const LEVELS = [
+  { name: "Novice", min: 0 },
+  { name: "Apprentice", min: 5 },
+  { name: "Scholar", min: 15 },
+  { name: "Savant", min: 30 },
+  { name: "Brainiac", min: 60 },
+  { name: "Brain Master", min: 120 },
+];
+function levelFor(sets: number) {
+  let i = 0;
+  for (let k = 0; k < LEVELS.length; k++) if (sets >= LEVELS[k].min) i = k;
+  const current = LEVELS[i];
+  const next = LEVELS[i + 1] ?? null;
+  const progress = next
+    ? Math.min(1, (sets - current.min) / (next.min - current.min))
+    : 1;
+  const remaining = next ? Math.max(0, next.min - sets) : 0;
+  return { current, next, progress, remaining };
+}
 
 // ---- small localStorage helpers (guarded for SSR) ----
 function readJSON<T>(key: string, fallback: T): T {
@@ -40,11 +61,6 @@ function writeJSON(key: string, val: unknown) {
     localStorage.setItem(key, JSON.stringify(val));
   } catch {}
 }
-const today = () => new Date().toISOString().slice(0, 10);
-const daysBetween = (a: string, b: string) =>
-  Math.round(
-    (Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000
-  );
 // Format a card's seenAt (ISO/UTC) in the viewer's local time, e.g. "Jun 30, 11:05 AM".
 function fmtSeen(iso?: string): string {
   if (!iso) return "";
@@ -82,7 +98,6 @@ export default function LearnFeed() {
   const [chosen, setChosen] = useState<number | null>(null); // quiz selection
   const [correct, setCorrect] = useState(0);
   const [quizCount, setQuizCount] = useState(0);
-  const [streak, setStreak] = useState(0);
   const [sets, setSets] = useState(0); // total sets completed (persisted)
   const [topics, setTopics] = useState<string[]>(TOPICS);
   const topicsRef = useRef<string[]>(TOPICS);
@@ -97,13 +112,8 @@ export default function LearnFeed() {
   const cardTopRef = useRef<HTMLDivElement>(null);
   const advancedRef = useRef(false); // skip the auto-scroll on first render/restore
 
-  // streak + sets + history for display (streak breaks if last completion >1d ago)
+  // sets + history + prefs for display
   useEffect(() => {
-    const { streak: s = 0, lastDate = "" } = readJSON<{
-      streak: number;
-      lastDate: string;
-    }>(STREAK_KEY, { streak: 0, lastDate: "" });
-    setStreak(lastDate && daysBetween(lastDate, today()) <= 1 ? s : 0);
     const savedSets = readJSON<number>(SETS_KEY, 0);
     setSets(typeof savedSets === "number" ? savedSets : 0);
     setHistory(readJSON<LearnCard[]>(HISTORY_KEY, []));
@@ -244,43 +254,19 @@ export default function LearnFeed() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx]);
 
-  // close the setup sheet on Escape
-  useEffect(() => {
-    if (!setupOpen) return;
-    const onKey = (e: KeyboardEvent) => {
-      if (e.key === "Escape") setSetupOpen(false);
-    };
-    window.addEventListener("keydown", onKey);
-    return () => window.removeEventListener("keydown", onKey);
-  }, [setupOpen]);
-
   const startNewSet = useCallback(() => {
     setSetupOpen(false);
     load();
   }, [load]);
 
-  // dynamic tab title = the external trigger
+  // dynamic tab title = the external "new set ready" trigger
   useEffect(() => {
     const base = "Learn · Monte Thakkar";
-    if (phase === "complete") document.title = "New set ready · Learn";
-    else document.title = streak > 0 ? `🔥 ${streak}-day streak · Learn` : base;
+    document.title = phase === "complete" ? "New set ready · Learn" : base;
     return () => {
       document.title = base;
     };
-  }, [phase, streak]);
-
-  const bumpStreak = useCallback(() => {
-    const { streak: s = 0, lastDate = "" } = readJSON<{
-      streak: number;
-      lastDate: string;
-    }>(STREAK_KEY, { streak: 0, lastDate: "" });
-    const t = today();
-    let next: number;
-    if (lastDate === t) next = s || 1;
-    else next = lastDate && daysBetween(lastDate, t) === 1 ? s + 1 : 1;
-    writeJSON(STREAK_KEY, { streak: next, lastDate: t });
-    setStreak(next);
-  }, []);
+  }, [phase]);
 
   const bumpSets = useCallback(() => {
     setSets((cur) => {
@@ -295,14 +281,14 @@ export default function LearnFeed() {
       setIdx((i) => i + 1);
       setChosen(null);
     } else {
-      bumpStreak();
       bumpSets();
       setPhase("complete");
     }
-  }, [idx, cards.length, bumpStreak, bumpSets]);
+  }, [idx, cards.length, bumpSets]);
 
   const card = cards[idx];
   const trans = reduceMotion ? "" : "transition-colors";
+  const lvl = levelFor(sets);
   // Only quiz cards gate the Next button — everything else is read-and-go.
   const engaged = card?.type === "quiz" ? chosen !== null : true;
 
@@ -326,8 +312,8 @@ export default function LearnFeed() {
         </p>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
           <span className="inline-flex items-center gap-1">
-            <Flame className="h-3.5 w-3.5 text-accent" aria-hidden />
-            {streak}-day streak
+            <Brain className="h-3.5 w-3.5 text-accent" aria-hidden />
+            {lvl.current.name}
           </span>
           <span className="inline-flex items-center gap-1">
             <Layers className="h-3.5 w-3.5" aria-hidden />
@@ -424,9 +410,7 @@ export default function LearnFeed() {
       ) : phase === "complete" ? (
         <Complete
           reduceMotion={reduceMotion}
-          streak={streak}
           sets={sets}
-          cardsCount={cards.length}
           onNewSet={() => setSetupOpen(true)}
         />
       ) : (
@@ -532,18 +516,8 @@ function SetupModal({
         : "border-border text-muted hover:text-fg"
     }`;
   return (
-    <div
-      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 backdrop-blur-sm sm:items-center sm:p-4"
-      onClick={onClose}
-      role="dialog"
-      aria-modal="true"
-      aria-label="New set"
-    >
-      <div
-        className="max-h-[88vh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-border bg-bg p-5 shadow-2xl sm:rounded-2xl"
-        onClick={(e) => e.stopPropagation()}
-      >
-        <div className="mb-4 flex items-center justify-between">
+    <Sheet onClose={onClose} ariaLabel="New set" className="sm:w-[26rem]">
+      <div className="mb-4 flex items-center justify-between">
           <h2 className="text-lg font-semibold text-fg">New set</h2>
           <button
             type="button"
@@ -596,8 +570,7 @@ function SetupModal({
           <Play className="h-4 w-4" aria-hidden />
           {types.length === 0 ? "Pick at least one type" : "Start set"}
         </button>
-      </div>
-    </div>
+    </Sheet>
   );
 }
 
@@ -702,31 +675,50 @@ function QuizReview({
 // ---------------------------------------------------------------------------
 function Complete({
   reduceMotion,
-  streak,
   sets,
-  cardsCount,
   onNewSet,
 }: {
   reduceMotion: boolean;
-  streak: number;
   sets: number;
-  cardsCount: number;
   onNewSet: () => void;
 }) {
+  const { current, next, progress, remaining } = levelFor(sets);
   return (
     <div className="mt-12 flex flex-col items-center text-center">
       <div
-        className={`relative mb-3 flex items-center gap-2 text-2xl font-semibold text-fg ${
+        className={`relative mb-2 flex items-center gap-2 text-2xl font-semibold text-fg ${
           reduceMotion ? "" : "learn-countup"
         }`}
       >
         {!reduceMotion && <Burst />}
-        <Flame className="h-6 w-6 text-accent" aria-hidden /> {streak}-day streak
+        <Brain className="h-6 w-6 text-accent" aria-hidden /> {current.name}
       </div>
-      <p className="text-fg">{cardsCount} cards · ~2 minutes</p>
-      <p className="mb-8 mt-1 text-sm text-muted">
-        {sets} {sets === 1 ? "set" : "sets"} done so far. Nice work.
+      <p className="mb-8 text-sm text-muted">
+        {sets} {sets === 1 ? "set" : "sets"} done
       </p>
+
+      {/* level progress: current on the left, next on the right */}
+      <div className="mb-8 w-full max-w-xs">
+        <div className="mb-1.5 flex items-center justify-between text-xs">
+          <span className="font-medium text-accent">{current.name}</span>
+          <span className="text-muted">{next ? next.name : "Max level"}</span>
+        </div>
+        <div className="h-2 w-full overflow-hidden rounded-full bg-border">
+          <div
+            className={`h-full rounded-full bg-accent ${
+              reduceMotion ? "" : "transition-all duration-500"
+            }`}
+            style={{ width: `${Math.round(progress * 100)}%` }}
+          />
+        </div>
+        <p className="mt-2 text-xs text-muted">
+          {next
+            ? `${remaining} more ${remaining === 1 ? "set" : "sets"} to ${
+                next.name
+              }`
+            : "Top level reached 🎉"}
+        </p>
+      </div>
 
       <button
         type="button"

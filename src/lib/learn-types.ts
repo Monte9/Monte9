@@ -66,4 +66,5 @@ export type LearnSession = {
   generatedAt: string;
   mode: "live" | "mock";
   degraded?: boolean; // true when a live fetch failed and we fell back to mock
+  note?: string; // short reason for a degraded/sample response (rate limit, etc.)
 };

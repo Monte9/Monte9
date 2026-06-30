@@ -2,6 +2,7 @@ import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import { LEARN_FIXTURES } from "@/data/learn-fixtures";
 import type { LearnCard, LearnSession } from "@/lib/learn-types";
+import { clientIp, withinIpLimit, withinDailyCap } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -133,9 +134,29 @@ export async function GET(req: Request) {
     (url.searchParams.get("topics") || "").split(",").map((t) => t.trim()).filter(Boolean);
   const topicList = topics.length ? topics : DEFAULT_TOPICS;
 
+  // Per-IP burst limit: serve a cheap sample deck (no model call) when tripped.
+  const ip = clientIp(req);
+  if (!(await withinIpLimit(ip))) {
+    return Response.json({
+      ...mockSession(n, seen),
+      degraded: true,
+      note: "slow down — sample cards",
+    });
+  }
+
   const apiKey = process.env.ANTHROPIC_API_KEY;
   // No key (e.g. before it's set in Vercel) → graceful mock so the feed still works.
   if (!apiKey) return Response.json(mockSession(n, seen));
+
+  // Global daily generation cap (circuit breaker on spend): once today's budget
+  // is spent, serve the sample deck instead of calling the model.
+  if (!(await withinDailyCap())) {
+    return Response.json({
+      ...mockSession(n, seen),
+      degraded: true,
+      note: "daily limit — sample cards",
+    });
+  }
 
   // Fresh real headlines for grounded news cards (best-effort).
   const headlines = await fetchHeadlines(3);

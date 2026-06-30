@@ -65,6 +65,7 @@ export default function LearnFeed() {
   const topicsRef = useRef<string[]>(TOPICS);
   const mockRef = useRef(false);
   const [degraded, setDegraded] = useState(false);
+  const [degradedNote, setDegradedNote] = useState<string | null>(null);
 
   // streak + sets + history for display (streak breaks if last completion >1d ago)
   useEffect(() => {
@@ -117,6 +118,7 @@ export default function LearnFeed() {
     writeJSON(HISTORY_KEY, mergedHist);
     setHistory(mergedHist);
     setDegraded(!!session.degraded);
+    setDegradedNote(session.note ?? null);
     setCards(session.cards);
     setQuizCount(session.cards.filter((c) => c.type === "quiz").length);
     setIdx(0);
@@ -204,7 +206,11 @@ export default function LearnFeed() {
               {idx + 1} / {cards.length}
             </span>
           )}
-          {degraded && <span className="opacity-80">· offline sample</span>}
+          {degraded && (
+            <span className="opacity-80">
+              · {degradedNote ?? "offline sample"}
+            </span>
+          )}
         </div>
 
         <div className="mt-3 flex items-center justify-between gap-3">

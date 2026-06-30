@@ -16,6 +16,9 @@ export const CARD_TYPES: { key: CardType; label: string }[] = [
   { key: "thisday", label: "On this day" },
 ];
 
+// All selectable card-type keys — the default "everything on" set.
+export const ALL_TYPE_KEYS = CARD_TYPES.map((t) => t.key as string);
+
 // Monte's selectable topics (the chips in the Learn topic picker). Passed to
 // /api/learn as the `topics` filter; the route adds a discover lane on top.
 export const TOPICS = [

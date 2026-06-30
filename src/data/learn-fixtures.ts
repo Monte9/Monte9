@@ -179,13 +179,4 @@ export const LEARN_FIXTURES: LearnCard[] = [
     why: "The descent computer threw 1202/1201 alarms (it was overloaded but shedding low-priority work) — a landmark in graceful degradation: the system kept the critical task running instead of crashing.",
   },
 
-  // ---- Big question ----
-  {
-    id: "b-agentic-judgment",
-    type: "bigq",
-    topic: "AI",
-    difficulty: "hard",
-    prompt:
-      "If an autonomous agent ships work while you sleep, what's the one check you'd never let it skip — and why that one?",
-  },
 ];

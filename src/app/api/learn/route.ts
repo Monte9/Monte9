@@ -63,19 +63,12 @@ const ThisDay = z.object({
   event: z.string().min(8),
   why: z.string().min(10),
 });
-const BigQ = z.object({
-  type: z.literal("bigq"),
-  topic: z.string(),
-  difficulty: Difficulty,
-  prompt: z.string().min(12),
-});
 const GenCard = z.discriminatedUnion("type", [
   Quiz,
   Trivia,
   News,
   Flashcard,
   ThisDay,
-  BigQ,
 ]);
 
 // Fresh, real headlines from the public Hacker News API (no key). Returns a few
@@ -162,7 +155,6 @@ Each card is one of:
 - {"type":"trivia","topic":string,"difficulty":"easy"|"medium"|"hard","fact":string,"why":string}
 - {"type":"flashcard","topic":string,"difficulty":"easy"|"medium"|"hard","term":string,"definition":string}
 - {"type":"thisday","topic":string,"difficulty":"easy"|"medium"|"hard","year":string,"event":string,"why":string}
-- {"type":"bigq","topic":string,"difficulty":"easy"|"medium"|"hard","prompt":string (an open, thought-provoking question — no single right answer)}
 - {"type":"news","topic":string,"difficulty":"easy"|"medium"|"hard","headline":string,"summary":string (≤2 sentences),"why":string (the so-what),"source":{"name":"Hacker News","url":string}}${newsBlock}
 
 Rules: be factually correct and self-contained; quiz options must be plausible (no throwaways) and exactly one correct; "explanation"/"why"/"summary"/"definition" is the teaching payoff in 1-2 sentences. For news cards, the headline and source.url MUST be copied verbatim from the provided headlines (do not invent news). Mix at least 3 different card TYPES across the set. Include exactly ONE "discover" card on an interesting topic OUTSIDE the reader's set above (label its topic honestly). Vary difficulty. Do NOT repeat well-worn clichés. Output the JSON array only.`;

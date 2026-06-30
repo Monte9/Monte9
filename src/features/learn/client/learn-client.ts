@@ -3,8 +3,8 @@
 // Source seam for the Learn feed. Mock now (Sprint 3); the live serverless
 // function is wired in Sprint 4 by flipping LIVE on and shipping /api/learn —
 // the UI never changes because both paths return a LearnSession.
-import { LEARN_FIXTURES } from "@/features/learn/data/learn-fixtures";
 import type { CardType, LearnSession } from "@/features/learn/types";
+import { buildMockSession } from "@/features/learn/mock-session";
 
 // Selectable card types (the chips in the "New set" setup sheet). Passed to
 // /api/learn as the `types` filter.
@@ -37,32 +37,6 @@ export const TOPICS = [
 // cards when ANTHROPIC_API_KEY isn't set, so the feed works key or no key).
 const LIVE = true;
 
-function shuffle<T>(arr: T[]): T[] {
-  const a = [...arr];
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
-  return a;
-}
-
-export function mockSession(
-  n: number,
-  seen: string[] = [],
-  types?: string[]
-): LearnSession {
-  const byType =
-    types && types.length
-      ? LEARN_FIXTURES.filter((c) => types.includes(c.type))
-      : LEARN_FIXTURES;
-  const base = byType.length ? byType : LEARN_FIXTURES;
-  const fresh = base.filter((c) => !seen.includes(c.id));
-  // If we've exhausted the deck, fall back to the full (typed) set so it never empties.
-  const pool = fresh.length >= n ? fresh : base;
-  const cards = shuffle(pool).slice(0, Math.min(n, pool.length));
-  return { cards, generatedAt: new Date().toISOString(), mode: "mock" };
-}
-
 export type SessionOpts = {
   n?: number;
   topics?: string[];
@@ -74,7 +48,7 @@ export type SessionOpts = {
 export async function getSession(opts: SessionOpts = {}): Promise<LearnSession> {
   const n = opts.n ?? 5;
   const seen = opts.seen ?? [];
-  if (opts.mock || !LIVE) return mockSession(n, seen, opts.types);
+  if (opts.mock || !LIVE) return buildMockSession(n, seen, opts.types);
   try {
     const qs = new URLSearchParams({ n: String(n) });
     if (opts.topics?.length) qs.set("topics", opts.topics.join(","));
@@ -88,6 +62,6 @@ export async function getSession(opts: SessionOpts = {}): Promise<LearnSession> 
   } catch {
     // Never blank: degrade to the mock deck on any error, flagged so the UI can
     // show an "offline sample" note.
-    return { ...mockSession(n, seen, opts.types), degraded: true };
+    return { ...buildMockSession(n, seen, opts.types), degraded: true };
   }
 }

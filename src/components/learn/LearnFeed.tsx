@@ -10,7 +10,9 @@ const SEEN_KEY = "learn-seen";
 const STREAK_KEY = "learn-streak";
 const TOPICS_KEY = "learn-topics";
 const SETS_KEY = "learn-sets";
+const HISTORY_KEY = "learn-history";
 const SESSION_N = 5;
+const HISTORY_CAP = 80;
 
 // ---- small localStorage helpers (guarded for SSR) ----
 function readJSON<T>(key: string, fallback: T): T {
@@ -32,13 +34,27 @@ const daysBetween = (a: string, b: string) =>
   Math.round(
     (Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000
   );
+function dedupeById(cards: LearnCard[]): LearnCard[] {
+  const seen = new Set<string>();
+  const out: LearnCard[] = [];
+  for (const c of cards) {
+    if (c && !seen.has(c.id)) {
+      seen.add(c.id);
+      out.push(c);
+    }
+  }
+  return out;
+}
 
 type Phase = "loading" | "card" | "complete";
+type View = "current" | "history";
 
 export default function LearnFeed() {
   const { reduceMotion } = useTheme();
   const [phase, setPhase] = useState<Phase>("loading");
+  const [view, setView] = useState<View>("current");
   const [cards, setCards] = useState<LearnCard[]>([]);
+  const [history, setHistory] = useState<LearnCard[]>([]);
   const [idx, setIdx] = useState(0);
   const [chosen, setChosen] = useState<number | null>(null); // quiz selection
   const [correct, setCorrect] = useState(0);
@@ -50,7 +66,7 @@ export default function LearnFeed() {
   const mockRef = useRef(false);
   const [degraded, setDegraded] = useState(false);
 
-  // streak + sets for display (streak breaks if last completion > 1 day ago)
+  // streak + sets + history for display (streak breaks if last completion >1d ago)
   useEffect(() => {
     const { streak: s = 0, lastDate = "" } = readJSON<{
       streak: number;
@@ -59,6 +75,7 @@ export default function LearnFeed() {
     setStreak(lastDate && daysBetween(lastDate, today()) <= 1 ? s : 0);
     const savedSets = readJSON<number>(SETS_KEY, 0);
     setSets(typeof savedSets === "number" ? savedSets : 0);
+    setHistory(readJSON<LearnCard[]>(HISTORY_KEY, []));
     const savedTopics = readJSON<string[]>(TOPICS_KEY, TOPICS);
     if (Array.isArray(savedTopics) && savedTopics.length) {
       setTopics(savedTopics);
@@ -79,6 +96,7 @@ export default function LearnFeed() {
   }, []);
 
   const load = useCallback(async () => {
+    setView("current");
     setPhase("loading");
     const seen = readJSON<string[]>(SEEN_KEY, []);
     const session: LearnSession = await getSession({
@@ -90,6 +108,14 @@ export default function LearnFeed() {
     // remember these cards so the next set avoids them (ring buffer ~60)
     const nextSeen = [...session.cards.map((c) => c.id), ...seen].slice(0, 60);
     writeJSON(SEEN_KEY, nextSeen);
+    // grow the full-card history (newest first, deduped, capped)
+    const prevHist = readJSON<LearnCard[]>(HISTORY_KEY, []);
+    const mergedHist = dedupeById([...session.cards, ...prevHist]).slice(
+      0,
+      HISTORY_CAP
+    );
+    writeJSON(HISTORY_KEY, mergedHist);
+    setHistory(mergedHist);
     setDegraded(!!session.degraded);
     setCards(session.cards);
     setQuizCount(session.cards.filter((c) => c.type === "quiz").length);
@@ -151,39 +177,19 @@ export default function LearnFeed() {
   const engaged = card?.type === "quiz" ? chosen !== null : true;
   const hasNextCard = idx < cards.length - 1;
 
+  // History = everything seen except the cards in the current set.
+  const currentIds = new Set(cards.map((c) => c.id));
+  const pastCards = history.filter((c) => !currentIds.has(c.id));
+
   return (
     <div className="relative -mx-5 -mt-10 -mb-28 flex h-[calc(100svh-8.5rem)] flex-col overflow-hidden sm:-mb-12 sm:h-[calc(100svh-4.5rem)]">
-      {/* ambient backdrop */}
-      <div
-        className="pointer-events-none absolute inset-0"
-        style={{
-          background:
-            "radial-gradient(80% 60% at 50% 22%, var(--surface) 0%, var(--bg) 70%)",
-        }}
-      />
-
-      {/* ---- header: title, description, live meta (streak · sets · progress) ---- */}
-      <div className="relative z-20 shrink-0 px-5 pt-4 sm:pt-5">
-        <div className="flex items-start justify-between gap-3">
-          <div>
-            <h1 className="hidden text-xl font-semibold text-fg sm:block">
-              Learn
-            </h1>
-            <p className="max-w-md text-xs leading-relaxed text-muted sm:mt-0.5 sm:text-sm">
-              A 2-minute hit of quizzes, trivia, and fresh news on the things
-              I&apos;m into. Work through a set — grab a new one anytime.
-            </p>
-          </div>
-          <button
-            type="button"
-            onClick={load}
-            aria-label="Deal a new set"
-            className="mt-0.5 inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-bg/60 px-3 py-1.5 text-xs font-medium text-muted backdrop-blur transition-colors hover:text-fg"
-          >
-            <RotateCw className="h-3.5 w-3.5" aria-hidden />
-            <span className="hidden sm:inline">New set</span>
-          </button>
-        </div>
+      {/* ---- header: title + description + meta + view toggle (matches /posts, /apps) ---- */}
+      <div className="relative z-20 shrink-0 px-5 pt-10">
+        <h1 className="mb-2 hidden text-2xl font-semibold sm:block">Learn</h1>
+        <p className="text-muted">
+          A 2-minute hit of quizzes, trivia, and fresh news on the things
+          I&apos;m into.
+        </p>
         <div className="mt-2 flex flex-wrap items-center gap-x-3 gap-y-1 text-xs text-muted">
           <span className="inline-flex items-center gap-1">
             <Flame className="h-3.5 w-3.5 text-accent" aria-hidden />
@@ -193,24 +199,60 @@ export default function LearnFeed() {
             <Layers className="h-3.5 w-3.5" aria-hidden />
             {sets} {sets === 1 ? "set" : "sets"} done
           </span>
-          {phase === "card" && cards.length > 0 && (
+          {view === "current" && phase === "card" && cards.length > 0 && (
             <span>
               {idx + 1} / {cards.length}
             </span>
           )}
           {degraded && <span className="opacity-80">· offline sample</span>}
         </div>
+
+        <div className="mt-3 flex items-center justify-between gap-3">
+          <div
+            className="inline-flex rounded-lg border border-border p-0.5 text-xs"
+            role="group"
+            aria-label="Learn view"
+          >
+            {(["current", "history"] as const).map((v) => (
+              <button
+                key={v}
+                type="button"
+                onClick={() => setView(v)}
+                aria-pressed={view === v}
+                className={`rounded-md px-2.5 py-1 capitalize transition-colors ${
+                  view === v
+                    ? "bg-surface-2 text-fg"
+                    : "text-muted hover:text-fg"
+                }`}
+              >
+                {v}
+                {v === "history" && pastCards.length > 0
+                  ? ` (${pastCards.length})`
+                  : ""}
+              </button>
+            ))}
+          </div>
+          <button
+            type="button"
+            onClick={load}
+            aria-label="Deal a new set"
+            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-bg/60 px-3 py-1.5 text-xs font-medium text-muted backdrop-blur transition-colors hover:text-fg"
+          >
+            <RotateCw className="h-3.5 w-3.5" aria-hidden />
+            <span className="hidden sm:inline">New set</span>
+          </button>
+        </div>
       </div>
 
       {/* ---- stage ---- */}
-      <div className="relative z-10 min-h-0 flex-1">
-        {phase === "loading" && (
+      <div className="relative z-10 mt-4 min-h-0 flex-1">
+        {view === "history" ? (
+          <HistoryFeed cards={pastCards} />
+        ) : phase === "loading" ? (
           <div className="flex h-full items-center justify-center text-sm text-muted">
             Dealing your cards…
           </div>
-        )}
-
-        {phase === "complete" && (
+        ) : phase === "complete" ? (
           <Complete
             reduceMotion={reduceMotion}
             streak={streak}
@@ -221,69 +263,64 @@ export default function LearnFeed() {
             onToggleTopic={toggleTopic}
             onNewSet={load}
           />
-        )}
+        ) : (
+          card && (
+            <>
+              {/* a static card behind the active one for a subtle "deck" feel */}
+              {hasNextCard && (
+                <div
+                  aria-hidden
+                  className="absolute left-1/2 top-1/2 rounded-2xl border border-border bg-surface"
+                  style={{
+                    width: "min(92vw, 30rem)",
+                    height: "min(100%, 30rem)",
+                    transform:
+                      "translate(-50%, -50%) translateY(12px) scale(0.955)",
+                    opacity: 0.5,
+                    zIndex: 5,
+                  }}
+                />
+              )}
 
-        {phase === "card" && card && (
-          <>
-            {/* a static card behind the active one for a subtle "deck" feel */}
-            {hasNextCard && (
               <div
-                aria-hidden
-                className="absolute left-1/2 top-1/2 rounded-2xl border border-border bg-surface"
+                key={card.id}
+                className="absolute left-1/2 top-1/2"
                 style={{
                   width: "min(92vw, 30rem)",
                   height: "min(100%, 30rem)",
-                  transform:
-                    "translate(-50%, -50%) translateY(12px) scale(0.955)",
-                  opacity: 0.5,
-                  zIndex: 5,
+                  transform: "translate(-50%, -50%)",
+                  zIndex: 10,
                 }}
-              />
-            )}
-
-            <div
-              key={card.id}
-              className="absolute left-1/2 top-1/2"
-              style={{
-                width: "min(92vw, 30rem)",
-                height: "min(100%, 30rem)",
-                transform: "translate(-50%, -50%)",
-                zIndex: 10,
-              }}
-            >
-              <div
-                className={`flex h-full flex-col rounded-2xl border border-border bg-surface p-5 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.4)] ${
-                  reduceMotion ? "" : "learn-card-in"
-                }`}
               >
-                <div className="mb-3 flex shrink-0 items-center gap-2 text-[11px] uppercase tracking-wide text-muted">
-                  <span className="rounded-full bg-surface-2 px-2 py-0.5 capitalize">
-                    {card.type}
-                  </span>
-                  <span className="truncate">{card.topic}</span>
-                </div>
-                <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
-                  <CardBody
-                    card={card}
-                    chosen={chosen}
-                    reduceMotion={reduceMotion}
-                    trans={trans}
-                    onChoose={(i) => {
-                      if (chosen !== null) return;
-                      setChosen(i);
-                      if (card.type === "quiz" && i === card.correctIndex)
-                        setCorrect((n) => n + 1);
-                    }}
-                  />
+                <div
+                  className={`flex h-full flex-col rounded-2xl border border-border bg-surface p-5 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.4)] ${
+                    reduceMotion ? "" : "learn-card-in"
+                  }`}
+                >
+                  <CardChrome type={card.type} topic={card.topic} />
+                  <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
+                    <CardBody
+                      card={card}
+                      chosen={chosen}
+                      reduceMotion={reduceMotion}
+                      trans={trans}
+                      onChoose={(i) => {
+                        if (chosen !== null) return;
+                        setChosen(i);
+                        if (card.type === "quiz" && i === card.correctIndex)
+                          setCorrect((n) => n + 1);
+                      }}
+                    />
+                  </div>
                 </div>
               </div>
-            </div>
-          </>
+            </>
+          )
         )}
       </div>
 
-      {/* ---- footer: progress dots + Next/Finish ---- */}
-      {phase === "card" && card && (
+      {/* ---- footer: progress dots + Next/Finish (current set only) ---- */}
+      {view === "current" && phase === "card" && card && (
         <div className="relative z-20 shrink-0 px-5 pb-3 pt-1">
           <div className="mb-2.5 flex items-center justify-center gap-1.5">
             {cards.map((_, i) => (
@@ -308,6 +345,85 @@ export default function LearnFeed() {
           </div>
         </div>
       )}
+    </div>
+  );
+}
+
+// The type/topic chip row at the top of a card.
+function CardChrome({ type, topic }: { type: string; topic: string }) {
+  return (
+    <div className="mb-3 flex shrink-0 items-center gap-2 text-[11px] uppercase tracking-wide text-muted">
+      <span className="rounded-full bg-surface-2 px-2 py-0.5 capitalize">
+        {type}
+      </span>
+      <span className="truncate">{topic}</span>
+    </div>
+  );
+}
+
+// ---------------------------------------------------------------------------
+// History feed — a scrollable, read-only list of previously-seen cards.
+// ---------------------------------------------------------------------------
+function HistoryFeed({ cards }: { cards: LearnCard[] }) {
+  if (cards.length === 0) {
+    return (
+      <div className="flex h-full items-center justify-center px-8 text-center text-sm text-muted">
+        No history yet — finish a set and the cards you&apos;ve seen show up
+        here.
+      </div>
+    );
+  }
+  return (
+    <div className="mx-auto h-full max-w-[30rem] space-y-3 overflow-y-auto px-5 pb-4">
+      {cards.map((c) => (
+        <div
+          key={c.id}
+          className="rounded-2xl border border-border bg-surface p-4"
+        >
+          <CardChrome type={c.type} topic={c.topic} />
+          {c.type === "quiz" ? (
+            <QuizReview card={c} />
+          ) : (
+            <NonQuizContent card={c} />
+          )}
+        </div>
+      ))}
+    </div>
+  );
+}
+
+// Read-only quiz: shows the question, the correct option, and the explanation.
+function QuizReview({
+  card,
+}: {
+  card: Extract<LearnCard, { type: "quiz" }>;
+}) {
+  return (
+    <div>
+      <p className="text-base font-medium leading-snug text-fg">
+        {card.question}
+      </p>
+      <div className="mt-3 space-y-2">
+        {card.options.map((opt, i) => {
+          const isCorrect = i === card.correctIndex;
+          return (
+            <div
+              key={i}
+              className={`flex items-center justify-between rounded-xl border px-4 py-2.5 text-sm ${
+                isCorrect
+                  ? "border-accent bg-surface-2 text-fg"
+                  : "border-border bg-bg text-muted"
+              }`}
+            >
+              <span>{opt}</span>
+              {isCorrect && (
+                <Check className="h-4 w-4 shrink-0 text-accent" aria-hidden />
+              )}
+            </div>
+          );
+        })}
+      </div>
+      <Quote>{card.explanation}</Quote>
     </div>
   );
 }
@@ -417,8 +533,7 @@ function Burst() {
 }
 
 // ---------------------------------------------------------------------------
-// Card body — the type-specific content. Reveal payoffs (the "why", the
-// flashcard definition) are always shown inline as quote blocks.
+// Card body — type-specific content for the interactive (current) card.
 // ---------------------------------------------------------------------------
 function CardBody({
   card,
@@ -444,7 +559,16 @@ function CardBody({
       />
     );
   }
+  return <NonQuizContent card={card} />;
+}
 
+// The always-shown payoff content for non-quiz cards (the "why" / definition
+// rendered inline as quote blocks). Shared by the live card and the history feed.
+function NonQuizContent({
+  card,
+}: {
+  card: Exclude<LearnCard, { type: "quiz" }>;
+}) {
   if (card.type === "trivia") {
     return (
       <div>
@@ -453,7 +577,6 @@ function CardBody({
       </div>
     );
   }
-
   if (card.type === "news") {
     return (
       <div>
@@ -473,7 +596,6 @@ function CardBody({
       </div>
     );
   }
-
   if (card.type === "flashcard") {
     return (
       <div>
@@ -482,7 +604,6 @@ function CardBody({
       </div>
     );
   }
-
   // thisday
   return (
     <div>

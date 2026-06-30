@@ -19,6 +19,7 @@ const STREAK_KEY = "learn-streak";
 const TOPICS_KEY = "learn-topics";
 const SETS_KEY = "learn-sets";
 const HISTORY_KEY = "learn-history";
+const CURRENT_KEY = "learn-current";
 const SESSION_N = 5;
 const HISTORY_CAP = 80;
 
@@ -137,9 +138,50 @@ export default function LearnFeed() {
     setPhase("card");
   }, []);
 
+  // On mount, restore the in-progress set instead of fetching — so navigating
+  // away and back (or any remount) doesn't burn a new generation. Only fetch
+  // when there's nothing saved; "New set" is the explicit way to fetch fresh.
   useEffect(() => {
-    load();
+    const saved = readJSON<{
+      cards: LearnCard[];
+      idx: number;
+      chosen: number | null;
+      correct: number;
+      quizCount: number;
+      phase: "card" | "complete";
+      degraded?: boolean;
+      note?: string | null;
+    } | null>(CURRENT_KEY, null);
+    if (saved && Array.isArray(saved.cards) && saved.cards.length) {
+      setCards(saved.cards);
+      setIdx(Math.min(Math.max(saved.idx ?? 0, 0), saved.cards.length - 1));
+      setChosen(saved.chosen ?? null);
+      setCorrect(saved.correct ?? 0);
+      setQuizCount(
+        saved.quizCount ?? saved.cards.filter((c) => c.type === "quiz").length
+      );
+      setDegraded(!!saved.degraded);
+      setDegradedNote(saved.note ?? null);
+      setPhase(saved.phase === "complete" ? "complete" : "card");
+    } else {
+      load();
+    }
   }, [load]);
+
+  // Persist the current set + progress so a remount restores exactly here.
+  useEffect(() => {
+    if (phase === "loading" || cards.length === 0) return;
+    writeJSON(CURRENT_KEY, {
+      cards,
+      idx,
+      chosen,
+      correct,
+      quizCount,
+      phase,
+      degraded,
+      note: degradedNote,
+    });
+  }, [cards, idx, chosen, correct, quizCount, phase, degraded, degradedNote]);
 
   // dynamic tab title = the external trigger
   useEffect(() => {
@@ -228,7 +270,7 @@ export default function LearnFeed() {
           )}
         </div>
 
-        <div className="mt-3 flex items-center justify-between gap-3">
+        <div className="mt-8 flex items-center justify-between gap-3">
           <div
             className="inline-flex rounded-lg border border-border p-0.5 text-xs"
             role="group"
@@ -330,8 +372,8 @@ export default function LearnFeed() {
                   aria-hidden
                   className="absolute left-1/2 top-1/2 rounded-2xl border border-border bg-surface"
                   style={{
-                    width: "min(92vw, 30rem)",
-                    height: "min(100%, 30rem)",
+                    width: "min(94vw, 34rem)",
+                    height: "min(100%, 38rem)",
                     transform:
                       "translate(-50%, -50%) translateY(12px) scale(0.955)",
                     opacity: 0.5,
@@ -344,8 +386,8 @@ export default function LearnFeed() {
                 key={card.id}
                 className="absolute left-1/2 top-1/2"
                 style={{
-                  width: "min(92vw, 30rem)",
-                  height: "min(100%, 30rem)",
+                  width: "min(94vw, 34rem)",
+                  height: "min(100%, 38rem)",
                   transform: "translate(-50%, -50%)",
                   zIndex: 10,
                 }}
@@ -432,7 +474,7 @@ function HistoryFeed({ cards }: { cards: LearnCard[] }) {
     );
   }
   return (
-    <div className="mx-auto h-full max-w-[30rem] space-y-3 overflow-y-auto px-5 pb-4">
+    <div className="mx-auto h-full max-w-[34rem] space-y-3 overflow-y-auto px-5 pb-4">
       {cards.map((c) => (
         <div
           key={c.id}

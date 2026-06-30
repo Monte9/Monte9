@@ -3,7 +3,7 @@
 import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useFrame, useThree } from "@react-three/fiber";
 import { Color, ShaderMaterial, Vector2, type IUniform } from "three";
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { GLOBE_COLORS, THEME_SWATCHES, type Theme } from "@/lib/theme";
 
 /**

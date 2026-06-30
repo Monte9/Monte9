@@ -14,7 +14,7 @@ import {
   Vector3,
 } from "three";
 import { CloudRain, RotateCcw, Zap } from "lucide-react";
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { GLOBE_COLORS, THEME_SWATCHES, type Theme } from "@/lib/theme";
 
 /**

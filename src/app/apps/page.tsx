@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import AppsList from "@/components/apps/AppsList";
+import AppsList from "@/features/apps/components/AppsList";
 
 export const metadata: Metadata = { title: "Apps" };
 

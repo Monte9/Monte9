@@ -3,7 +3,7 @@ import path from "path";
 import matter from "gray-matter";
 import { marked } from "marked";
 
-export { formatDate } from "./format";
+export { formatDate } from "@/lib/format";
 
 const postsDir = path.join(process.cwd(), "content", "posts");
 

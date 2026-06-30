@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import Field from "@/components/apps/Field";
+import Field from "@/features/apps/components/Field";
 
 export const metadata: Metadata = { title: "Field" };
 

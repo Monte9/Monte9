@@ -8,12 +8,12 @@ import {
   useState,
 } from "react";
 import { Plane, RotateCw, Hand } from "lucide-react";
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import {
   BOARDING_PASSES,
   PASSENGER,
   type BoardingPass as Pass,
-} from "@/data/boarding-pass";
+} from "@/features/apps/data/boarding-pass";
 
 /**
  * Boarding Pass — Monte's immigration-and-career arc as a tactile stack of

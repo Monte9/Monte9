@@ -9,10 +9,10 @@ import {
   Vector3,
   type PerspectiveCamera,
 } from "three";
-import { latLngToVec3, buildBorderPositions } from "@/components/globe-utils";
-import { useTheme } from "@/components/ThemeProvider";
+import { latLngToVec3, buildBorderPositions } from "@/lib/globe-utils";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { GLOBE_COLORS } from "@/lib/theme";
-import { JOURNEY_STOPS, type JourneyStop } from "@/data/journey";
+import { JOURNEY_STOPS, type JourneyStop } from "@/features/apps/data/journey";
 
 const GLOBE_RADIUS = 1;
 

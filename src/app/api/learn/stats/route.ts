@@ -1,4 +1,4 @@
-import { dailyCounts, readEnv, RATE_LIMIT_CONFIG } from "@/lib/rate-limit";
+import { dailyCounts, readEnv, RATE_LIMIT_CONFIG } from "@/features/learn/server/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

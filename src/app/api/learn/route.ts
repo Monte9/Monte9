@@ -1,13 +1,13 @@
 import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
-import { LEARN_FIXTURES } from "@/data/learn-fixtures";
-import type { LearnCard, LearnSession } from "@/lib/learn-types";
+import { LEARN_FIXTURES } from "@/features/learn/data/learn-fixtures";
+import type { LearnCard, LearnSession } from "@/features/learn/types";
 import {
   clientIp,
   withinIpLimit,
   withinDailyCap,
   readEnv,
-} from "@/lib/rate-limit";
+} from "@/features/learn/server/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";

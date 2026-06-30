@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import JourneyGlobe from "@/components/apps/JourneyGlobe";
+import JourneyGlobe from "@/features/apps/components/JourneyGlobe";
 
 export const metadata: Metadata = { title: "The Journey" };
 

@@ -3,8 +3,8 @@
 // Source seam for the Learn feed. Mock now (Sprint 3); the live serverless
 // function is wired in Sprint 4 by flipping LIVE on and shipping /api/learn —
 // the UI never changes because both paths return a LearnSession.
-import { LEARN_FIXTURES } from "@/data/learn-fixtures";
-import type { CardType, LearnSession } from "@/lib/learn-types";
+import { LEARN_FIXTURES } from "@/features/learn/data/learn-fixtures";
+import type { CardType, LearnSession } from "@/features/learn/types";
 
 // Selectable card types (the chips in the "New set" setup sheet). Passed to
 // /api/learn as the `types` filter.

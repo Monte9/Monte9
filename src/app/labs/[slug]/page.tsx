@@ -1,5 +1,5 @@
-import Redirect from "@/components/Redirect";
-import { APP_EXPERIMENTS } from "@/data/apps";
+import Redirect from "@/components/ui/Redirect";
+import { APP_EXPERIMENTS } from "@/features/apps/data/apps";
 
 // Legacy per-experiment routes: /labs/<slug> → /apps/<slug>. Only the slugs that
 // ever existed under /labs are generated; new apps live only under /apps.

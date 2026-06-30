@@ -4,7 +4,7 @@ import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
 import { formatDate } from "@/lib/format";
-import type { PostMeta } from "@/lib/posts";
+import type { PostMeta } from "@/features/posts/server/posts";
 
 type Sort = "recent" | "oldest";
 

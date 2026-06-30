@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import WeatherPixels from "@/components/apps/WeatherPixels";
+import WeatherPixels from "@/features/apps/components/WeatherPixels";
 
 export const metadata: Metadata = {
   title: "Weather Pixels",

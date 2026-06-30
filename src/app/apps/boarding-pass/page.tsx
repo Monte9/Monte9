@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import BoardingPass from "@/components/apps/BoardingPass";
+import BoardingPass from "@/features/apps/components/BoardingPass";
 
 export const metadata: Metadata = { title: "Boarding Pass" };
 

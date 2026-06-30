@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import ShatterType from "@/components/apps/ShatterType";
+import ShatterType from "@/features/apps/components/ShatterType";
 
 export const metadata: Metadata = { title: "Shatter Type" };
 

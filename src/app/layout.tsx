@@ -1,11 +1,11 @@
 import type { Metadata } from "next";
 import fs from "fs";
 import path from "path";
-import MobileTabBar from "@/components/MobileTabBar";
-import DesktopNav from "@/components/DesktopNav";
-import HeaderBrand from "@/components/HeaderBrand";
-import SiteMenu from "@/components/SiteMenu";
-import { ThemeProvider } from "@/components/ThemeProvider";
+import MobileTabBar from "@/components/chrome/MobileTabBar";
+import DesktopNav from "@/components/chrome/DesktopNav";
+import HeaderBrand from "@/components/chrome/HeaderBrand";
+import SiteMenu from "@/components/chrome/SiteMenu";
+import { ThemeProvider } from "@/components/theme/ThemeProvider";
 import { NO_FOUC_SCRIPT } from "@/lib/theme";
 import "./globals.css";
 

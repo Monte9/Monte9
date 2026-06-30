@@ -19,7 +19,7 @@ import {
   LOOP_STAGES,
   type LoopStageId,
   type Milestone,
-} from "@/data/buildlog";
+} from "@/features/apps/data/buildlog";
 
 /* ------------------------------------------------------------------ *
  * Motion helper — respects the site's reduce-motion preference, which

@@ -1,7 +1,7 @@
 // Client-safe route info for the header. Detail pages (/posts/<slug>,
 // /apps/<slug>) get special treatment: a Back control / the app's own title, and
 // no hamburger — so an app link reads as a clean standalone page when shared.
-import { APP_EXPERIMENTS } from "@/data/apps";
+import { APP_EXPERIMENTS } from "@/features/apps/data/apps";
 
 export type PageKind = "home" | "list" | "post-detail" | "app-detail";
 

@@ -1,6 +1,6 @@
 import { notFound } from "next/navigation";
 import type { Metadata } from "next";
-import { getAllPosts, getPost, formatDate } from "@/lib/posts";
+import { getAllPosts, getPost, formatDate } from "@/features/posts/server/posts";
 
 export function generateStaticParams() {
   return getAllPosts().map((post) => ({ slug: post.slug }));

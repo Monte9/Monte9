@@ -3,8 +3,8 @@
 import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowRight } from "lucide-react";
-import { APP_EXPERIMENTS, formatAppDate } from "@/data/apps";
-import AppThumb from "@/components/apps/AppThumb";
+import { APP_EXPERIMENTS, formatAppDate } from "@/features/apps/data/apps";
+import AppThumb from "@/features/apps/components/AppThumb";
 
 type Sort = "recent" | "oldest";
 

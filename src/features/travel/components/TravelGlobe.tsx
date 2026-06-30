@@ -2,12 +2,12 @@
 
 import dynamic from "next/dynamic";
 import { useState } from "react";
-import { CATEGORY_LABELS, type TravelCountry } from "@/data/travel";
-import CountryInfo from "@/components/CountryInfo";
-import { useTheme } from "@/components/ThemeProvider";
+import { CATEGORY_LABELS, type TravelCountry } from "@/features/travel/data/travel";
+import CountryInfo from "@/features/travel/components/CountryInfo";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { GLOBE_COLORS } from "@/lib/theme";
 
-const Globe = dynamic(() => import("@/components/Globe"), {
+const Globe = dynamic(() => import("@/features/travel/components/Globe"), {
   ssr: false,
   loading: () => (
     <div className="flex h-full w-full items-center justify-center text-sm text-muted">

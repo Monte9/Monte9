@@ -2,7 +2,7 @@
 // the graceful fallback when the live /api/learn function errors. Cards span
 // every v1 type (quiz/trivia/news) and Monte's topics. Kept factually correct;
 // they double as worked examples for the generation prompt in Sprint 4.
-import type { LearnCard } from "@/lib/learn-types";
+import type { LearnCard } from "@/features/learn/types";
 
 export const LEARN_FIXTURES: LearnCard[] = [
   // ---- Quiz ----

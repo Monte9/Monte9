@@ -1,6 +1,6 @@
 "use client";
 
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { THEMES, THEME_LABELS, THEME_SWATCHES } from "@/lib/theme";
 
 export default function SettingsPanel() {

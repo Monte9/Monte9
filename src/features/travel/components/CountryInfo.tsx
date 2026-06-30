@@ -1,10 +1,10 @@
 "use client";
 
 import { X } from "lucide-react";
-import { type TravelCountry, CATEGORY_LABELS } from "@/data/travel";
-import { useTheme } from "@/components/ThemeProvider";
+import { type TravelCountry, CATEGORY_LABELS } from "@/features/travel/data/travel";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { GLOBE_COLORS } from "@/lib/theme";
-import Sheet from "@/components/Sheet";
+import Sheet from "@/components/ui/Sheet";
 
 // Rich-info surface for a country — uses the shared Sheet (bottom sheet on
 // mobile, centered dialog on desktop).

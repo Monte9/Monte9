@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import AsciiEngine from "@/components/apps/AsciiEngine";
+import AsciiEngine from "@/features/apps/components/AsciiEngine";
 
 export const metadata: Metadata = { title: "ASCII Engine" };
 

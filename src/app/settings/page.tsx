@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import SettingsPanel from "@/components/SettingsPanel";
+import SettingsPanel from "@/components/theme/SettingsPanel";
 
 export const metadata: Metadata = { title: "Settings" };
 

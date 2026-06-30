@@ -10,10 +10,10 @@ import {
   BarChart3,
   Play,
 } from "lucide-react";
-import { useTheme } from "@/components/ThemeProvider";
-import { getSession, TOPICS, CARD_TYPES } from "@/lib/learn-client";
-import type { LearnCard, LearnSession } from "@/lib/learn-types";
-import Sheet from "@/components/Sheet";
+import { useTheme } from "@/components/theme/ThemeProvider";
+import { getSession, TOPICS, CARD_TYPES } from "@/features/learn/client/learn-client";
+import type { LearnCard, LearnSession } from "@/features/learn/types";
+import Sheet from "@/components/ui/Sheet";
 
 const SEEN_KEY = "learn-seen";
 const TOPICS_KEY = "learn-topics";

@@ -4,9 +4,9 @@ import { useEffect, useMemo, useRef, useState } from "react";
 import { Canvas, useThree } from "@react-three/fiber";
 import { OrbitControls } from "@react-three/drei";
 import { Color, DoubleSide, Vector3, type PerspectiveCamera } from "three";
-import { TRAVEL_COUNTRIES, type TravelCountry } from "@/data/travel";
-import { buildBorderPositions, buildCountryFill } from "@/components/globe-utils";
-import { useTheme } from "@/components/ThemeProvider";
+import { TRAVEL_COUNTRIES, type TravelCountry } from "@/features/travel/data/travel";
+import { buildBorderPositions, buildCountryFill } from "@/lib/globe-utils";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { GLOBE_COLORS } from "@/lib/theme";
 
 const GLOBE_RADIUS = 1;

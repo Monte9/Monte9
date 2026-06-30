@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import RopeType from "@/components/apps/RopeType";
+import RopeType from "@/features/apps/components/RopeType";
 
 export const metadata: Metadata = { title: "Rope Type" };
 

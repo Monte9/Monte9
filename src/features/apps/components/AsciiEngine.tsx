@@ -11,7 +11,7 @@ import {
   WebGLRenderTarget,
 } from "three";
 import { Pause, Play, RotateCcw, Type } from "lucide-react";
-import { useTheme } from "@/components/ThemeProvider";
+import { useTheme } from "@/components/theme/ThemeProvider";
 import { THEME_SWATCHES, type Theme } from "@/lib/theme";
 
 /**

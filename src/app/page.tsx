@@ -5,10 +5,5 @@ import LearnFeed from "@/components/learn/LearnFeed";
 // route-level title would clobber it after hydration. The layout default title
 // covers SSR/SEO.
 export default function LearnPage() {
-  return (
-    <div>
-      <h1 className="mb-6 hidden text-2xl font-semibold sm:block">Learn</h1>
-      <LearnFeed />
-    </div>
-  );
+  return <LearnFeed />;
 }

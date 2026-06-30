@@ -40,7 +40,9 @@ export function clientIp(req: Request): string {
 }
 
 // ---- Upstash REST pipeline (returns null on any failure → caller falls back) ----
-async function redisIncr(key: string, ttl: number): Promise<number | null> {
+async function redisPipeline(
+  cmds: (string | number)[][]
+): Promise<Array<{ result?: unknown }> | null> {
   if (!REDIS_URL || !REDIS_TOKEN) return null;
   try {
     const res = await fetch(`${REDIS_URL}/pipeline`, {
@@ -49,19 +51,24 @@ async function redisIncr(key: string, ttl: number): Promise<number | null> {
         Authorization: `Bearer ${REDIS_TOKEN}`,
         "Content-Type": "application/json",
       },
-      body: JSON.stringify([
-        ["INCR", key],
-        ["EXPIRE", key, ttl],
-      ]),
+      body: JSON.stringify(cmds),
       cache: "no-store",
     });
     if (!res.ok) return null;
-    const out = (await res.json()) as Array<{ result?: number }>;
-    const n = Number(out?.[0]?.result);
-    return Number.isFinite(n) ? n : null;
+    return (await res.json()) as Array<{ result?: unknown }>;
   } catch {
     return null;
   }
+}
+
+async function redisIncr(key: string, ttl: number): Promise<number | null> {
+  const out = await redisPipeline([
+    ["INCR", key],
+    ["EXPIRE", key, ttl],
+  ]);
+  if (!out) return null;
+  const n = Number(out[0]?.result);
+  return Number.isFinite(n) ? n : null;
 }
 
 // ---- in-memory fallback (per-instance) ----
@@ -100,9 +107,35 @@ export async function withinIpLimit(ip: string): Promise<boolean> {
 
 // Daily spend cap: increment today's generation counter and report whether
 // we're still under the cap. Call ONLY on the path that actually invokes the
-// model, so mock/no-key responses don't burn the budget.
+// model, so mock/no-key responses don't burn the budget. The per-day key is
+// kept for 35 days so the stats endpoint can show a month of history.
+const DAILY_TTL = 35 * 86400;
 export async function withinDailyCap(): Promise<boolean> {
   const key = `learn:rl:daily:${todayUTC()}`;
-  const count = (await redisIncr(key, 172800)) ?? memDailyIncr();
+  const count = (await redisIncr(key, DAILY_TTL)) ?? memDailyIncr();
   return count <= DAILY_CAP;
+}
+
+// Read the per-day generation counts for the last `days` days (most recent
+// first). Reads from KV when configured; otherwise only this instance's
+// in-memory count for today is known.
+export async function dailyCounts(
+  days: number
+): Promise<{ date: string; sets: number }[]> {
+  const span = Math.max(1, Math.min(days, 90));
+  const now = Date.now();
+  const dates: string[] = [];
+  for (let i = 0; i < span; i++) {
+    dates.push(new Date(now - i * 86400000).toISOString().slice(0, 10));
+  }
+  const out = await redisPipeline(
+    dates.map((d) => ["GET", `learn:rl:daily:${d}`])
+  );
+  if (out) {
+    return dates.map((d, i) => ({ date: d, sets: Number(out[i]?.result) || 0 }));
+  }
+  return dates.map((d) => ({
+    date: d,
+    sets: d === memDaily.date ? memDaily.n : 0,
+  }));
 }

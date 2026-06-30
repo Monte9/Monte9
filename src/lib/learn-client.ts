@@ -4,7 +4,17 @@
 // function is wired in Sprint 4 by flipping LIVE on and shipping /api/learn —
 // the UI never changes because both paths return a LearnSession.
 import { LEARN_FIXTURES } from "@/data/learn-fixtures";
-import type { LearnCard, LearnSession } from "@/lib/learn-types";
+import type { CardType, LearnSession } from "@/lib/learn-types";
+
+// Selectable card types (the chips in the "New set" setup sheet). Passed to
+// /api/learn as the `types` filter.
+export const CARD_TYPES: { key: CardType; label: string }[] = [
+  { key: "quiz", label: "Quiz" },
+  { key: "trivia", label: "Trivia" },
+  { key: "news", label: "News" },
+  { key: "flashcard", label: "Flashcard" },
+  { key: "thisday", label: "On this day" },
+];
 
 // Monte's selectable topics (the chips in the Learn topic picker). Passed to
 // /api/learn as the `topics` filter; the route adds a discover lane on top.
@@ -36,10 +46,19 @@ function shuffle<T>(arr: T[]): T[] {
   return a;
 }
 
-export function mockSession(n: number, seen: string[] = []): LearnSession {
-  const fresh = LEARN_FIXTURES.filter((c) => !seen.includes(c.id));
-  // If we've exhausted the deck, fall back to the full set so it never empties.
-  const pool = fresh.length >= n ? fresh : LEARN_FIXTURES;
+export function mockSession(
+  n: number,
+  seen: string[] = [],
+  types?: string[]
+): LearnSession {
+  const byType =
+    types && types.length
+      ? LEARN_FIXTURES.filter((c) => types.includes(c.type))
+      : LEARN_FIXTURES;
+  const base = byType.length ? byType : LEARN_FIXTURES;
+  const fresh = base.filter((c) => !seen.includes(c.id));
+  // If we've exhausted the deck, fall back to the full (typed) set so it never empties.
+  const pool = fresh.length >= n ? fresh : base;
   const cards = shuffle(pool).slice(0, Math.min(n, pool.length));
   return { cards, generatedAt: new Date().toISOString(), mode: "mock" };
 }
@@ -47,6 +66,7 @@ export function mockSession(n: number, seen: string[] = []): LearnSession {
 export type SessionOpts = {
   n?: number;
   topics?: string[];
+  types?: string[];
   seen?: string[];
   mock?: boolean;
 };
@@ -54,10 +74,11 @@ export type SessionOpts = {
 export async function getSession(opts: SessionOpts = {}): Promise<LearnSession> {
   const n = opts.n ?? 5;
   const seen = opts.seen ?? [];
-  if (opts.mock || !LIVE) return mockSession(n, seen);
+  if (opts.mock || !LIVE) return mockSession(n, seen, opts.types);
   try {
     const qs = new URLSearchParams({ n: String(n) });
     if (opts.topics?.length) qs.set("topics", opts.topics.join(","));
+    if (opts.types?.length) qs.set("types", opts.types.join(","));
     if (seen.length) qs.set("seen", seen.join(","));
     const res = await fetch(`/api/learn/?${qs.toString()}`, { cache: "no-store" });
     if (!res.ok) throw new Error(`status ${res.status}`);
@@ -67,6 +88,6 @@ export async function getSession(opts: SessionOpts = {}): Promise<LearnSession> 
   } catch {
     // Never blank: degrade to the mock deck on any error, flagged so the UI can
     // show an "offline sample" note.
-    return { ...mockSession(n, seen), degraded: true };
+    return { ...mockSession(n, seen, opts.types), degraded: true };
   }
 }

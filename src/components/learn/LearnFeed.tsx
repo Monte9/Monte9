@@ -2,16 +2,16 @@
 
 import { useCallback, useEffect, useRef, useState } from "react";
 import {
-  RotateCw,
   Check,
   X,
   ArrowRight,
   Flame,
   Layers,
   BarChart3,
+  Play,
 } from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
-import { getSession, TOPICS } from "@/lib/learn-client";
+import { getSession, TOPICS, CARD_TYPES } from "@/lib/learn-client";
 import type { LearnCard, LearnSession } from "@/lib/learn-types";
 
 const SEEN_KEY = "learn-seen";
@@ -20,8 +20,10 @@ const TOPICS_KEY = "learn-topics";
 const SETS_KEY = "learn-sets";
 const HISTORY_KEY = "learn-history";
 const CURRENT_KEY = "learn-current";
+const CARD_TYPES_KEY = "learn-card-types";
 const SESSION_N = 5;
 const HISTORY_CAP = 80;
+const ALL_TYPE_KEYS = CARD_TYPES.map((t) => t.key as string);
 
 // ---- small localStorage helpers (guarded for SSR) ----
 function readJSON<T>(key: string, fallback: T): T {
@@ -43,6 +45,18 @@ const daysBetween = (a: string, b: string) =>
   Math.round(
     (Date.parse(b + "T00:00:00Z") - Date.parse(a + "T00:00:00Z")) / 86400000
   );
+// Format a card's seenAt (ISO/UTC) in the viewer's local time, e.g. "Jun 30, 11:05 AM".
+function fmtSeen(iso?: string): string {
+  if (!iso) return "";
+  const d = new Date(iso);
+  if (isNaN(d.getTime())) return "";
+  return d.toLocaleString(undefined, {
+    month: "short",
+    day: "numeric",
+    hour: "numeric",
+    minute: "2-digit",
+  });
+}
 function dedupeById(cards: LearnCard[]): LearnCard[] {
   const seen = new Set<string>();
   const out: LearnCard[] = [];
@@ -72,6 +86,9 @@ export default function LearnFeed() {
   const [sets, setSets] = useState(0); // total sets completed (persisted)
   const [topics, setTopics] = useState<string[]>(TOPICS);
   const topicsRef = useRef<string[]>(TOPICS);
+  const [cardTypes, setCardTypes] = useState<string[]>(ALL_TYPE_KEYS);
+  const cardTypesRef = useRef<string[]>(ALL_TYPE_KEYS);
+  const [setupOpen, setSetupOpen] = useState(false);
   const mockRef = useRef(false);
   const [degraded, setDegraded] = useState(false);
   const [degradedNote, setDegradedNote] = useState<string | null>(null);
@@ -95,6 +112,13 @@ export default function LearnFeed() {
       setTopics(savedTopics);
       topicsRef.current = savedTopics;
     }
+    const savedTypes = readJSON<string[]>(CARD_TYPES_KEY, ALL_TYPE_KEYS);
+    if (Array.isArray(savedTypes) && savedTypes.length) {
+      const valid = savedTypes.filter((t) => ALL_TYPE_KEYS.includes(t));
+      const next = valid.length ? valid : ALL_TYPE_KEYS;
+      setCardTypes(next);
+      cardTypesRef.current = next;
+    }
     mockRef.current =
       typeof window !== "undefined" &&
       new URLSearchParams(window.location.search).get("mock") === "1";
@@ -109,6 +133,15 @@ export default function LearnFeed() {
     });
   }, []);
 
+  const toggleType = useCallback((t: string) => {
+    setCardTypes((cur) => {
+      const next = cur.includes(t) ? cur.filter((x) => x !== t) : [...cur, t];
+      cardTypesRef.current = next;
+      writeJSON(CARD_TYPES_KEY, next);
+      return next;
+    });
+  }, []);
+
   const load = useCallback(async () => {
     setView("current");
     setPhase("loading");
@@ -118,13 +151,23 @@ export default function LearnFeed() {
       seen,
       mock: mockRef.current,
       topics: topicsRef.current.length ? topicsRef.current : undefined,
+      types:
+        cardTypesRef.current.length &&
+        cardTypesRef.current.length < ALL_TYPE_KEYS.length
+          ? cardTypesRef.current
+          : undefined,
     });
+    // stamp each card with when it was dealt (for "when" + history sort)
+    const stamped = session.cards.map((c) => ({
+      ...c,
+      seenAt: c.seenAt ?? session.generatedAt,
+    }));
     // remember these cards so the next set avoids them (ring buffer ~60)
-    const nextSeen = [...session.cards.map((c) => c.id), ...seen].slice(0, 60);
+    const nextSeen = [...stamped.map((c) => c.id), ...seen].slice(0, 60);
     writeJSON(SEEN_KEY, nextSeen);
     // grow the full-card history (newest first, deduped, capped)
     const prevHist = readJSON<LearnCard[]>(HISTORY_KEY, []);
-    const mergedHist = dedupeById([...session.cards, ...prevHist]).slice(
+    const mergedHist = dedupeById([...stamped, ...prevHist]).slice(
       0,
       HISTORY_CAP
     );
@@ -132,8 +175,8 @@ export default function LearnFeed() {
     setHistory(mergedHist);
     setDegraded(!!session.degraded);
     setDegradedNote(session.note ?? null);
-    setCards(session.cards);
-    setQuizCount(session.cards.filter((c) => c.type === "quiz").length);
+    setCards(stamped);
+    setQuizCount(stamped.filter((c) => c.type === "quiz").length);
     setIdx(0);
     setChosen(null);
     setCorrect(0);
@@ -200,6 +243,21 @@ export default function LearnFeed() {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [idx]);
+
+  // close the setup sheet on Escape
+  useEffect(() => {
+    if (!setupOpen) return;
+    const onKey = (e: KeyboardEvent) => {
+      if (e.key === "Escape") setSetupOpen(false);
+    };
+    window.addEventListener("keydown", onKey);
+    return () => window.removeEventListener("keydown", onKey);
+  }, [setupOpen]);
+
+  const startNewSet = useCallback(() => {
+    setSetupOpen(false);
+    load();
+  }, [load]);
 
   // dynamic tab title = the external trigger
   useEffect(() => {
@@ -345,11 +403,11 @@ export default function LearnFeed() {
             )}
             <button
               type="button"
-              onClick={load}
-              aria-label="Deal a new set"
+              onClick={() => setSetupOpen(true)}
+              aria-label="Start a new set"
               className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-bg/60 px-3 py-1.5 text-xs font-medium text-muted backdrop-blur transition-colors hover:text-fg"
             >
-              <RotateCw className="h-3.5 w-3.5" aria-hidden />
+              <Play className="h-3.5 w-3.5" aria-hidden />
               <span className="hidden sm:inline">New set</span>
             </button>
           </div>
@@ -368,11 +426,8 @@ export default function LearnFeed() {
           reduceMotion={reduceMotion}
           streak={streak}
           sets={sets}
-          correct={correct}
-          quizCount={quizCount}
-          topics={topics}
-          onToggleTopic={toggleTopic}
-          onNewSet={load}
+          cardsCount={cards.length}
+          onNewSet={() => setSetupOpen(true)}
         />
       ) : (
         card && (
@@ -399,7 +454,11 @@ export default function LearnFeed() {
                 reduceMotion ? "" : "learn-card-in"
               }`}
             >
-              <CardChrome type={card.type} topic={card.topic} />
+              <CardChrome
+                type={card.type}
+                topic={card.topic}
+                seenAt={card.seenAt}
+              />
               <CardBody
                 card={card}
                 chosen={chosen}
@@ -431,18 +490,138 @@ export default function LearnFeed() {
           </div>
         )
       )}
+
+      <SetupModal
+        open={setupOpen}
+        types={cardTypes}
+        topics={topics}
+        onToggleType={toggleType}
+        onToggleTopic={toggleTopic}
+        onClose={() => setSetupOpen(false)}
+        onStart={startNewSet}
+      />
     </div>
   );
 }
 
-// The type/topic chip row at the top of a card.
-function CardChrome({ type, topic }: { type: string; topic: string }) {
+// ---------------------------------------------------------------------------
+// New-set setup sheet — choose card types + topics, then start a fresh set.
+// ---------------------------------------------------------------------------
+function SetupModal({
+  open,
+  types,
+  topics,
+  onToggleType,
+  onToggleTopic,
+  onClose,
+  onStart,
+}: {
+  open: boolean;
+  types: string[];
+  topics: string[];
+  onToggleType: (t: string) => void;
+  onToggleTopic: (t: string) => void;
+  onClose: () => void;
+  onStart: () => void;
+}) {
+  if (!open) return null;
+  const chip = (on: boolean) =>
+    `rounded-full border px-3 py-1.5 text-xs transition-colors ${
+      on
+        ? "border-accent bg-accent/10 text-accent"
+        : "border-border text-muted hover:text-fg"
+    }`;
   return (
-    <div className="mb-3 flex shrink-0 items-center gap-2 text-[11px] uppercase tracking-wide text-muted">
+    <div
+      className="fixed inset-0 z-50 flex items-end justify-center bg-black/40 p-0 backdrop-blur-sm sm:items-center sm:p-4"
+      onClick={onClose}
+      role="dialog"
+      aria-modal="true"
+      aria-label="New set"
+    >
+      <div
+        className="max-h-[88vh] w-full max-w-md overflow-y-auto rounded-t-2xl border border-border bg-bg p-5 shadow-2xl sm:rounded-2xl"
+        onClick={(e) => e.stopPropagation()}
+      >
+        <div className="mb-4 flex items-center justify-between">
+          <h2 className="text-lg font-semibold text-fg">New set</h2>
+          <button
+            type="button"
+            onClick={onClose}
+            aria-label="Close"
+            className="rounded-full p-1.5 text-muted transition-colors hover:bg-surface-2 hover:text-fg"
+          >
+            <X className="h-4 w-4" aria-hidden />
+          </button>
+        </div>
+
+        <p className="mb-2 text-xs uppercase tracking-wide text-muted">
+          Card types
+        </p>
+        <div className="mb-5 flex flex-wrap gap-1.5">
+          {CARD_TYPES.map((t) => (
+            <button
+              key={t.key}
+              type="button"
+              aria-pressed={types.includes(t.key)}
+              onClick={() => onToggleType(t.key)}
+              className={chip(types.includes(t.key))}
+            >
+              {t.label}
+            </button>
+          ))}
+        </div>
+
+        <p className="mb-2 text-xs uppercase tracking-wide text-muted">Topics</p>
+        <div className="mb-6 flex flex-wrap gap-1.5">
+          {TOPICS.map((t) => (
+            <button
+              key={t}
+              type="button"
+              aria-pressed={topics.includes(t)}
+              onClick={() => onToggleTopic(t)}
+              className={chip(topics.includes(t))}
+            >
+              {t}
+            </button>
+          ))}
+        </div>
+
+        <button
+          type="button"
+          onClick={onStart}
+          disabled={types.length === 0}
+          className="inline-flex w-full items-center justify-center gap-2 rounded-xl bg-accent py-3.5 text-sm font-semibold text-accent-contrast transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
+        >
+          <Play className="h-4 w-4" aria-hidden />
+          {types.length === 0 ? "Pick at least one type" : "Start set"}
+        </button>
+      </div>
+    </div>
+  );
+}
+
+// The type/topic chip row at the top of a card, with the time it was dealt.
+function CardChrome({
+  type,
+  topic,
+  seenAt,
+}: {
+  type: string;
+  topic: string;
+  seenAt?: string;
+}) {
+  return (
+    <div className="mb-3 flex items-center gap-2 text-[11px] uppercase tracking-wide text-muted">
       <span className="rounded-full bg-surface-2 px-2 py-0.5 capitalize">
         {type}
       </span>
       <span className="truncate">{topic}</span>
+      {seenAt && (
+        <span className="ml-auto shrink-0 normal-case tracking-normal opacity-70">
+          {fmtSeen(seenAt)}
+        </span>
+      )}
     </div>
   );
 }
@@ -459,14 +638,18 @@ function HistoryFeed({ cards }: { cards: LearnCard[] }) {
       </div>
     );
   }
+  // Newest first (most-recently-dealt at the top).
+  const sorted = [...cards].sort((a, b) =>
+    (b.seenAt ?? "").localeCompare(a.seenAt ?? "")
+  );
   return (
     <div className="mt-6 space-y-3">
-      {cards.map((c) => (
+      {sorted.map((c) => (
         <div
           key={c.id}
           className="rounded-2xl border border-border bg-surface p-4"
         >
-          <CardChrome type={c.type} topic={c.topic} />
+          <CardChrome type={c.type} topic={c.topic} seenAt={c.seenAt} />
           {c.type === "quiz" ? (
             <QuizReview card={c} />
           ) : (
@@ -521,74 +704,40 @@ function Complete({
   reduceMotion,
   streak,
   sets,
-  correct,
-  quizCount,
-  topics,
-  onToggleTopic,
+  cardsCount,
   onNewSet,
 }: {
   reduceMotion: boolean;
   streak: number;
   sets: number;
-  correct: number;
-  quizCount: number;
-  topics: string[];
-  onToggleTopic: (t: string) => void;
+  cardsCount: number;
   onNewSet: () => void;
 }) {
   return (
-    <div className="mt-10 flex flex-col items-center text-center">
+    <div className="mt-12 flex flex-col items-center text-center">
       <div
-        className={`relative mb-2 flex items-center gap-2 text-2xl font-semibold text-fg ${
+        className={`relative mb-3 flex items-center gap-2 text-2xl font-semibold text-fg ${
           reduceMotion ? "" : "learn-countup"
         }`}
       >
         {!reduceMotion && <Burst />}
         <Flame className="h-6 w-6 text-accent" aria-hidden /> {streak}-day streak
       </div>
-      {quizCount > 0 && (
-        <p className={`mb-1 text-fg ${reduceMotion ? "" : "learn-countup"}`}>
-          {correct}/{quizCount} correct this set
-        </p>
-      )}
-      <p className="mb-6 text-sm text-muted">
-        Nice — that&apos;s your 2 minutes. {sets} {sets === 1 ? "set" : "sets"}{" "}
-        done so far.
+      <p className="text-fg">{cardsCount} cards · ~2 minutes</p>
+      <p className="mb-8 mt-1 text-sm text-muted">
+        {sets} {sets === 1 ? "set" : "sets"} done so far. Nice work.
       </p>
-
-      <div className="mb-6 w-full max-w-sm">
-        <p className="mb-2 text-xs uppercase tracking-wide text-muted">
-          Topics for your next set
-        </p>
-        <div className="flex flex-wrap justify-center gap-1.5">
-          {TOPICS.map((t) => {
-            const on = topics.includes(t);
-            return (
-              <button
-                key={t}
-                type="button"
-                onClick={() => onToggleTopic(t)}
-                aria-pressed={on}
-                className={`rounded-full border px-2.5 py-1 text-xs transition-colors ${
-                  on
-                    ? "border-accent text-accent"
-                    : "border-border text-muted hover:text-fg"
-                }`}
-              >
-                {t}
-              </button>
-            );
-          })}
-        </div>
-      </div>
 
       <button
         type="button"
         onClick={onNewSet}
-        className="inline-flex items-center gap-2 rounded-xl bg-accent px-5 py-3 font-medium text-accent-contrast hover:opacity-90"
+        className="inline-flex items-center gap-2 rounded-xl bg-accent px-6 py-3 font-medium text-accent-contrast hover:opacity-90"
       >
-        <RotateCw className="h-4 w-4" aria-hidden /> New set
+        <Play className="h-4 w-4" aria-hidden /> New set
       </button>
+      <p className="mt-3 text-xs text-muted">
+        Pick card types &amp; topics for the next one
+      </p>
     </div>
   );
 }

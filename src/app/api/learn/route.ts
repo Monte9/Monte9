@@ -104,9 +104,16 @@ async function fetchHeadlines(k: number): Promise<{ title: string; url: string }
   }
 }
 
-function mockSession(n: number, seen: string[]): LearnSession {
-  const fresh = LEARN_FIXTURES.filter((c) => !seen.includes(c.id));
-  const pool = fresh.length >= n ? fresh : LEARN_FIXTURES;
+const ALL_TYPES = ["quiz", "trivia", "news", "flashcard", "thisday"];
+
+function mockSession(n: number, seen: string[], types?: string[]): LearnSession {
+  const byType =
+    types && types.length
+      ? LEARN_FIXTURES.filter((c) => types.includes(c.type))
+      : LEARN_FIXTURES;
+  const base = byType.length ? byType : LEARN_FIXTURES;
+  const fresh = base.filter((c) => !seen.includes(c.id));
+  const pool = fresh.length >= n ? fresh : base;
   const a = [...pool];
   for (let i = a.length - 1; i > 0; i--) {
     const j = Math.floor(Math.random() * (i + 1));
@@ -138,12 +145,18 @@ export async function GET(req: Request) {
   const topics =
     (url.searchParams.get("topics") || "").split(",").map((t) => t.trim()).filter(Boolean);
   const topicList = topics.length ? topics : DEFAULT_TOPICS;
+  const reqTypes = (url.searchParams.get("types") || "")
+    .split(",")
+    .map((t) => t.trim())
+    .filter((t) => ALL_TYPES.includes(t));
+  const allowed = reqTypes.length ? reqTypes : ALL_TYPES;
+  const typeArg = reqTypes.length ? reqTypes : undefined;
 
   // Per-IP burst limit: serve a cheap sample deck (no model call) when tripped.
   const ip = clientIp(req);
   if (!(await withinIpLimit(ip))) {
     return Response.json({
-      ...mockSession(n, seen),
+      ...mockSession(n, seen, typeArg),
       degraded: true,
       note: "slow down — sample cards",
     });
@@ -151,20 +164,20 @@ export async function GET(req: Request) {
 
   const apiKey = readEnv("ANTHROPIC_API_KEY");
   // No key (e.g. before it's set in Vercel) → graceful mock so the feed still works.
-  if (!apiKey) return Response.json(mockSession(n, seen));
+  if (!apiKey) return Response.json(mockSession(n, seen, typeArg));
 
   // Global daily generation cap (circuit breaker on spend): once today's budget
   // is spent, serve the sample deck instead of calling the model.
   if (!(await withinDailyCap())) {
     return Response.json({
-      ...mockSession(n, seen),
+      ...mockSession(n, seen, typeArg),
       degraded: true,
       note: "daily limit — sample cards",
     });
   }
 
-  // Fresh real headlines for grounded news cards (best-effort).
-  const headlines = await fetchHeadlines(3);
+  // Fresh real headlines for grounded news cards (best-effort; only if wanted).
+  const headlines = allowed.includes("news") ? await fetchHeadlines(3) : [];
   const headlineUrls = new Set(headlines.map((h) => h.url));
   const newsBlock = headlines.length
     ? `\n\nCURRENT REAL HEADLINES (use 1-2 of these as "news" cards — copy the headline and url VERBATIM into the card; write your own summary + so-what):\n${headlines
@@ -172,18 +185,27 @@ export async function GET(req: Request) {
         .join("\n")}`
     : "";
 
+  const SCHEMA_LINES: Record<string, string> = {
+    quiz: `- {"type":"quiz","topic":string,"difficulty":"easy"|"medium"|"hard","question":string,"options":[3-4 strings],"correctIndex":integer (0-based index of the correct option),"explanation":string}`,
+    trivia: `- {"type":"trivia","topic":string,"difficulty":"easy"|"medium"|"hard","fact":string,"why":string}`,
+    flashcard: `- {"type":"flashcard","topic":string,"difficulty":"easy"|"medium"|"hard","term":string,"definition":string}`,
+    thisday: `- {"type":"thisday","topic":string,"difficulty":"easy"|"medium"|"hard","year":string,"event":string,"why":string}`,
+    news: `- {"type":"news","topic":string,"difficulty":"easy"|"medium"|"hard","headline":string,"summary":string (≤2 sentences),"why":string (the so-what),"source":{"name":"Hacker News","url":string}}`,
+  };
+  const schemaList = allowed.map((t) => SCHEMA_LINES[t]).join("\n");
+  const mixRule =
+    allowed.length >= 3
+      ? "Mix at least 3 of the allowed card TYPES across the set."
+      : "Use a spread of the allowed types across the set.";
+
   const prompt = `You are a sharp, accurate quizmaster generating ${n} bite-size LEARNING cards for a personal "Learn" feed. The reader has ~2 minutes and wants to learn something and be entertained.
 
-Return ONLY a JSON array of exactly ${n} cards (no prose, no markdown fences). Mix the TYPES and TOPICS so it feels varied. Draw topics from this set (use the reader's interests): ${topicList.join(", ")}.
+Return ONLY a JSON array of exactly ${n} cards (no prose, no markdown fences). Use ONLY these card types: ${allowed.join(", ")}. Vary the TOPICS so it feels fresh. Draw topics from this set (use the reader's interests): ${topicList.join(", ")}.
 
 Each card is one of:
-- {"type":"quiz","topic":string,"difficulty":"easy"|"medium"|"hard","question":string,"options":[3-4 strings],"correctIndex":integer (0-based index of the correct option),"explanation":string}
-- {"type":"trivia","topic":string,"difficulty":"easy"|"medium"|"hard","fact":string,"why":string}
-- {"type":"flashcard","topic":string,"difficulty":"easy"|"medium"|"hard","term":string,"definition":string}
-- {"type":"thisday","topic":string,"difficulty":"easy"|"medium"|"hard","year":string,"event":string,"why":string}
-- {"type":"news","topic":string,"difficulty":"easy"|"medium"|"hard","headline":string,"summary":string (≤2 sentences),"why":string (the so-what),"source":{"name":"Hacker News","url":string}}${newsBlock}
+${schemaList}${newsBlock}
 
-Rules: be factually correct and self-contained; quiz options must be plausible (no throwaways) and exactly one correct; "explanation"/"why"/"summary"/"definition" is the teaching payoff in 1-2 sentences. For news cards, the headline and source.url MUST be copied verbatim from the provided headlines (do not invent news). Mix at least 3 different card TYPES across the set. Include exactly ONE "discover" card on an interesting topic OUTSIDE the reader's set above (label its topic honestly). Vary difficulty. Do NOT repeat well-worn clichés. Output the JSON array only.`;
+Rules: be factually correct and self-contained; quiz options must be plausible (no throwaways) and exactly one correct; "explanation"/"why"/"summary"/"definition" is the teaching payoff in 1-2 sentences. For news cards, the headline and source.url MUST be copied verbatim from the provided headlines (do not invent news). ${mixRule} Include exactly ONE "discover" card on an interesting topic OUTSIDE the reader's set above (label its topic honestly). Vary difficulty. Do NOT repeat well-worn clichés. Output the JSON array only.`;
 
   try {
     const client = new Anthropic({ apiKey });
@@ -196,19 +218,21 @@ Rules: be factually correct and self-contained; quiz options must be plausible (
       .map((b) => (b.type === "text" ? b.text : ""))
       .join("");
     const raw = extractJsonArray(text);
-    if (!raw) return Response.json(mockSession(n, seen));
+    if (!raw) return Response.json(mockSession(n, seen, typeArg));
 
     const cards: LearnCard[] = [];
     for (const item of raw) {
       const parsed = GenCard.safeParse(item);
       if (!parsed.success) continue;
       const c = parsed.data;
+      // Honor the requested type filter — drop anything outside it.
+      if (!allowed.includes(c.type)) continue;
       if (c.type === "quiz" && c.correctIndex >= c.options.length) continue;
       // Drop hallucinated news: the source URL must be one we actually fetched.
       if (c.type === "news" && !headlineUrls.has(c.source.url)) continue;
       cards.push({ ...c, id: `live-${crypto.randomUUID().slice(0, 8)}` } as LearnCard);
     }
-    if (cards.length === 0) return Response.json(mockSession(n, seen));
+    if (cards.length === 0) return Response.json(mockSession(n, seen, typeArg));
 
     const session: LearnSession = {
       cards,
@@ -217,6 +241,6 @@ Rules: be factually correct and self-contained; quiz options must be plausible (
     };
     return Response.json(session);
   } catch {
-    return Response.json(mockSession(n, seen));
+    return Response.json(mockSession(n, seen, typeArg));
   }
 }

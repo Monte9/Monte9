@@ -1,4 +1,4 @@
-import { dailyCounts, RATE_LIMIT_CONFIG } from "@/lib/rate-limit";
+import { dailyCounts, readEnv, RATE_LIMIT_CONFIG } from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -13,9 +13,9 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   const url = new URL(req.url);
 
-  // Note: Vercel/Next bakes process.env references at build time — changing
-  // LEARN_STATS_TOKEN requires a fresh deploy (clean build) to take effect.
-  const required = process.env.LEARN_STATS_TOKEN?.trim();
+  // readEnv uses a computed key so a "Sensitive" LEARN_STATS_TOKEN (runtime-only)
+  // isn't inlined to empty at build time. Changing the value needs a redeploy.
+  const required = readEnv("LEARN_STATS_TOKEN")?.trim();
   if (required) {
     const provided = (
       url.searchParams.get("token") ||
@@ -42,15 +42,6 @@ export async function GET(req: Request) {
 
   if (url.searchParams.get("format") === "json") {
     return Response.json({
-      _diag: {
-        hasStatsToken: !!process.env.LEARN_STATS_TOKEN,
-        statsTokenLen: (process.env.LEARN_STATS_TOKEN || "").length,
-        hasKvUrl: !!process.env.KV_REST_API_URL,
-        hasKvToken: !!process.env.KV_REST_API_TOKEN,
-        relevantEnvKeys: Object.keys(process.env)
-          .filter((k) => /^(LEARN_|KV_|UPSTASH_|REDIS)/.test(k))
-          .sort(),
-      },
       today: today.sets,
       date: today.date,
       dailyCap: cap,

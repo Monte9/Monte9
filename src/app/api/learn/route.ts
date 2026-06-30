@@ -2,7 +2,12 @@ import Anthropic from "@anthropic-ai/sdk";
 import { z } from "zod";
 import { LEARN_FIXTURES } from "@/data/learn-fixtures";
 import type { LearnCard, LearnSession } from "@/lib/learn-types";
-import { clientIp, withinIpLimit, withinDailyCap } from "@/lib/rate-limit";
+import {
+  clientIp,
+  withinIpLimit,
+  withinDailyCap,
+  readEnv,
+} from "@/lib/rate-limit";
 
 export const runtime = "nodejs";
 export const dynamic = "force-dynamic";
@@ -144,7 +149,7 @@ export async function GET(req: Request) {
     });
   }
 
-  const apiKey = process.env.ANTHROPIC_API_KEY;
+  const apiKey = readEnv("ANTHROPIC_API_KEY");
   // No key (e.g. before it's set in Vercel) → graceful mock so the feed still works.
   if (!apiKey) return Response.json(mockSession(n, seen));
 

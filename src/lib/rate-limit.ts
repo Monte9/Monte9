@@ -13,15 +13,23 @@
 // plain fetch (the Upstash REST API) so there's no extra dependency, and any
 // Redis hiccup fails open to the in-memory path rather than breaking the feed.
 
+// Read env via a COMPUTED key. Next/Turbopack inlines static `process.env.FOO`
+// accesses at build time, which breaks Vercel "Sensitive" env vars (those are
+// runtime-only, absent at build → inlined as empty). A variable key can't be
+// statically inlined, so this always reads the real runtime value.
+export function readEnv(name: string): string | undefined {
+  return process.env[name];
+}
+
 const REDIS_URL =
-  process.env.UPSTASH_REDIS_REST_URL || process.env.KV_REST_API_URL || "";
+  readEnv("UPSTASH_REDIS_REST_URL") || readEnv("KV_REST_API_URL") || "";
 const REDIS_TOKEN =
-  process.env.UPSTASH_REDIS_REST_TOKEN || process.env.KV_REST_API_TOKEN || "";
+  readEnv("UPSTASH_REDIS_REST_TOKEN") || readEnv("KV_REST_API_TOKEN") || "";
 
 // All three are env-overridable so limits can be tuned without a redeploy.
-const PER_IP = Number(process.env.LEARN_RL_PER_IP) || 30; // requests per window
-const WINDOW_S = Number(process.env.LEARN_RL_WINDOW_S) || 300; // window, seconds
-const DAILY_CAP = Number(process.env.LEARN_DAILY_CAP) || 500; // generations/day
+const PER_IP = Number(readEnv("LEARN_RL_PER_IP")) || 30; // requests per window
+const WINDOW_S = Number(readEnv("LEARN_RL_WINDOW_S")) || 300; // window, seconds
+const DAILY_CAP = Number(readEnv("LEARN_DAILY_CAP")) || 500; // generations/day
 
 export const RATE_LIMIT_CONFIG = {
   perIp: PER_IP,

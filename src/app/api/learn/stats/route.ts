@@ -42,6 +42,15 @@ export async function GET(req: Request) {
 
   if (url.searchParams.get("format") === "json") {
     return Response.json({
+      _diag: {
+        hasStatsToken: !!process.env.LEARN_STATS_TOKEN,
+        statsTokenLen: (process.env.LEARN_STATS_TOKEN || "").length,
+        hasKvUrl: !!process.env.KV_REST_API_URL,
+        hasKvToken: !!process.env.KV_REST_API_TOKEN,
+        relevantEnvKeys: Object.keys(process.env)
+          .filter((k) => /^(LEARN_|KV_|UPSTASH_|REDIS)/.test(k))
+          .sort(),
+      },
       today: today.sets,
       date: today.date,
       dailyCap: cap,

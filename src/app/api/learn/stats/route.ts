@@ -13,10 +13,15 @@ export const dynamic = "force-dynamic";
 export async function GET(req: Request) {
   const url = new URL(req.url);
 
-  const required = process.env.LEARN_STATS_TOKEN;
+  // Note: Vercel/Next bakes process.env references at build time — changing
+  // LEARN_STATS_TOKEN requires a fresh deploy (clean build) to take effect.
+  const required = process.env.LEARN_STATS_TOKEN?.trim();
   if (required) {
-    const provided =
-      url.searchParams.get("token") || req.headers.get("x-stats-token");
+    const provided = (
+      url.searchParams.get("token") ||
+      req.headers.get("x-stats-token") ||
+      ""
+    ).trim();
     if (provided !== required) {
       return Response.json({ error: "unauthorized" }, { status: 401 });
     }

@@ -5,7 +5,11 @@ description: Run the autonomous Labs routine for montethakkar.com — generate 3
 
 # Labs Auto
 
-An autonomous loop that ships one new `/labs` prototype per run and gets better
+> **Superseded by the `creator` skill** (which routes between an app and a post
+> each run). `creator` is the scheduled routine; `labs-auto` is kept runnable for
+> manual app-only runs and shares the same `agent/apps/` memory + `/apps` target.
+
+An autonomous loop that ships one new `/apps` prototype per run and gets better
 at it over time. Full design + memory map: `agent/apps/README.md`.
 
 ## What one run does
@@ -41,7 +45,7 @@ Do nothing else — the workflow owns building, judging, memory, and the push.
   nothing, log a no-ship round.
 - **Isolation:** each prototype is a self-contained `/apps/<slug>` page + its own
   component(s). The only shared file the routine edits is the registry
-  (`src/data/apps.ts`), appended once by the ship stage. A weak prototype can
+  (`src/features/apps/data/apps.ts`), appended once by the ship stage. A weak prototype can
   never break the rest of the site.
 - **Ship exactly one** per run; losers' files are removed before the commit.
 - **Memory is the point:** every run reads `agent/apps/{IDEAS,JOURNAL,TASTE}.md`
@@ -54,7 +58,7 @@ Do nothing else — the workflow owns building, judging, memory, and the push.
 - `agent/apps/JOURNAL.md` — every run: candidates, scores, winner, commit.
 - `agent/apps/TASTE.md` — the judge's evolving rubric (a Lesson per run).
 - `agent/apps/IDEAS.md` — concept ledger (dedupe source).
-- `src/data/apps.ts` — the live registry of shipped experiments.
+- `src/features/apps/data/apps.ts` — the live registry of shipped experiments.
 
 ## Scheduling
 

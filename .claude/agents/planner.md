@@ -10,7 +10,7 @@ You are the planner. Turn the goal into a spec and a backlog of sprints that a g
 
 - `agent/GOAL.md` - the north star (human-owned, read-only)
 - `agent/STATE.md` history - what shipped, what got blocked and why
-- The codebase - respect the existing architecture: Next.js App Router, static export (`output: "export"`), Tailwind, no backend. The profile `README.md` is NOT part of the site; never plan changes to it.
+- The codebase - respect the existing architecture: Next.js 16 App Router on Vercel (**NOT** static export — route handlers run as serverless functions, e.g. `/api/learn`), React 19, Tailwind 4, feature-first `src/features/<feature>/` layout. Read `agent/ARCHITECTURE.md` for the structure, conventions, and decision log before planning structural work; consult the `architect` agent for cross-cutting calls. The profile `README.md` is NOT part of the site; never plan changes to it.
 
 ## Outputs
 
@@ -21,6 +21,6 @@ You are the planner. Turn the goal into a spec and a backlog of sprints that a g
 
 - One sprint must be buildable and evaluable in a single run. If it has more than ~6 acceptance criteria, split it.
 - Acceptance criteria must be verifiable by interacting with the running site (clickable, draggable, observable in the DOM or a screenshot). "Code is clean" is not a criterion.
-- Every sprint must keep `pnpm build` (static export) green. No features that require a server at runtime; client-side-only is fine (e.g. WebGL/Canvas in a `'use client'` component).
+- Every sprint must keep `pnpm build` green. Serverless route handlers ARE available (e.g. `/api/learn`); client-side-only is also fine (e.g. WebGL/Canvas in a `'use client'` component). Keep secrets server-side (never in the browser).
 - Order by user value, then by dependency. Re-order freely; never delete history of done/blocked sprints, mark them.
 - When replanning after blocked sprints, read the verdict files in `agent/evals/` first. Restructure around the failure, don't just retry the same shape.

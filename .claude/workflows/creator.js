@@ -139,17 +139,17 @@ const SHIP_SCHEMA = {
 
 const BUILDER_RULES = `
 STRICT CONSTRAINTS (other builder agents edit this repo concurrently):
-- CREATE ONLY: src/app/apps/<slug>/page.tsx, src/components/apps/<ComponentName>.tsx,
-  and optionally src/data/<slug>.ts. Do NOT modify ANY existing file (not the registry
-  src/data/apps.ts, nav, layout, globals.css, package.json, or other experiments).
+- CREATE ONLY: src/app/apps/<slug>/page.tsx, src/features/apps/components/<ComponentName>.tsx,
+  and optionally src/features/apps/data/<slug>.ts. Do NOT modify ANY existing file (not the registry
+  src/features/apps/data/apps.ts, nav, layout, globals.css, package.json, or other experiments).
 - Use ONLY installed deps: react, next, three, @react-three/fiber, @react-three/drei,
   lucide-react. NO new dependencies. Do NOT run pnpm build/dev (concurrent clobber).
 - Static-export safe: page.tsx is a SERVER component with metadata; the component is
   'use client' with an in-file mount guard (const [m,setM]=useState(false);
   useEffect(()=>setM(true),[]); {m ? <Canvas/> : <div className="...text-muted">Loading…</div>}).
-  Study src/components/apps/Field.tsx + JourneyGlobe.tsx; src/components/globe-utils.ts
+  Study src/features/apps/components/Field.tsx + JourneyGlobe.tsx; src/lib/globe-utils.ts
   has latLngToVec3 + buildBorderPositions (import, never modify).
-- Theme-aware: useTheme() from @/components/ThemeProvider ({ theme, reduceMotion });
+- Theme-aware: useTheme() from @/components/theme/ThemeProvider ({ theme, reduceMotion });
   GLOBE_COLORS/THEME_SWATCHES from @/lib/theme; UI uses semantic tokens only (text-fg,
   text-muted, text-accent, bg-bg, bg-surface, bg-surface-2, border-border). Light/dark/sunset.
 - reduceMotion freezes/quiets motion. THREE.Earcut does NOT exist (use
@@ -171,7 +171,7 @@ Decide the SINGLE most interesting thing to make THIS run: an /apps experiment O
 
 READ (Read tool): agent/creator/DIRECTION.md (your routing rubric — apply it), agent/creator/JOURNAL.md,
 agent/apps/IDEAS.md + agent/apps/JOURNAL.md, agent/posts/IDEAS.md + agent/posts/JOURNAL.md,
-src/data/apps.ts, and 'ls content/posts' (to gauge the post count). Assess BALANCE: what has
+src/features/apps/data/apps.ts, and 'ls content/posts' (to gauge the post count). Assess BALANCE: what has
 shipped recently, and which kind is under-represented.
 
 Build a small cross-kind slate (~2 app + 2 post pitches), score each 1-10 on the DIRECTION
@@ -190,8 +190,8 @@ if (route.kind === 'app') {
   const idea = await agent(
     `You are the APP IDEATOR for montethakkar.com's Creator (repo /home/user/Monte9).
 The router chose to build an /apps experiment in this direction: "${route.direction}".
-READ agent/apps/IDEAS.md (DO NOT repeat any), agent/apps/TASTE.md (aim high), src/data/apps.ts, and
-skim src/components/apps/. Propose 3 DISTINCT concepts in the spirit of the direction (or sharper):
+READ agent/apps/IDEAS.md (DO NOT repeat any), agent/apps/TASTE.md (aim high), src/features/apps/data/apps.ts, and
+skim src/features/apps/components/. Propose 3 DISTINCT concepts in the spirit of the direction (or sharper):
 self-contained /apps/<slug> pages, installed deps only, each a different technique/feel, prioritizing
 fun + novel technique + a strong static first frame. At least one purely-creative (personalAngle "n/a").
 slugs kebab-case, not in IDEAS.md.`,
@@ -206,7 +206,7 @@ slugs kebab-case, not in IDEAS.md.`,
       `You are an APP BUILDER for the Creator (repo /home/user/Monte9). Build EXACTLY this one /apps piece:
   slug: ${c.slug}
   title: ${c.title}
-  component: src/components/apps/${c.componentName}.tsx ('use client')
+  component: src/features/apps/components/${c.componentName}.tsx ('use client')
   page: src/app/apps/${c.slug}/page.tsx (server component with metadata)
   pitch: ${c.pitch}
   technique: ${c.technique}
@@ -227,7 +227,7 @@ Make it genuinely good — judged on craft, novelty, fun, wow, performance, fit.
     `You are the VERIFIER for the Creator (repo /home/user/Monte9). Candidate /apps pages just built:
 ${JSON.stringify(attempted.map(({ slug, componentName, files }) => ({ slug, componentName, files })), null, 2)}
 1. cd /home/user/Monte9 && rm -rf .next && pnpm build (timeout 300s). (The site is a standard Next app now — NOT a static export, so there is no out/ dir.)
-2. If it FAILS, find the offending slug, delete its files (src/app/apps/<slug>/, its component, any src/data/<slug>.ts), rebuild; repeat until green or none left. Track brokenSlugs/builtSlugs.
+2. If it FAILS, find the offending slug, delete its files (src/app/apps/<slug>/, its component, any src/features/apps/data/<slug>.ts), rebuild; repeat until green or none left. Track brokenSlugs/builtSlugs.
 3. Once green: ts=$(date -u +%Y%m%d-%H%M%S); mkdir -p agent/apps/runs/$ts (runDir). Serve the built app with Next: (pnpm start -p 4137 >/dev/null 2>&1 &); then poll until http://localhost:4137 responds (sleep ~3s). For each built slug + theme light,dark write a Playwright .cjs that sets localStorage theme, visits http://localhost:4137/apps/<slug>/ at 1280x900, waits ~1500ms, moves the mouse across + scrolls, screenshots agent/apps/runs/$ts/<slug>-<theme>.png. Run with PLAYWRIGHT_BROWSERS_PATH=/opt/pw-browsers NODE_PATH=/opt/node22/lib/node_modules node <script>.cjs (or 'npx playwright install chromium' first on CI). Capture console/page errors. Kill the server: lsof -ti tcp:4137 | xargs -r kill. Screenshots are best-effort (shots:[] if they fail).
 Return green, builtSlugs, brokenSlugs, runDir, shots, notes.`,
     { schema: APP_VERIFY_SCHEMA, phase: 'Judge', label: 'verify' }
@@ -236,7 +236,7 @@ Return green, builtSlugs, brokenSlugs, runDir, shots, notes.`,
   if (!verify.green || verify.builtSlugs.length === 0) {
     phase('Ship')
     const noship = await agent(
-      `SHIP/LOG agent (repo /home/user/Monte9). No green app build this run — ship NOTHING. Remove any untracked stray files under src/app/apps + src/components/apps that are not shipped experiments. Prepend a no-ship entry to agent/apps/JOURNAL.md and agent/creator/JOURNAL.md (timestamp $(date -u '+%Y-%m-%d %H:%M'), candidates ${JSON.stringify(concepts.map((c) => c.slug))}, reason from ${JSON.stringify(verify.notes)}). Add the 3 concepts to agent/apps/IDEAS.md as 'rejected'. rm -rf .next && pnpm build must be green for the existing site. git add -A && git commit -m "creator: no-ship app round" && git push origin HEAD:main (retry x4 backoff). Return shipped=null, kind="app".`,
+      `SHIP/LOG agent (repo /home/user/Monte9). No green app build this run — ship NOTHING. Remove any untracked stray files under src/app/apps + src/features/apps/components that are not shipped experiments. Prepend a no-ship entry to agent/apps/JOURNAL.md and agent/creator/JOURNAL.md (timestamp $(date -u '+%Y-%m-%d %H:%M'), candidates ${JSON.stringify(concepts.map((c) => c.slug))}, reason from ${JSON.stringify(verify.notes)}). Add the 3 concepts to agent/apps/IDEAS.md as 'rejected'. rm -rf .next && pnpm build must be green for the existing site. git add -A && git commit -m "creator: no-ship app round" && git push origin HEAD:main (retry x4 backoff). Return shipped=null, kind="app".`,
       { schema: SHIP_SCHEMA, phase: 'Ship', label: 'no-ship' }
     )
     return { route, branch: 'app', verify, ship: noship }
@@ -255,8 +255,8 @@ READ agent/apps/TASTE.md and apply it. LOOK at each candidate's screenshots (Rea
   const winMotif = (attempted.find((a) => a.slug === verdict.winner) || {}).motif || ''
   const ship = await agent(
     `You are the SHIP agent for the Creator (repo /home/user/Monte9). Winner='${verdict.winner}'. Ship exactly this /apps piece to main.
-1. REMOVE losers entirely: ${JSON.stringify(loserFiles)} (rm -rf each slug's src/app/apps/<slug>, its component(s), any src/data/<slug>.ts). Then git status and remove any other untracked stray under src/app/apps or src/components/apps that isn't the winner or an existing experiment.
-2. APPEND ONE object to APP_EXPERIMENTS in src/data/apps.ts (place LAST):
+1. REMOVE losers entirely: ${JSON.stringify(loserFiles)} (rm -rf each slug's src/app/apps/<slug>, its component(s), any src/features/apps/data/<slug>.ts). Then git status and remove any other untracked stray under src/app/apps or src/features/apps/components that isn't the winner or an existing experiment.
+2. APPEND ONE object to APP_EXPERIMENTS in src/features/apps/data/apps.ts (place LAST):
    { slug: "${verdict.winner}", title: ${JSON.stringify(verdict.registry.title)}, blurb: ${JSON.stringify(verdict.registry.blurb)}, date: "<now: $(date -u +%FT%H:%M)>", tags: ${JSON.stringify(verdict.registry.tags)}, motif: ${JSON.stringify(winMotif)} }
    date MUST be full ISO date-time so it sorts to the top. Keep the motif string intact (it's SVG inner markup). Match existing style.
 3. MEMORY: prepend run blocks to agent/apps/JOURNAL.md (candidates, scores ${JSON.stringify(verdict.scores)}, winner, rationale, dropped) and agent/creator/JOURNAL.md (slate ${JSON.stringify(route.slate)}, chosen: app — winner, outcome). Add the 3 concepts to agent/apps/IDEAS.md (winner 'shipped', others 'rejected'). Prepend this to agent/apps/TASTE.md "## Lessons": ${JSON.stringify(verdict.tasteLesson)}. Append a one-line lesson to agent/creator/DIRECTION.md "## Lessons".

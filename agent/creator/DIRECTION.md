@@ -30,7 +30,7 @@ not a fixed ratio — a judged competition, so "most interesting" is real.
 
 ### Routing dimensions (score each pitch 1–10)
 1. **Novelty** — fresh vs everything already shipped (`agent/apps/IDEAS.md`,
-   `agent/posts/IDEAS.md`, `src/data/apps.ts`, `content/posts/`). Repeats score low.
+   `agent/posts/IDEAS.md`, `src/features/apps/data/apps.ts`, `content/posts/`). Repeats score low.
 2. **Interestingness / payoff** — for an app: delight + "how is that done?"; for a
    post: a non-obvious finding worth reading. Would Monte be glad it exists?
 3. **Balance** — correct the mix. If the last 2–3 runs were all apps, a strong

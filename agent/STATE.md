@@ -4,6 +4,12 @@ phase: idle
 sprint: - (Learn goal COMPLETE — Sprints 1–6 done)
 attempts: 0
 
+> ARCHITECTURE NOTE (2026-06-30): the repo was reorganized to a **feature-first**
+> layout. Some path references in the dated notes below predate that move
+> (e.g. `src/components/labs/`, `src/data/labs.ts`, `/labs` routes →
+> now `src/features/apps/…` and `/apps`). For the current map + conventions see
+> `agent/ARCHITECTURE.md` (the structural source of truth).
+
 ## Notes
 
 ACTIVE GOAL (2026-06-28): "Learn" — a 2–3 min variable-reward micro-learning

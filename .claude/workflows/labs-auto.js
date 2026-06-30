@@ -114,24 +114,24 @@ const SHIP_SCHEMA = {
 
 const BUILDER_RULES = `
 STRICT CONSTRAINTS (other builder agents edit this repo concurrently):
-- CREATE ONLY: src/app/apps/<slug>/page.tsx, src/components/apps/<ComponentName>.tsx,
-  and optionally src/data/<slug>.ts. Do NOT modify ANY existing file. Do NOT touch
-  the registry (src/data/apps.ts), nav, layout, globals.css, package.json, or other
+- CREATE ONLY: src/app/apps/<slug>/page.tsx, src/features/apps/components/<ComponentName>.tsx,
+  and optionally src/features/apps/data/<slug>.ts. Do NOT modify ANY existing file. Do NOT touch
+  the registry (src/features/apps/data/apps.ts), nav, layout, globals.css, package.json, or other
   experiments' files.
 - Use ONLY installed deps: react, next, three, @react-three/fiber, @react-three/drei,
   lucide-react. NO new dependencies.
 - Do NOT run pnpm build / pnpm dev (concurrent builds clobber). Verify by careful
   reading + 'npx tsc --noEmit' ONLY IF no other agent is mid-build (skip if unsure).
-- Static-export safe (output:"export"): page.tsx is a SERVER component with
+- Server/client split: page.tsx is a SERVER component with
   'export const metadata = { title: "<Title>" }' and renders the component directly.
   Next 16 FORBIDS dynamic(ssr:false) in a server component — instead the component
   is 'use client' and guards WebGL/window with an in-file mount guard:
     const [mounted,setMounted]=useState(false); useEffect(()=>setMounted(true),[]);
     ... {mounted ? <Canvas/> : <div className="...text-muted">Loading…</div>}
-  Study src/components/apps/Field.tsx (mount-guard) and JourneyGlobe.tsx as the
-  canonical patterns; src/components/globe-utils.ts has latLngToVec3 +
+  Study src/features/apps/components/Field.tsx (mount-guard) and JourneyGlobe.tsx as the
+  canonical patterns; src/lib/globe-utils.ts has latLngToVec3 +
   buildBorderPositions (IMPORT, never modify) if you need a globe.
-- Theme-aware: useTheme() from @/components/ThemeProvider gives { theme, reduceMotion }.
+- Theme-aware: useTheme() from @/components/theme/ThemeProvider gives { theme, reduceMotion }.
   Globe/3D colors from GLOBE_COLORS[theme] / THEME_SWATCHES[theme] in @/lib/theme.
   UI uses semantic tokens ONLY: text-fg, text-muted, text-accent, bg-bg, bg-surface,
   bg-surface-2, border-border. Must look right in light/dark/sunset.
@@ -151,14 +151,14 @@ log('Reading memory and generating 3 distinct concepts…')
 
 const idea = await agent(
   `You are the IDEATOR for montethakkar.com's autonomous Labs routine (repo /home/user/Monte9).
-Propose exactly 3 DISTINCT, fresh web-dev prototype concepts for /labs.
+Propose exactly 3 DISTINCT, fresh web-dev prototype concepts for /apps.
 
 First, READ these for memory + taste (use the Read tool):
 - agent/apps/IDEAS.md  (every concept already tried — DO NOT repeat any; pick genuinely new techniques)
 - agent/apps/JOURNAL.md (past runs)
 - agent/apps/TASTE.md  (what the judge rewards — aim for high scores there)
-- src/data/apps.ts     (what is currently shipped)
-Also skim src/components/apps/ to see the house style.
+- src/features/apps/data/apps.ts     (what is currently shipped)
+Also skim src/features/apps/components/ to see the house style.
 
 Then propose 3 concepts that:
 - are each a self-contained /apps/<slug> page buildable with the installed deps only
@@ -191,7 +191,7 @@ Build EXACTLY this one prototype as a finished, tasteful /apps page:
 
   slug: ${c.slug}
   title: ${c.title}
-  component: src/components/apps/${c.componentName}.tsx  (PascalCase, 'use client')
+  component: src/features/apps/components/${c.componentName}.tsx  (PascalCase, 'use client')
   page: src/app/apps/${c.slug}/page.tsx  (server component with metadata)
   pitch: ${c.pitch}
   technique: ${c.technique}
@@ -223,15 +223,16 @@ Three builder agents just created candidate /apps pages. Candidates (slug + file
 ${JSON.stringify(attempted, null, 2)}
 
 Do this carefully with Bash:
-1. cd /home/user/Monte9 && rm -rf .next out && pnpm build  (timeout ~300s).
+1. cd /home/user/Monte9 && rm -rf .next && pnpm build  (timeout ~300s). (Standard Next
+   app on Vercel — NOT a static export, so there is no out/ dir.)
 2. If the build FAILS, read the error, identify which candidate slug's file(s) caused
    it, DELETE that candidate's files (its src/app/apps/<slug>/ dir and its component
-   src/components/apps/<ComponentName>.tsx and any src/data/<slug>.ts it added), and
+   src/features/apps/components/<ComponentName>.tsx and any src/features/apps/data/<slug>.ts it added), and
    rebuild. Repeat until the build is GREEN or no candidates remain. Track which slugs
    you removed (brokenSlugs) and which survived (builtSlugs).
-3. Once green, serve the export and screenshot each surviving candidate:
+3. Once green, serve the built app and screenshot each surviving candidate:
    - ts=$(date -u +%Y%m%d-%H%M%S); mkdir -p agent/apps/runs/$ts   (this is runDir)
-   - cd out && (python3 -m http.server 4137 >/dev/null 2>&1 &) ; sleep 1 ; cd ..
+   - (pnpm start -p 4137 >/dev/null 2>&1 &) ; then poll until http://localhost:4137 responds (sleep ~3s)
    - For each built slug and theme in light,dark: write a small Playwright .cjs
      (in the run dir or scratch) that sets localStorage 'theme', goes to
      http://localhost:4137/apps/<slug>/ at 1280x900, waits ~1500ms for WebGL/scroll,
@@ -261,8 +262,8 @@ produced NO green build, so ship NOTHING. Record it so the routine learns:
   winner: none, and a 'no-ship:' reason from: ${JSON.stringify(verify.notes)}.
 - Append the 3 concepts to agent/apps/IDEAS.md as status 'rejected' with this run.
 - Ensure NO stray candidate files remain: git status; remove any untracked files under
-  src/app/apps/ and src/components/apps/ that are NOT a shipped experiment.
-- rm -rf .next out ; cd /home/user/Monte9 && pnpm build must still be green for the existing site.
+  src/app/apps/ and src/features/apps/components/ that are NOT a shipped experiment.
+- rm -rf .next ; cd /home/user/Monte9 && pnpm build must still be green for the existing site.
 - git add -A && git commit -m "labs-auto: no-ship round (no green candidate)" and push main
   (git push origin HEAD:main; retry up to 4x with backoff on network error).
 Return shipped=null.`,
@@ -279,7 +280,7 @@ TASTE and you refine it over time. Pick EXACTLY ONE winner from the candidates.
 1. READ agent/apps/TASTE.md fully — apply its dimensions and principles.
 2. For each built candidate ${JSON.stringify(verify.builtSlugs)}, LOOK at its screenshots
    (use the Read tool on the PNG paths) and skim its component code in
-   src/components/apps/. Screenshots for this run are in ${verify.runDir}:
+   src/features/apps/components/. Screenshots for this run are in ${verify.runDir}:
    ${JSON.stringify(verify.shots, null, 2)}
 3. Score each candidate (sum the TASTE dimensions, 1-10 each), pick the single best
    'winner' (must be one of builtSlugs), and write a one-paragraph 'rationale'.
@@ -308,10 +309,10 @@ The judge picked winner='${verdict.winner}'. Ship EXACTLY this one to /apps on m
 
 1. REMOVE the losing candidates entirely (files + dirs):
    losers: ${JSON.stringify(loserFiles, null, 2)}
-   For each loser: rm -rf src/app/apps/<slug> ; rm -f its component(s) ; rm -f src/data/<slug>.ts if it added one.
-   Then 'git status' and remove ANY other untracked stray under src/app/apps or src/components/apps
+   For each loser: rm -rf src/app/apps/<slug> ; rm -f its component(s) ; rm -f src/features/apps/data/<slug>.ts if it added one.
+   Then 'git status' and remove ANY other untracked stray under src/app/apps or src/features/apps/components
    that is not the winner or an already-shipped experiment.
-2. ADD the winner to the live registry src/data/apps.ts — append ONE object to the
+2. ADD the winner to the live registry src/features/apps/data/apps.ts — append ONE object to the
    APP_EXPERIMENTS array (keep existing entries; place the new one LAST):
      { slug: "${verdict.winner}", title: ${JSON.stringify(verdict.registry.title)},
        blurb: ${JSON.stringify(verdict.registry.blurb)},
@@ -326,7 +327,7 @@ The judge picked winner='${verdict.winner}'. Ship EXACTLY this one to /apps on m
    - IDEAS.md: add all 3 concepts as table rows — winner status 'shipped', others 'rejected'.
    - TASTE.md: prepend this Lesson under "## Lessons":
 ${verdict.tasteLesson}
-4. GREEN-GATE: rm -rf .next out && pnpm build (timeout 300s) MUST exit 0 with the winner
+4. GREEN-GATE: rm -rf .next && pnpm build (timeout 300s) MUST exit 0 with the winner
    wired into the registry. If it is NOT green, try to fix the winner; if still broken,
    ABORT the ship: revert the winner too (remove its files + registry line), record a
    'no-ship: winner failed final build' in JOURNAL.md, and return shipped=null.

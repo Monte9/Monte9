@@ -4,7 +4,7 @@ The evaluator grades the running site against this rubric plus the current sprin
 
 ## Hard gates (any FAIL fails the sprint)
 
-1. `pnpm build` exits 0 with no errors (static export must succeed)
+1. `pnpm build` exits 0 with no errors (the production build must succeed; the site is a standard Next app on Vercel, not a static export)
 2. Zero console errors / page errors on: the homepage and every page the sprint touched
 3. No broken images (`naturalWidth > 0` on rendered `img` elements)
 4. No horizontal overflow at 390px viewport width on touched pages

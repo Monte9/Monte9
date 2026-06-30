@@ -42,7 +42,7 @@ TASTE · posts: grounding RUBRIC) → Ship 1 to main`. Orchestrated by
   rubric (real sources, no invented stats). A weak winner is a **no-ship**.
 - **Ship exactly one** per run; losers' files are removed/deleted before commit.
 - **Isolation:** apps are self-contained `/apps/<slug>`; the only shared app file
-  edited is the registry (`src/data/apps.ts`). Posts are single `.md` files.
+  edited is the registry (`src/features/apps/data/apps.ts`). Posts are single `.md` files.
 - **Posts auto-publish with `aiGenerated: true`** → an "AI-generated" badge +
   disclosure. Each app winner also writes a bespoke `motif` (thumbnail) into the
   registry.
@@ -52,7 +52,7 @@ TASTE · posts: grounding RUBRIC) → Ship 1 to main`. Orchestrated by
 
 ## Memory
 - `agent/creator/{DIRECTION,JOURNAL}.md` — routing taste + run spine.
-- `agent/apps/{IDEAS,JOURNAL,TASTE}.md` + `src/data/apps.ts` — app stream.
+- `agent/apps/{IDEAS,JOURNAL,TASTE}.md` + `src/features/apps/data/apps.ts` — app stream.
 - `agent/posts/{IDEAS,JOURNAL,RUBRIC}.md` + `content/posts/` — post stream.
 
 ## Scheduling

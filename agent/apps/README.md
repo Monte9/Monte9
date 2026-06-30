@@ -1,7 +1,7 @@
 # Labs Auto — the autonomous prototype routine
 
 An hourly loop that **generates 3 web-dev prototypes, judges them with evolving
-taste, and ships exactly 1** to `/labs` on montethakkar.com. It compounds: every
+taste, and ships exactly 1** to `/apps` on montethakkar.com. It compounds: every
 run reads what came before so it never repeats itself and the judge gets sharper
 over time.
 
@@ -24,7 +24,7 @@ Orchestrated by `.claude/workflows/labs-auto.js` (invoked via the
 | `JOURNAL.md` | Append-only log of every run: the 3 candidates, scores, the verdict + rationale, what shipped. The system's episodic memory. | Ship stage |
 | `TASTE.md` | The judge's living rubric — aesthetic principles, refined after each run. The system's learned judgement. | Judge stage |
 | `IDEAS.md` | Ledger of every concept ever tried (shipped / rejected) — the dedupe source so ideation never repeats. | Ship stage |
-| `src/data/apps.ts` | The live registry the site renders. Canonical "what shipped." | Ship stage |
+| `src/features/apps/data/apps.ts` | The live registry the site renders. Canonical "what shipped." | Ship stage |
 | `runs/<ts>/` | Per-run screenshots of the 3 candidates (judge's evidence). | Verify stage |
 
 ### How to search the memory
@@ -38,11 +38,11 @@ sed -n '1,40p'         agent/apps/TASTE.md       # current judging principles
 
 ## Hard rules (keep the live site safe)
 
-1. **Green-gate.** Never commit/push unless `pnpm build` (static export) exits 0.
+1. **Green-gate.** Never commit/push unless `pnpm build` exits 0.
    A round that can't produce a green build ships *nothing* and logs a no-ship.
 2. **Isolation.** Each prototype is a self-contained `/apps/<slug>` page +
    its own component(s). Never edit shared files except the single registry
-   append (`src/data/apps.ts`) done by the ship stage. So a weak prototype can
+   append (`src/features/apps/data/apps.ts`) done by the ship stage. So a weak prototype can
    never break the rest of the site.
 3. **Ship exactly one** per run. Losers' files are removed before commit.
 4. **No new dependencies.** Only what's already installed (react, next, three,

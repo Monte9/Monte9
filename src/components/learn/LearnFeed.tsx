@@ -1,7 +1,15 @@
 "use client";
 
 import { useCallback, useEffect, useRef, useState } from "react";
-import { RotateCw, Check, X, ArrowRight, Flame, Layers } from "lucide-react";
+import {
+  RotateCw,
+  Check,
+  X,
+  ArrowRight,
+  Flame,
+  Layers,
+  BarChart3,
+} from "lucide-react";
 import { useTheme } from "@/components/ThemeProvider";
 import { getSession, TOPICS } from "@/lib/learn-client";
 import type { LearnCard, LearnSession } from "@/lib/learn-types";
@@ -66,6 +74,8 @@ export default function LearnFeed() {
   const mockRef = useRef(false);
   const [degraded, setDegraded] = useState(false);
   const [degradedNote, setDegradedNote] = useState<string | null>(null);
+  const [showStats, setShowStats] = useState(false); // analytics password UI
+  const [statsPass, setStatsPass] = useState("");
 
   // streak + sets + history for display (streak breaks if last completion >1d ago)
   useEffect(() => {
@@ -179,9 +189,14 @@ export default function LearnFeed() {
   const engaged = card?.type === "quiz" ? chosen !== null : true;
   const hasNextCard = idx < cards.length - 1;
 
-  // History = everything seen except the cards in the current set.
+  // History = everything seen. While a set is in progress we hide its own cards
+  // (they're the "current" set); once it's complete, fold them in so the count
+  // and the History feed update the moment you finish on the success screen.
   const currentIds = new Set(cards.map((c) => c.id));
-  const pastCards = history.filter((c) => !currentIds.has(c.id));
+  const pastCards =
+    phase === "complete"
+      ? history
+      : history.filter((c) => !currentIds.has(c.id));
 
   return (
     <div className="relative -mx-5 -mt-10 -mb-28 flex h-[calc(100svh-8.5rem)] flex-col overflow-hidden sm:-mb-12 sm:h-[calc(100svh-4.5rem)]">
@@ -238,15 +253,52 @@ export default function LearnFeed() {
               </button>
             ))}
           </div>
-          <button
-            type="button"
-            onClick={load}
-            aria-label="Deal a new set"
-            className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-bg/60 px-3 py-1.5 text-xs font-medium text-muted backdrop-blur transition-colors hover:text-fg"
-          >
-            <RotateCw className="h-3.5 w-3.5" aria-hidden />
-            <span className="hidden sm:inline">New set</span>
-          </button>
+          <div className="flex items-center gap-2">
+            {showStats ? (
+              <form
+                onSubmit={(e) => {
+                  e.preventDefault();
+                  const t = statsPass.trim();
+                  if (t)
+                    window.location.href = `/api/learn/stats/?token=${encodeURIComponent(
+                      t
+                    )}`;
+                }}
+              >
+                <input
+                  type="password"
+                  value={statsPass}
+                  autoFocus
+                  onChange={(e) => setStatsPass(e.target.value)}
+                  onKeyDown={(e) => {
+                    if (e.key === "Escape") setShowStats(false);
+                  }}
+                  placeholder="password ↵"
+                  aria-label="Analytics password"
+                  className="w-32 rounded-full border border-border bg-bg/60 px-3 py-1.5 text-xs text-fg outline-none backdrop-blur focus:border-accent"
+                />
+              </form>
+            ) : (
+              <button
+                type="button"
+                onClick={() => setShowStats(true)}
+                aria-label="View analytics"
+                title="Analytics"
+                className="inline-flex shrink-0 items-center justify-center rounded-full border border-border bg-bg/60 p-2 text-muted backdrop-blur transition-colors hover:text-fg"
+              >
+                <BarChart3 className="h-3.5 w-3.5" aria-hidden />
+              </button>
+            )}
+            <button
+              type="button"
+              onClick={load}
+              aria-label="Deal a new set"
+              className="inline-flex shrink-0 items-center gap-1.5 rounded-full border border-border bg-bg/60 px-3 py-1.5 text-xs font-medium text-muted backdrop-blur transition-colors hover:text-fg"
+            >
+              <RotateCw className="h-3.5 w-3.5" aria-hidden />
+              <span className="hidden sm:inline">New set</span>
+            </button>
+          </div>
         </div>
       </div>
 

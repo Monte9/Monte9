@@ -77,6 +77,8 @@ export default function LearnFeed() {
   const [degradedNote, setDegradedNote] = useState<string | null>(null);
   const [showStats, setShowStats] = useState(false); // analytics password UI
   const [statsPass, setStatsPass] = useState("");
+  const cardTopRef = useRef<HTMLDivElement>(null);
+  const advancedRef = useRef(false); // skip the auto-scroll on first render/restore
 
   // streak + sets + history for display (streak breaks if last completion >1d ago)
   useEffect(() => {
@@ -183,6 +185,22 @@ export default function LearnFeed() {
     });
   }, [cards, idx, chosen, correct, quizCount, phase, degraded, degradedNote]);
 
+  // On advance (idx change), bring the new card up into view — but never on the
+  // first render / restore.
+  useEffect(() => {
+    if (!advancedRef.current) {
+      advancedRef.current = true;
+      return;
+    }
+    if (view === "current" && phase === "card") {
+      cardTopRef.current?.scrollIntoView({
+        behavior: reduceMotion ? "auto" : "smooth",
+        block: "start",
+      });
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [idx]);
+
   // dynamic tab title = the external trigger
   useEffect(() => {
     const base = "Learn · Monte Thakkar";
@@ -229,7 +247,6 @@ export default function LearnFeed() {
   const trans = reduceMotion ? "" : "transition-colors";
   // Only quiz cards gate the Next button — everything else is read-and-go.
   const engaged = card?.type === "quiz" ? chosen !== null : true;
-  const hasNextCard = idx < cards.length - 1;
 
   // History = everything seen. While a set is in progress we hide its own cards
   // (they're the "current" set); once it's complete, fold them in so the count
@@ -241,9 +258,9 @@ export default function LearnFeed() {
       : history.filter((c) => !currentIds.has(c.id));
 
   return (
-    <div className="relative -mx-5 -mt-10 -mb-28 flex h-[calc(100svh-8.5rem)] flex-col overflow-hidden sm:-mb-12 sm:h-[calc(100svh-4.5rem)]">
+    <div>
       {/* ---- header: title + description + meta + view toggle (matches /posts, /apps) ---- */}
-      <div className="relative z-20 shrink-0 px-5 pt-10">
+      <div>
         <h1 className="mb-2 hidden text-2xl font-semibold sm:block">Learn</h1>
         <p className="text-muted">
           A 2-minute hit of quizzes, trivia, and fresh news on the things
@@ -258,11 +275,6 @@ export default function LearnFeed() {
             <Layers className="h-3.5 w-3.5" aria-hidden />
             {sets} {sets === 1 ? "set" : "sets"} done
           </span>
-          {view === "current" && phase === "card" && cards.length > 0 && (
-            <span>
-              {idx + 1} / {cards.length}
-            </span>
-          )}
           {degraded && (
             <span className="opacity-80">
               · {degradedNote ?? "offline sample"}
@@ -344,106 +356,80 @@ export default function LearnFeed() {
         </div>
       </div>
 
-      {/* ---- stage ---- */}
-      <div className="relative z-10 mt-4 min-h-0 flex-1">
-        {view === "history" ? (
-          <HistoryFeed cards={pastCards} />
-        ) : phase === "loading" ? (
-          <div className="flex h-full items-center justify-center text-sm text-muted">
-            Dealing your cards…
-          </div>
-        ) : phase === "complete" ? (
-          <Complete
-            reduceMotion={reduceMotion}
-            streak={streak}
-            sets={sets}
-            correct={correct}
-            quizCount={quizCount}
-            topics={topics}
-            onToggleTopic={toggleTopic}
-            onNewSet={load}
-          />
-        ) : (
-          card && (
-            <>
-              {/* a static card behind the active one for a subtle "deck" feel */}
-              {hasNextCard && (
-                <div
-                  aria-hidden
-                  className="absolute left-1/2 top-1/2 rounded-2xl border border-border bg-surface"
-                  style={{
-                    width: "min(94vw, 34rem)",
-                    height: "min(100%, 38rem)",
-                    transform:
-                      "translate(-50%, -50%) translateY(12px) scale(0.955)",
-                    opacity: 0.5,
-                    zIndex: 5,
-                  }}
+      {/* ---- content ---- */}
+      {view === "history" ? (
+        <HistoryFeed cards={pastCards} />
+      ) : phase === "loading" ? (
+        <div className="mt-16 text-center text-sm text-muted">
+          Dealing your cards…
+        </div>
+      ) : phase === "complete" ? (
+        <Complete
+          reduceMotion={reduceMotion}
+          streak={streak}
+          sets={sets}
+          correct={correct}
+          quizCount={quizCount}
+          topics={topics}
+          onToggleTopic={toggleTopic}
+          onNewSet={load}
+        />
+      ) : (
+        card && (
+          <div ref={cardTopRef} className="mt-6 scroll-mt-20">
+            {/* segmented progress bar (replaces the carousel dots) */}
+            <div className="flex gap-1.5" aria-hidden>
+              {cards.map((_, i) => (
+                <span
+                  key={i}
+                  className={`h-1 flex-1 rounded-full ${
+                    reduceMotion ? "" : "transition-colors"
+                  } ${i <= idx ? "bg-accent" : "bg-border"}`}
                 />
-              )}
+              ))}
+            </div>
+            <p className="mt-2 text-xs text-muted">
+              {idx + 1} of {cards.length}
+            </p>
 
-              <div
-                key={card.id}
-                className="absolute left-1/2 top-1/2"
-                style={{
-                  width: "min(94vw, 34rem)",
-                  height: "min(100%, 38rem)",
-                  transform: "translate(-50%, -50%)",
-                  zIndex: 10,
+            {/* card sizes to its content — every option visible, nothing clipped */}
+            <div
+              key={card.id}
+              className={`mt-3 rounded-2xl border border-border bg-surface p-5 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.35)] ${
+                reduceMotion ? "" : "learn-card-in"
+              }`}
+            >
+              <CardChrome type={card.type} topic={card.topic} />
+              <CardBody
+                card={card}
+                chosen={chosen}
+                reduceMotion={reduceMotion}
+                trans={trans}
+                onChoose={(i) => {
+                  if (chosen !== null) return;
+                  setChosen(i);
+                  if (card.type === "quiz" && i === card.correctIndex)
+                    setCorrect((n) => n + 1);
                 }}
-              >
-                <div
-                  className={`flex h-full flex-col rounded-2xl border border-border bg-surface p-5 shadow-[0_18px_40px_-22px_rgba(0,0,0,0.4)] ${
-                    reduceMotion ? "" : "learn-card-in"
-                  }`}
-                >
-                  <CardChrome type={card.type} topic={card.topic} />
-                  <div className="min-h-0 flex-1 overflow-y-auto pr-0.5">
-                    <CardBody
-                      card={card}
-                      chosen={chosen}
-                      reduceMotion={reduceMotion}
-                      trans={trans}
-                      onChoose={(i) => {
-                        if (chosen !== null) return;
-                        setChosen(i);
-                        if (card.type === "quiz" && i === card.correctIndex)
-                          setCorrect((n) => n + 1);
-                      }}
-                    />
-                  </div>
-                </div>
-              </div>
-            </>
-          )
-        )}
-      </div>
-
-      {/* ---- footer: progress dots + Next/Finish (current set only) ---- */}
-      {view === "current" && phase === "card" && card && (
-        <div className="relative z-20 shrink-0 px-5 pb-3 pt-1">
-          <div className="mb-2.5 flex items-center justify-center gap-1.5">
-            {cards.map((_, i) => (
-              <span
-                key={i}
-                className={`h-1.5 rounded-full ${
-                  reduceMotion ? "" : "transition-all duration-300"
-                } ${i === idx ? "w-6 bg-accent" : "w-1.5 bg-border"}`}
               />
-            ))}
-          </div>
-          <div className="flex items-center justify-center">
+            </div>
+
+            {/* full-width primary advance button */}
             <button
               type="button"
               onClick={next}
               disabled={!engaged}
-              className="inline-flex items-center gap-1.5 rounded-xl border border-border bg-bg/60 px-5 py-2.5 text-sm font-medium text-fg backdrop-blur transition-colors hover:bg-surface-2 disabled:opacity-40"
+              className={`mt-4 inline-flex w-full items-center justify-center gap-2 rounded-xl py-3.5 text-sm font-semibold transition-colors ${
+                engaged
+                  ? "bg-accent text-accent-contrast hover:opacity-90"
+                  : "cursor-not-allowed border border-border text-muted"
+              }`}
             >
               {idx === cards.length - 1 ? "Finish" : "Next"}
               <ArrowRight className="h-4 w-4" aria-hidden />
             </button>
           </div>
-        </div>
+        )
       )}
     </div>
   );
@@ -467,14 +453,14 @@ function CardChrome({ type, topic }: { type: string; topic: string }) {
 function HistoryFeed({ cards }: { cards: LearnCard[] }) {
   if (cards.length === 0) {
     return (
-      <div className="flex h-full items-center justify-center px-8 text-center text-sm text-muted">
+      <div className="mt-16 px-8 text-center text-sm text-muted">
         No history yet — finish a set and the cards you&apos;ve seen show up
         here.
       </div>
     );
   }
   return (
-    <div className="mx-auto h-full max-w-[34rem] space-y-3 overflow-y-auto px-5 pb-4">
+    <div className="mt-6 space-y-3">
       {cards.map((c) => (
         <div
           key={c.id}
@@ -551,7 +537,7 @@ function Complete({
   onNewSet: () => void;
 }) {
   return (
-    <div className="flex h-full flex-col items-center justify-center overflow-y-auto px-5 py-4 text-center">
+    <div className="mt-10 flex flex-col items-center text-center">
       <div
         className={`relative mb-2 flex items-center gap-2 text-2xl font-semibold text-fg ${
           reduceMotion ? "" : "learn-countup"

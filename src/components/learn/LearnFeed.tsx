@@ -25,14 +25,16 @@ const SESSION_N = 5;
 const HISTORY_CAP = 80;
 const ALL_TYPE_KEYS = CARD_TYPES.map((t) => t.key as string);
 
-// Progress levels keyed off total sets completed. Each set ≈ 5 cards / ~2 min.
+// Progress levels keyed off total sets completed — doubling so early levels
+// come fast, capped at 64. Each set ≈ 5 cards / ~2 min.
 const LEVELS = [
   { name: "Novice", min: 0 },
-  { name: "Apprentice", min: 5 },
-  { name: "Scholar", min: 15 },
-  { name: "Savant", min: 30 },
-  { name: "Brainiac", min: 60 },
-  { name: "Brain Master", min: 120 },
+  { name: "Curious", min: 2 },
+  { name: "Apprentice", min: 4 },
+  { name: "Scholar", min: 8 },
+  { name: "Savant", min: 16 },
+  { name: "Brainiac", min: 32 },
+  { name: "Brain Master", min: 64 },
 ];
 function levelFor(sets: number) {
   let i = 0;
@@ -172,17 +174,11 @@ export default function LearnFeed() {
       ...c,
       seenAt: c.seenAt ?? session.generatedAt,
     }));
-    // remember these cards so the next set avoids them (ring buffer ~60)
+    // remember these cards so the next set avoids them (ring buffer ~60).
+    // History is grown on completion (finishSet), not on deal — so the count
+    // is stable while a set is in progress and only the current set is "live".
     const nextSeen = [...stamped.map((c) => c.id), ...seen].slice(0, 60);
     writeJSON(SEEN_KEY, nextSeen);
-    // grow the full-card history (newest first, deduped, capped)
-    const prevHist = readJSON<LearnCard[]>(HISTORY_KEY, []);
-    const mergedHist = dedupeById([...stamped, ...prevHist]).slice(
-      0,
-      HISTORY_CAP
-    );
-    writeJSON(HISTORY_KEY, mergedHist);
-    setHistory(mergedHist);
     setDegraded(!!session.degraded);
     setDegradedNote(session.note ?? null);
     setCards(stamped);
@@ -268,23 +264,30 @@ export default function LearnFeed() {
     };
   }, [phase]);
 
-  const bumpSets = useCallback(() => {
+  // Finishing a set: count it once and fold its cards into history (newest
+  // first, deduped, capped). History only grows here — never on deal.
+  const finishSet = useCallback(() => {
     setSets((cur) => {
       const n = cur + 1;
       writeJSON(SETS_KEY, n);
       return n;
     });
-  }, []);
+    setHistory((prev) => {
+      const merged = dedupeById([...cards, ...prev]).slice(0, HISTORY_CAP);
+      writeJSON(HISTORY_KEY, merged);
+      return merged;
+    });
+  }, [cards]);
 
   const next = useCallback(() => {
     if (idx < cards.length - 1) {
       setIdx((i) => i + 1);
       setChosen(null);
     } else {
-      bumpSets();
+      finishSet();
       setPhase("complete");
     }
-  }, [idx, cards.length, bumpSets]);
+  }, [idx, cards.length, finishSet]);
 
   const card = cards[idx];
   const trans = reduceMotion ? "" : "transition-colors";
@@ -292,14 +295,9 @@ export default function LearnFeed() {
   // Only quiz cards gate the Next button — everything else is read-and-go.
   const engaged = card?.type === "quiz" ? chosen !== null : true;
 
-  // History = everything seen. While a set is in progress we hide its own cards
-  // (they're the "current" set); once it's complete, fold them in so the count
-  // and the History feed update the moment you finish on the success screen.
-  const currentIds = new Set(cards.map((c) => c.id));
-  const pastCards =
-    phase === "complete"
-      ? history
-      : history.filter((c) => !currentIds.has(c.id));
+  // History holds only completed sets' cards (added in finishSet), so the count
+  // is stable while a set is in progress and grows by one set on completion.
+  const pastCards = history;
 
   return (
     <div>

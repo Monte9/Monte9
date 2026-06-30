@@ -41,15 +41,7 @@ export async function GET(req: Request) {
     : "In-memory only — no KV configured, so this is just one serverless instance's count for today. Connect Vercel KV / Upstash for accurate cross-instance daily totals.";
 
   if (url.searchParams.get("format") === "json") {
-    const KEY = ["LEARN", "STATS", "TOKEN"].join("_");
-    const g = globalThis as unknown as { process?: { env?: Record<string, string | undefined> } };
     return Response.json({
-      _diag: {
-        readEnvLen: (readEnv("LEARN_STATS_TOKEN") || "").length,
-        joinKeyLen: (process.env[KEY] || "").length,
-        globalLen: (g?.process?.env?.[KEY] || "").length,
-        keyPresent: Object.keys(process.env).includes(KEY),
-      },
       today: today.sets,
       date: today.date,
       dailyCap: cap,

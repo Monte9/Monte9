@@ -11,7 +11,7 @@ move (new top-level dir, a new feature, a shared abstraction, a dependency, a
 data-model or routing change). See "When to consult the architect" at the end.
 
 > Scope note: this file is about the **site** (`src/`, routing, build). The
-> autonomous build/creator/labs harness lives in `agent/` and `.claude/` and is
+> autonomous build/creator harness lives in `agent/` and `.claude/` and is
 > documented in `AGENTS.md` + each routine's README. The profile `README.md` is
 > NOT part of the site.
 
@@ -237,7 +237,7 @@ import rewrites, build-gated, behavior-identical.
 Removed `output: "export"` (kept `trailingSlash: true`). **Why:** Learn needs
 live, on-demand generation behind a server-held API key — impossible under a pure
 static export. **Consequence:** route handlers run as serverless functions; there
-is no `out/` dir; the creator/labs routines verify by serving `next start`, not
+is no `out/` dir; the creator routine verifies by serving `next start`, not
 `out/`. This is the single biggest mental-model shift — see the Stack note.
 
 ### Pre-existing load-bearing decisions (captured retroactively)

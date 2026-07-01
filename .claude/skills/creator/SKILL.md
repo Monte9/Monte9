@@ -6,8 +6,8 @@ description: Run the unified autonomous Creator routine for montethakkar.com —
 # Creator
 
 One routine that grows the site on two streams — **apps** (`/apps`) and **posts**
-(`/posts`) — choosing the most interesting next thing each run. Supersedes the
-app-only `labs-auto`. Full design + memory map: `agent/creator/DIRECTION.md`.
+(`/posts`) — choosing the most interesting next thing each run. Full design +
+memory map: `agent/creator/DIRECTION.md`.
 
 ## What one run does
 
@@ -57,5 +57,3 @@ TASTE · posts: grounding RUBRIC) → Ship 1 to main`. Orchestrated by
 
 ## Scheduling
 A Claude Code Routine (cloud) invokes this. Config: `agent/creator/ROUTINE.md`.
-(Replaces the old `labs-auto` routine — swap the routine's prompt to invoke
-`creator`.)

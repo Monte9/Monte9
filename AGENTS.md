@@ -34,14 +34,12 @@ This repo does two jobs:
 
 - **`build-sprint`** — the autonomous build harness (planner → builder →
   evaluator) that drives `agent/GOAL.md` to done, one sprint at a time.
-- **`creator`** — picks the most interesting next thing (an `/apps` experiment or
-  a `/posts` note) and ships one to `main` (green/grounding-gated).
-- **`labs-auto`** — the app-only predecessor of `creator` (generate 3 web-dev
-  prototypes, judge with evolving taste, ship 1 to `/apps`). **Superseded by
-  `creator`** (the scheduled routine); kept runnable for manual app-only runs.
+- **`creator`** — the site's autonomous content routine: each run it routes
+  (an `/apps` experiment **or** a `/posts` note, by editorial taste), builds 3
+  candidates, judges, and ships one to `main` (green/grounding-gated). Its
+  pipeline + memory are reusable for on-demand, review-before-push builds too.
 
-Routine memory lives in `agent/{apps,posts,creator}/` (JOURNAL/TASTE/IDEAS/…);
-each routine has a README.
+Routine memory lives in `agent/{apps,posts,creator}/` (JOURNAL/TASTE/IDEAS/…).
 
 ## Repo conventions
 

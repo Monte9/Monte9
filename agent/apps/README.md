@@ -1,11 +1,11 @@
-# Labs Auto — the autonomous prototype routine
+# Apps stream — the `/apps` experiment memory
 
-An hourly loop that **generates 3 web-dev prototypes, judges them with evolving
-taste, and ships exactly 1** to `/apps` on montethakkar.com. It compounds: every
-run reads what came before so it never repeats itself and the judge gets sharper
-over time.
+The compounding memory behind the site's `/apps` experiments: every run reads what
+came before so it never repeats an idea and the judge gets sharper over time. This
+folder is the **apps half** of the `creator` routine's memory (posts live in
+`agent/posts/`).
 
-## The loop (one iteration)
+## The loop (the apps pipeline, one iteration)
 
 ```
 Ideate ──▶ Build ──▶ Verify ──▶ Judge ──▶ Ship
@@ -14,8 +14,8 @@ Ideate ──▶ Build ──▶ Verify ──▶ Judge ──▶ Ship
             agents     screenshot           build green, commit + push main
 ```
 
-Orchestrated by `.claude/workflows/labs-auto.js` (invoked via the
-`labs-auto` skill). Runs on `main` so the winner deploys.
+Driven by the `creator` skill (`.claude/workflows/creator.js`), which routes
+between an app and a post each run. Runs on `main` so the winner deploys.
 
 ## Memory — everything is plain markdown so any agent (or human) can grep it
 
@@ -51,10 +51,12 @@ sed -n '1,40p'         agent/apps/TASTE.md       # current judging principles
 
 ## Operating it
 
-- Manual run: invoke the `labs-auto` skill (or `Workflow({name:'labs-auto'})`).
+- Manual run: invoke the `creator` skill (or `Workflow({name:'creator'})`); it
+  may pick an app or a post that run.
 - Scheduled (durable, 24/7): a **Claude Code Routine** runs it on Anthropic's
-  cloud — survives container reclaim. Config + setup steps: `ROUTINE.md`.
-  Manage at https://claude.ai/code/routines or via the `/schedule` CLI.
+  cloud — survives container reclaim. Config + setup steps:
+  `agent/creator/ROUTINE.md`. Manage at https://claude.ai/code/routines or via
+  the `/schedule` CLI.
 
 To pause: pause/delete the Routine at claude.ai/code/routines (or `/schedule
 list` → update). To stop a bad streak: nothing live ever breaks (green-gate +

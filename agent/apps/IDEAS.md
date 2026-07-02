@@ -8,6 +8,7 @@ Status legend: `shipped` · `rejected` · `proposed`
 
 | status | slug | concept (one line) | tags | run |
 |--------|------|--------------------|------|-----|
+| shipped | eiffel-tower | Procedural 3D Eiffel Tower (wrought-iron lattice, arches, platforms) from the monument's real proportions — orbit / zoom / pan | webgl, three.js, r3f, 3d, procedural, architecture | directed |
 | shipped | built-by-agents | Animated harness-loop diagram + scroll-revealed sprint timeline from real STATE.md history | Agentic, Dataviz, Animation | seed |
 | shipped | journey | Scroll-driven globe flying Bangalore→SF→Austin→LA through Monte's life | WebGL, Three.js, Scrollytelling | seed |
 | shipped | field | Interactive domain-warped GLSL flow-field reacting to the cursor | WebGL, GLSL, Shaders | seed |

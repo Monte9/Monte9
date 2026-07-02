@@ -21,6 +21,20 @@ Format per run:
 
 <!-- Runs are prepended below this line. -->
 
+## Directed build — 2026-07-02 00:05
+- mode: user-directed single-app build (not the 3-candidate routine) — "a 3D
+  model I can zoom and pan around; pick a well-known structure."
+- shipped: eiffel-tower — src/app/apps/eiffel-tower/ + src/features/apps/components/EiffelTower.tsx
+- what: the Eiffel Tower modeled procedurally in three.js/r3f from its real
+  proportions (330 m tip; platforms at 57/115/276 m; the inward-curving legs).
+  One InstancedMesh for the whole wrought-iron lattice (rails + belts + X-bracing),
+  plus 3 platforms, 4 base arches, antenna + beacon. OrbitControls = orbit + zoom
+  + pan; theme-aware bronze / night-bronze; reduce-motion freezes auto-rotate.
+- verified: pnpm build green; Playwright light/dark/sunset + 390px mobile, zero
+  console errors, orbit/zoom/pan confirmed by a before/after interaction diff.
+- note: no external .glb — procedural keeps it self-contained (no new deps, no
+  asset licensing/CORS), which real 3D-scan assets wouldn't.
+
 ## Run 5 — 2026-06-28 22:28
 - candidates: commit-terrain, weather-pixels, audio-bars-3d
 - scores: weather-pixels=51, commit-terrain=46, audio-bars-3d=42

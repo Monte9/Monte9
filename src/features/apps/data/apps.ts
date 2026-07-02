@@ -85,6 +85,16 @@ export const APP_EXPERIMENTS: AppExperiment[] = [
     motif:
       "<g fill=\"currentColor\"><rect x=\"3\" y=\"20\" width=\"3\" height=\"8\" rx=\"0.5\"/><rect x=\"7\" y=\"16\" width=\"3\" height=\"12\" rx=\"0.5\"/><rect x=\"11\" y=\"22\" width=\"3\" height=\"6\" rx=\"0.5\"/><rect x=\"15\" y=\"13\" width=\"3\" height=\"15\" rx=\"0.5\"/><rect x=\"19\" y=\"18\" width=\"3\" height=\"10\" rx=\"0.5\"/><rect x=\"23\" y=\"15\" width=\"3\" height=\"13\" rx=\"0.5\"/><rect x=\"27\" y=\"21\" width=\"3\" height=\"7\" rx=\"0.5\"/></g><g className=\"text-muted\" fill=\"currentColor\"><rect x=\"3\" y=\"10\" width=\"3\" height=\"3\" rx=\"0.5\"/><rect x=\"11\" y=\"12\" width=\"3\" height=\"3\" rx=\"0.5\"/><rect x=\"23\" y=\"8\" width=\"3\" height=\"3\" rx=\"0.5\"/><rect x=\"27\" y=\"11\" width=\"3\" height=\"3\" rx=\"0.5\"/></g><path d=\"M18 3 L13.5 12 L16.5 12 L14.5 19 L21 9.5 L17.5 9.5 L20 3 Z\" fill=\"currentColor\"/>",
   },
+  {
+    slug: "eiffel-tower",
+    title: "Eiffel Tower",
+    blurb:
+      "The Eiffel Tower rebuilt from its proportions — the wrought-iron lattice, three platforms, four grand arches, and the antenna's beacon, all generated in code from the monument's real dimensions (330 m to the tip, the inward-curving “Eiffel curve” legs). Orbit it, scroll to zoom into the ironwork, right-drag to pan; a warm night-lit bronze in dark mode.",
+    date: "2026-07-02T00:05",
+    tags: ["webgl", "three.js", "r3f", "3d", "procedural", "architecture", "interactive"],
+    motif:
+      "<g fill=\"none\" stroke=\"currentColor\" stroke-width=\"1.6\" stroke-linecap=\"round\" stroke-linejoin=\"round\"><path d=\"M6 27 C11 19 14 11 16 4 C18 11 21 19 26 27\"/><path d=\"M9 27 Q16 21 23 27\"/><path d=\"M10 21.5 H22\"/><path d=\"M12.2 15 H19.8\"/><path d=\"M16 4 V1.6\"/></g>",
+  },
 ];
 
 // Every distinct tag across experiments, alphabetized. Shown on cards.
